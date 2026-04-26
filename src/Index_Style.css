@@ -1,0 +1,105 @@
+
+body {
+    background-color: AntiqueWhite;
+
+   }
+
+
+
+/**
+color nav bar
+**/
+.Nav_Bar {
+    background-color: BlanchedAlmond;
+    overflow: hidden;
+    border-style: hidden hidden solid hidden;
+    border-color: white;
+
+    }
+
+
+/**
+style buttons in  nav bar, hardcoded values should be changed later
+**/
+.Nav_Bar a {
+    float: left;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 17px;
+    color: black;
+
+    }
+
+/**
+change color when hover
+**/
+.Nav_Bar a:hover{
+    background-color: black;
+    color: white;
+
+    }
+
+
+/**
+change color when click
+**/
+.Nav_Bar a:active{
+    background-color: black;
+    color: white;
+
+    }
+
+/**
+color nav bar, hardcoded values should be changed later
+**/
+.Enter_User_Section a{
+        float: right;
+        text-align: center;
+        padding: 14px 16px;
+        font-size: 17px;
+        text-decoration: none;
+        color: black;
+
+    }
+
+/**
+change color when hover for sign up section
+**/
+.Enter_User_Section a:hover{
+    background-color: black;
+    color: white;
+
+    }
+
+
+/**
+change color when click for sign up section
+**/
+.Enter_User_Section a:active{
+    background-color: Aquamarine;
+    color: white;
+
+    }
+
+
+/**
+style main central box
+**/
+.Central_Element {
+    background-color: #d2a679;
+    color: white;
+    text-align: center;
+    border: 3px solid white;
+    border-radius: 15px;
+    margin-top: 80px;
+    padding: 20px;
+    font-size: 20px;
+}
+
+/**
+get small blurb to be on bottom section of central element
+**/
+.Central_Element p {
+    float: bottom;
+}
