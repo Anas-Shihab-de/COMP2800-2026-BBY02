@@ -1,0 +1,288 @@
+Index: src/Index_Script.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/Index_Script.js b/src/Index_Script.js
+--- a/src/Index_Script.js	(revision 67d443eab5b36ddd33c6c26422f5a47df94a5d5e)
++++ b/src/Index_Script.js	(date 1777321678423)
+@@ -1,0 +1,187 @@
++import mapboxgl from "mapbox-gl";
++
++
++// Adds a blue marker for user's location on the map literally
++function addUserPin(map, userLocation) {
++  new mapboxgl.Marker({ color: "blue" }).setLngLat(userLocation).addTo(map);
++}
++
++async function showMap() {
++  // Initialize the Mapbox map With access token from .env and initial settings
++
++  mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
++
++  // Attempt to get user's real location or default if not available
++
++  const userLocation = await getUserLocation();
++
++  const map = new mapboxgl.Map({
++    container: "map",
++    style: "mapbox://styles/mapbox/streets-v12",
++    center: userLocation,
++    zoom: 19,
++  });
++
++  // When the user clicks the map get the route from
++  // the user's location to the clicked location
++
++  getClickedLocation(map, (clickedLocation) => {
++    getRoute(map, userLocation, clickedLocation);
++  });
++
++  addControls();
++
++  function addControls() {
++    map.addControl(new mapboxgl.NavigationControl());
++  }
++
++  // When the map is done loading set up the user pin
++  map.once("load", () => setupMap(map, userLocation));
++  function setupMap(map, userLocation) {
++    addUserPin(map, userLocation);
++  }
++}
++showMap();
++
++// Detects when the user clicks the map grab the coordinate places the end point there
++// and returns that using callback.
++function getClickedLocation(map, callback) {
++  map.on("click", (event) => {
++    const clickedLocation = Object.keys(event.lngLat).map(
++      (key) => event.lngLat[key]
++    );
++    const end = {
++      type: "FeatureCollection",
++      features: [
++        {
++          type: "Feature",
++          properties: {},
++          geometry: {
++            type: "Point",
++            coordinates: clickedLocation,
++          },
++        },
++      ],
++    };
++
++    // If the end point exists then replace it with a new one
++    // Otherwise, create a new visible circle marker layer.
++    if (map.getLayer("end")) {
++      map.getSource("end").setData(end);
++    } else {
++      map.addLayer({
++        id: "end",
++        type: "circle",
++        source: {
++          type: "geojson",
++          data: {
++            type: "FeatureCollection",
++            features: [
++              {
++                type: "Feature",
++                properties: {},
++                geometry: {
++                  type: "Point",
++                  coordinates: clickedLocation,
++                },
++              },
++            ],
++          },
++        },
++        paint: {
++          "circle-radius": 10,
++          "circle-color": "#f30",
++        },
++      });
++    }
++
++    callback(clickedLocation);
++  });
++}
++
++// Gets the user's location using the Geolocation API
++async function getUserLocation() {
++  const defaultLocation = [-123.00163752324765, 49.25324576104826];
++
++  if (!navigator.geolocation) {
++    console.log("Geolocation not supported. Using default.");
++    return defaultLocation;
++  }
++
++  // Wrap the async GPS call inside a Promise so we can use 'await'
++  return new Promise((resolve) => {
++    navigator.geolocation.getCurrentPosition(
++      // So if it work then user location is retrieved
++      (pos) => {
++        const coords = [pos.coords.longitude, pos.coords.latitude];
++
++        resolve(coords);
++      },
++
++      () => {
++        console.log("Geolocation failed. Using default.");
++
++        resolve(defaultLocation);
++      }
++    );
++  });
++}
++
++// Uses the Mapbox Directions API to get a walking route from start end.
++// Draws the route on the map and fills the sidebar with turn by turn instructions.
++
++async function getRoute(map, start, end) {
++  const query = await fetch(
++    `https://api.mapbox.com/directions/v5/mapbox/walking/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
++    { method: "GET" }
++  );
++
++  // Parse the response and extract the route geometry
++  const json = await query.json();
++  const data = json.routes[0];
++  const route = data.geometry.coordinates;
++  const geojson = {
++    type: "Feature",
++    properties: {},
++    geometry: {
++      type: "LineString",
++      coordinates: route,
++    },
++  };
++  // If the route already exists update it.
++  // If not add a new layer to draw the path on the map.
++
++  if (map.getSource("route")) {
++    map.getSource("route").setData(geojson);
++  } else {
++    map.addLayer({
++      id: "route",
++      type: "line",
++      source: {
++        type: "geojson",
++        data: geojson,
++      },
++      layout: {
++        "line-join": "round",
++        "line-cap": "round",
++      },
++      paint: {
++        "line-color": "#3887be",
++        "line-width": 5,
++        "line-opacity": 0.75,
++      },
++    });
++  }
++
++  // get the sidebar and add the instructions
++  const instructions = document.getElementById("instructions");
++  const steps = data.legs[0].steps;
++
++  let tripInstructions = "";
++  for (const step of steps) {
++    tripInstructions += `<li>${step.maneuver.instruction}</li>`;
++  }
++  instructions.innerHTML = `<p><strong>Trip duration: ${Math.floor(
++    data.duration / 60
++  )} min  </strong></p><ol>${tripInstructions}</ol>`;
++}
+Index: src/index.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><!DOCTYPE html>\r\n<html lang=\"en\">\r\n<head>\r\n    <!--\r\n    template metadata\r\n    -->\r\n    <title>template title</title>\r\n    <meta charset = \"UTF-8\">\r\n    <meta name = \"viewport\">\r\n\r\n    <!--\r\n    reference style/logic file in src folder\r\n    -->\r\n    <link rel = \"stylesheet\" href = \"Index_Style.css\">\r\n    <script src = \"Index_Script.js\"></script>\r\n\r\n\r\n\r\n</head>\r\n<body>\r\n\r\n<!--\r\nsimple nav bar\r\n-->\r\n<div class = \"Nav_Bar\">\r\n\r\n    <a href = \"\">button1</a>\r\n    <a href = \"\">button2</a>\r\n    <a href = \"\">button3</a>\r\n\r\n\r\n    <div class = \"Enter_User_Section\">\r\n    <a href = \"Sign_Up_Page.html\">Sign Up</a>\r\n    <a href = \"Log_In_Page.html\">Login</a>\r\n    </div>\r\n\r\n</div>\r\n\r\n<div class = \"Central_Element\">\r\n    <h3>\r\n        Main Element\r\n    </h3>\r\n\r\n    <p>minor blurb</p>\r\n</div>\r\n\r\n\r\n\r\n\r\n</body>\r\n</html>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/index.html b/src/index.html
+--- a/src/index.html	(revision 67d443eab5b36ddd33c6c26422f5a47df94a5d5e)
++++ b/src/index.html	(date 1777319437739)
+@@ -36,13 +36,12 @@
+ 
+ </div>
+ 
+-<div class = "Central_Element">
+-    <h3>
+-        Main Element
+-    </h3>
+ 
+-    <p>minor blurb</p>
+-</div>
++<!-- MAP SECTION -->
++<main id="map-container">
++    <div id="map"></div>
++    <div id="instructions"></div>
++</main>
+ 
+ 
+ 
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"88af22a5-f2dc-4635-aa03-e32015ec07cc\" name=\"Changes\" comment=\"\">\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_BRANCH_BY_REPOSITORY\">\r\n      <map>\r\n        <entry key=\"$PROJECT_DIR$\" value=\"main\" />\r\n      </map>\r\n    </option>\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;Anas-Shihab-de&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">{\r\n  &quot;selectedUrlAndAccountId&quot;: {\r\n    &quot;url&quot;: &quot;https://github.com/Anas-Shihab-de/COMP2800-2026-BBY02.git&quot;,\r\n    &quot;accountId&quot;: &quot;2d606bfa-e589-4c77-ba19-eb67b36d7ca1&quot;\r\n  }\r\n}</component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 4\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"3CuB2GZAF9mogGUprtAg4WEUKxz\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">{\r\n  &quot;keyToString&quot;: {\r\n    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,\r\n    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,\r\n    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,\r\n    &quot;git-widget-placeholder&quot;: &quot;main&quot;,\r\n    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,\r\n    &quot;last_opened_file_path&quot;: &quot;C:/Users/User/Documents/GitHub/COMP2800-2026-BBY02&quot;\r\n  }\r\n}</component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-jdk-30f59d01ecdd-26cb7f24e5b0-intellij.indexing.shared.core-IU-253.29346.240\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"88af22a5-f2dc-4635-aa03-e32015ec07cc\" name=\"Changes\" comment=\"\" />\r\n      <created>1777225366040</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1777225366040</updated>\r\n    </task>\r\n    <servers />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 67d443eab5b36ddd33c6c26422f5a47df94a5d5e)
++++ b/.idea/workspace.xml	(date 1777322099743)
+@@ -1,8 +1,12 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+   <component name="ChangeListManager">
+-    <list default="true" id="88af22a5-f2dc-4635-aa03-e32015ec07cc" name="Changes" comment="">
++    <list default="true" id="88af22a5-f2dc-4635-aa03-e32015ec07cc" name="Changes" comment="index page template set up">
++      <change afterPath="$PROJECT_DIR$/.env" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/MapAPIHandler.json" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/Index_Script.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/Index_Script.js" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.html" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+Index: MapAPIHandler.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/MapAPIHandler.json b/MapAPIHandler.json
+new file mode 100644
+--- /dev/null	(date 1777322203636)
++++ b/MapAPIHandler.json	(date 1777322203636)
+@@ -0,0 +1,16 @@
++{
++  "name": "mapbox-app",
++  "version": "1.0.0",
++  "private": true,
++  "scripts": {
++    "dev": "vite",
++    "build": "vite build",
++    "preview": "vite preview"
++  },
++  "devDependencies": {
++    "vite": "^5.0.0"
++  },
++  "dependencies": {
++    "mapbox-gl": "^3.0.0"
++  }
++}
+\ No newline at end of file
+Index: .env
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.env b/.env
+new file mode 100644
+--- /dev/null	(date 1777321458188)
++++ b/.env	(date 1777321458188)
+@@ -0,0 +1,1 @@
++VITE_MAPBOX_TOKEN=pk.eyJ1IjoiYXNoaWhhYjIiLCJhIjoiY21vaG43MHA3MDEwejJwcTAyamI0cnA0MyJ9.gjY7I00h4KOr2dnIK9ocYw
+\ No newline at end of file

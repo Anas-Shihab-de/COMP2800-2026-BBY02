@@ -103,3 +103,37 @@ get small blurb to be on bottom section of central element
 .Central_Element p {
     float: bottom;
 }
+
+
+/**
+give map box a box to have the map in, and style
+**/
+ #map {
+    width: 50vw;
+    height: 50vh;
+    overflow: hidden;
+    background-color: black;
+    margin-top: 80px;
+    left: 25%;
+    border-style: solid solid solid solid;
+    border-color: Brown;
+    border-radius: 10px;
+    border-width: 8px;
+  }
+
+/* Instructions overlay that sits on top of the map */
+#instructions {
+  position: absolute;
+  top: 140px;
+  left: 20px;
+  width: 20%;
+  max-height: calc(100% - 40px);
+  padding: 20px;
+  overflow: hidden;
+  font-size: 10pt;
+  font-family: sans-serif;
+  background-color: white;
+  border-style: solid solid solid solid;
+  border-radius: 10px;
+  border-width: 8px;
+}
