@@ -8,3 +8,13 @@ USAGE:
 
 [write use case]
 
+## About Us
+Team Name: BBY-10
+Team Members: 
+- Anas Shihab
+- Sofia Leustean
+- Min Lee
+- Damon Cao
+- Danielle Laron
+## More details to come
+TBA

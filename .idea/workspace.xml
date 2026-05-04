@@ -32,12 +32,21 @@
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
 }</component>
-  <component name="ProjectId" id="3CuB2GZAF9mogGUprtAg4WEUKxz" />
-  <component name="ProjectViewState">
-    <option name="hideEmptyMiddlePackages" value="true" />
-    <option name="showLibraryContents" value="true" />
-  </component>
-  <component name="PropertiesComponent">{
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Anas-Shihab-de/COMP2800-2026-BBY10.git&quot;,
+    &quot;accountId&quot;: &quot;2d606bfa-e589-4c77-ba19-eb67b36d7ca1&quot;
+  }
+}&lt;/component&gt;
+  &lt;component name=&quot;ProjectColorInfo&quot;&gt;{
+  &amp;quot;associatedIndex&amp;quot;: 4
+}&lt;/component&gt;
+  &lt;component name=&quot;ProjectId&quot; id=&quot;3CuB2GZAF9mogGUprtAg4WEUKxz&quot; /&gt;
+  &lt;component name=&quot;ProjectViewState&quot;&gt;
+    &lt;option name=&quot;hideEmptyMiddlePackages&quot; value=&quot;true&quot; /&gt;
+    &lt;option name=&quot;showLibraryContents&quot; value=&quot;true&quot; /&gt;
+  &lt;/component&gt;
+  &lt;component name=&quot;PropertiesComponent&quot;&gt;&lt;![CDATA[{
   &quot;keyToString&quot;: {
     &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
@@ -54,19 +63,6 @@
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\User\Documents\GitHub\COMP2800-2026-BBY02" />
     </key>
-  </component>
-  <component name="RunManager">
-    <configuration default="true" type="JetRunConfigurationType">
-      <module name="COMP2800-2026-BBY02" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="COMP2800-2026-BBY02" />
-      <option name="filePath" />
-      <method v="2" />
-    </configuration>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
