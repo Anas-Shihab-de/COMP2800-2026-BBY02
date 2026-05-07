@@ -294,21 +294,21 @@
       </div>
 
       <div id="loginForm">
-        <form>
+        <form action="/api/login" method="post">
           <h2>Login</h2>
-          <input type="text" placeholder="username" />
-          <input type="text" placeholder="password" />
-          <button id="loginButton" type="button">Login</button>
+          <input name="loginName" type="text" placeholder="username" />
+          <input name="loginPassword" type="password" placeholder="password" />
+          <button id="loginButton" type="submit">Login</button>
         </form>
       </div>
 
       <div id="signupForm" style="display: none">
-        <form>
+        <form action="/api/signup" method="post">
           <h2>Sign Up</h2>
-          <input type="text" placeholder="username" />
-          <input type="email" placeholder="email" />
-          <input type="text" placeholder="password" />
-          <button id="signupButton" type="button">Sign Up</button>
+          <input name="signupName" type="text" placeholder="username" />
+          <input name="signupEmail" type="email" placeholder="email" />
+          <input name="signupPassword" type="password" placeholder="password" />
+          <button id="signupButton" type="submit">Sign Up</button>
         </form>
       </div>
     </div>
