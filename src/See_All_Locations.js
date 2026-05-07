@@ -31,15 +31,45 @@ document.getElementById('saved-btn').addEventListener('click', openSaved);
  * Loads in locations from the database.
  */
 async function loadLocations() {
-// TODO: Fetch the locations from MongoDB
+  const res = await fetch("/api/locations");
+  const locations = await res.json();
+  await renderCards(locations);
 }
+loadLocations();
 
 /**
  * 
  * @param {*} locations 
  */
 function renderCards(locations) {
-// TODO: Take the locations from the database and make thr actual location cards
+  const grid = document.getElementById("cards-grid");
+  for (let i = 0; i < locations.length; i++) {
+    grid.insertAdjacentHTML("beforeend", `
+      <div class="card">
+
+        <div class="card-image-wrapper">
+          <img src="ex-img-url-here" alt="Location name" class="card-image">
+          <button class="bookmark-btn">
+            <span class="material-symbols-outlined">bookmark_heart</span>
+          </button>
+        </div>
+
+        <div class="card-body">
+          <p class="card-name">${locations[i].name}</p>
+          <div class="card-meta">
+            <span class="meta-distance">X km</span>
+            <span class="meta-price">$$</span>
+          </div>
+          <div class="card-tags">
+            ${locations[i].tags.map(tag => {
+              return '<span class="tag">' + tag + '</span>'
+            }).join('')}
+          </div>
+        </div>
+
+      </div>
+    `);
+  }
 }
 
 /**

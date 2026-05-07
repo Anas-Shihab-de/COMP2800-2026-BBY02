@@ -37,6 +37,7 @@ const locations = await res.json();
 app.get('/api/locations', async (req, res) => {
     try {
         const locations = await client.db(mongodb_project_database).collection('Locations').find().toArray();
+        console.log(locations);
         res.json(locations);
     } catch (error) {
         res.status(500).send('Error fetching data');
