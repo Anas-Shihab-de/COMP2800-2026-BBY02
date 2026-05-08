@@ -49,7 +49,7 @@ function renderCards(locations) {
 
         <div class="card-image-wrapper">
           <img src="ex-img-url-here" alt="Location name" class="card-image">
-          <button class="bookmark-btn">
+          <button class="bookmark-btn" onclick="toggleSave(event, '${locations[i]._id}')">
             <span class="material-symbols-outlined">bookmark_heart</span>
           </button>
         </div>
@@ -79,7 +79,23 @@ function renderCards(locations) {
  */
 function toggleSave(event, locationId) {
   event.stopPropagation(); //Prevent bubbling
-  //TODO: Save/unsave a location...if a location isnt saved then save it, else if it is save then unsave it
+  const btn = event.currentTarget;
+  const icon = btn.querySelector('.material-symbols-outlined');
+
+  // Temporary?? will switch this eventually when I'm connected to the database rather than local storage lol
+  let saved = JSON.parse(localStorage.getItem('savedLocations') || '[]');
+
+  if (saved.includes(locationId)) {
+    // Unsaved state
+    saved = saved.filter(id => id !== locationId);
+    icon.style.fontVariationSettings = "'FILL' 0";
+  } else {
+    // Saved state
+    saved.push(locationId);
+    icon.style.fontVariationSettings = "'FILL' 1";
+  }
+
+  localStorage.setItem('savedLocations', JSON.stringify(saved));
 }
 
 /**
@@ -87,7 +103,7 @@ function toggleSave(event, locationId) {
  * @param {*} locationId 
  */
 function openLocation(locationId) {
-  // TODO: Redirect to location detail page
+  window.location.href = `/Location?id=${locationId}`;
 }
 
 function openFilters() {
@@ -98,9 +114,5 @@ function openFilters() {
  *
  */
 function openSaved() {
-  // TODO: Show saved places page
+  window.location.href = `/Saved_Places`; //temporary
 }
-
-/*
-* Call loadLocations() once the functions are finished :p probs about it
-*/

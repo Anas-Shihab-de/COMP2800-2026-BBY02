@@ -20,7 +20,7 @@ const client = new MongoClient(MONGO_URI);
 
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
-app.use(express.static(__dirname + "/"));
+app.use(express.static(__dirname + "/src"));
 
 // TODO tasks for login:
 // - Add sessions
@@ -89,6 +89,22 @@ app.post('/api/login', async (req, res) => {
     } catch (error) {
         res.status(503).send('Error logging in');
     }
+});
+
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/src/Index.html');
+});
+
+app.get('/See_All_Locations', (req, res) => {
+    res.sendFile(__dirname + '/src/See_All_Locations.html');
+});
+
+app.get('/Login', (req, res) => {
+    res.sendFile(__dirname + '/src/Log_In_Page.html');
+});
+
+app.get('/Sign_Up', (req, res) => {
+    res.sendFile(__dirname + '/src/Sign_Up_Page.html');
 });
 
 app.listen(PORT, () => {
