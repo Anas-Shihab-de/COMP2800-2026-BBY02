@@ -180,6 +180,12 @@ body {
   font-variation-settings: "FILL" 1;
 }
 
+/* unsave bookmark */
+.material-symbols-outlined-bookmark-unsave {
+  font-size: 32px;
+  color: var(--color-white);
+}
+
 .card__text-container {
   width: 100%;
   padding: 10px;

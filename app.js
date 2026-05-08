@@ -10,15 +10,15 @@ const mongodb_session_secret = process.env.MONGODB_SESSION_SECRET;
 const bcrypt = require("bcrypt");
 const saltRounds = 12;
 
-const express = require('express');
+const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const { MongoClient } = require('mongodb');
+const { MongoClient } = require("mongodb");
 const MONGO_URI = `mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/`;
 const client = new MongoClient(MONGO_URI);
 
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(__dirname + "/"));
 
@@ -34,63 +34,134 @@ const locations = await res.json();
 
 ^put this into the js code and you'll have all of the documents in an array
 */
-app.get('/api/locations', async (req, res) => {
-    try {
-        const locations = await client.db(mongodb_project_database).collection('Locations').find().toArray();
-        res.json(locations);
-    } catch (error) {
-        res.status(500).send('Error fetching data');
-    }
+app.get("/api/locations", async (req, res) => {
+  try {
+    const locations = await client
+      .db(mongodb_project_database)
+      .collection("Locations")
+      .find()
+      .toArray();
+    res.json(locations);
+  } catch (error) {
+    res.status(500).send("Error fetching data");
+  }
 });
 
-app.get('/api/users', async (req, res) => {
-    try {
-        const users = await client.db(mongodb_project_database).collection('Users').find().toArray();
-        res.json(users);
-    } catch (error) {
-        res.status(500).send('Error fetching data');
-    }
+app.get("/api/users", async (req, res) => {
+  try {
+    const users = await client
+      .db(mongodb_project_database)
+      .collection("Users")
+      .find()
+      .toArray();
+    res.json(users);
+  } catch (error) {
+    res.status(500).send("Error fetching data");
+  }
 });
 
-app.get('/api/sessions', async (req, res) => {
-    try {
-        const sessions = await client.db(mongodb_sessions_database).collection('sessions').find().toArray();
-        res.json(sessions);
-    } catch (error) {
-        res.status(500).send('Error fetching data');
-    }
+app.get("/api/sessions", async (req, res) => {
+  try {
+    const sessions = await client
+      .db(mongodb_sessions_database)
+      .collection("sessions")
+      .find()
+      .toArray();
+    res.json(sessions);
+  } catch (error) {
+    res.status(500).send("Error fetching data");
+  }
 });
 
-app.post('/api/signup', async (req, res) => {
-    const username = req.body.signupName;
-    const email = req.body.signupEmail;
-    const password = req.body.signupPassword;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-    try {
-        const usersCollection = await client.db(mongodb_project_database).collection('Users');
-        await usersCollection.insertOne({"username": username, "email": email, "password": hashedPassword});
-        res.redirect("/about"); // Sends to about.html if successful for testing, change in future
-    } catch (error) {
-        res.status(503).send('Error adding to userbase');
-    }
+app.post("/api/signup", async (req, res) => {
+  const username = req.body.signupName;
+  const email = req.body.signupEmail;
+  const password = req.body.signupPassword;
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
+  try {
+    const usersCollection = await client
+      .db(mongodb_project_database)
+      .collection("Users");
+    await usersCollection.insertOne({
+      username: username,
+      email: email,
+      password: hashedPassword,
+      saved_list: [],
+    }); // added saved_list for saved_page logic
+    res.redirect("/about"); // Sends to about.html if successful for testing, change in future
+  } catch (error) {
+    res.status(503).send("Error adding to userbase");
+  }
 });
 
-app.post('/api/login', async (req, res) => {
-    const username = req.body.loginName;
-    const password = req.body.loginPassword;
-    try {
-        const usersCollection = await client.db(mongodb_project_database).collection('Users');
-        const result = await usersCollection.find({"username": username}).toArray();
-        if (result.length > 0 && await bcrypt.compare(password, result[0].password)) {
-            res.redirect("/about");
-        } else {
-            res.redirect("/Login");
-        }
-    } catch (error) {
-        res.status(503).send('Error logging in');
+app.post("/api/login", async (req, res) => {
+  const username = req.body.loginName;
+  const password = req.body.loginPassword;
+  try {
+    const usersCollection = await client
+      .db(mongodb_project_database)
+      .collection("Users");
+    const result = await usersCollection.find({ username: username }).toArray();
+    if (
+      result.length > 0 &&
+      (await bcrypt.compare(password, result[0].password))
+    ) {
+      res.redirect("/about");
+    } else {
+      res.redirect("/Login");
     }
+  } catch (error) {
+    res.status(503).send("Error logging in");
+  }
+});
+
+/**
+ * saved_page.js : unsave / save the location from the user's saved_list
+ * TODO: update username
+ *
+ * https://www.mongodb.com/docs/drivers/node/current/crud/update/modify/#std-label-node-usage-updateone
+ * https://thalals.tistory.com/176
+ */
+app.post("/api/unsave-location", async (req, res) => {
+  const locationId = req.body.savedLocationId;
+  const username = "test";
+
+  try {
+    const usersCollection = await client
+      .db(mongodb_project_database)
+      .collection("Users");
+
+    const result = await usersCollection.updateOne(
+      { username: username },
+      { $pull: { saved_list: locationId } },
+    );
+
+    res.json({ message: "location unsaved" });
+  } catch (error) {
+    res.status(503).send("Error unsaving place.");
+  }
+});
+
+app.post("/api/save-location", async (req, res) => {
+  const locationId = req.body.savedLocationId;
+  const username = "test";
+
+  try {
+    const usersCollection = await client
+      .db(mongodb_project_database)
+      .collection("Users");
+
+    const result = await usersCollection.updateOne(
+      { username: username },
+      { $push: { saved_list: locationId } },
+    );
+
+    res.json({ message: "location saved" });
+  } catch (error) {
+    res.status(503).send("Error saving place.");
+  }
 });
 
 app.listen(PORT, () => {
-    console.log("Server is running on port " + PORT);
+  console.log("Server is running on port " + PORT);
 });
