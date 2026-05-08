@@ -1,3 +1,13 @@
+// Check if authenticated
+async function checkAuth() {
+  const res = await fetch("/api/authentication");
+  const auth = await res.json();
+  if (!auth.authenticated) {
+    window.location.href = "/Login.html";
+  }
+}
+checkAuth();
+
 /*
 * The catagories that we currently have :thumbsup:
 * If there are any other catagories to add here lemme know otherwise
