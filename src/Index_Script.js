@@ -1,191 +1,402 @@
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 
-// Adds a blue marker for user's location on the map literally
-function addUserPin(map, userLocation) {
-  new mapboxgl.Marker({ color: "blue" }).setLngLat(userLocation).addTo(map);
-}
+// =========================
+// MAPBOX ACCESS TOKEN
+// =========================
+mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
-async function showMap() {
-  // Initialize the Mapbox map With access token from .env and initial settings
+// =========================
+// APP STATE
+// =========================
+let map;
+let userLocation;
+let selectedLocation = null;
 
-  mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
+let userMarker = null;
+let locationMarkers = []; // 🔥 FIX: required for clearing POIs
 
-  // Attempt to get user's real location or default if not available
+let radius = 10; // km default
 
-  const userLocation = await getUserLocation();
+// =========================
+// START APPLICATION
+// =========================
+window.addEventListener("load", async () => {
+  await initializeMap();
+});
 
-  const map = new mapboxgl.Map({
+// =========================
+// INITIALIZE MAP
+// =========================
+async function initializeMap() {
+  userLocation = await getUserLocation();
+
+  map = new mapboxgl.Map({
     container: "map",
     style: "mapbox://styles/mapbox/streets-v12",
     center: userLocation,
-    zoom: 19,
+    zoom: 12,
   });
 
-  // When the user clicks the map get the route from
-  // the user's location to the clicked location
+  map.addControl(new mapboxgl.NavigationControl());
 
-  getClickedLocation(map, (clickedLocation) => {
-    getRoute(map, userLocation, clickedLocation);
+  map.once("load", async () => {
+    userMarker = createUserMarker(userLocation);
+
+    setupMapClickHandler();
+    setupSetLocationButton();
+
+    await loadUserSettings();
+    await loadLocations();
   });
 
-  addControls();
+  // load settings early (safe defaults)
+  try {
+    const raw = localStorage.getItem("userSettings");
+    if (raw) {
+      const settings = JSON.parse(raw);
 
-  function addControls() {
-    map.addControl(new mapboxgl.NavigationControl());
-  }
-
-  // When the map is done loading set up the user pin
-  map.once("load", () => setupMap(map, userLocation));
-  function setupMap(map, userLocation) {
-    addUserPin(map, userLocation);
+      if (settings?.radius) radius = settings.radius;
+      if (settings?.location) userLocation = settings.location;
+    }
+  } catch (err) {
+    console.error("Failed to read settings:", err);
   }
 }
-window.addEventListener("load", () => {
-  showMap();
-});
 
-// Detects when the user clicks the map grab the coordinate places the end point there
-// and returns that using callback.
-function getClickedLocation(map, callback) {
-  map.on("click", (event) => {
-    const clickedLocation = Object.keys(event.lngLat).map(
-      (key) => event.lngLat[key]
-    );
-    const end = {
-      type: "FeatureCollection",
-      features: [
-        {
-          type: "Feature",
-          properties: {},
-          geometry: {
-            type: "Point",
-            coordinates: clickedLocation,
-          },
+// =========================
+// DISTANCE HELPERS
+// =========================
+function getDistanceKm(a, b) {
+  const R = 6371;
+
+  const dLat = (b[1] - a[1]) * Math.PI / 180;
+  const dLon = (b[0] - a[0]) * Math.PI / 180;
+
+  const lat1 = a[1] * Math.PI / 180;
+  const lat2 = b[1] * Math.PI / 180;
+
+  const x =
+    Math.sin(dLat / 2) ** 2 +
+    Math.sin(dLon / 2) ** 2 *
+    Math.cos(lat1) *
+    Math.cos(lat2);
+
+  return R * (2 * Math.asin(Math.sqrt(x)));
+}
+
+function isWithinRadius(userLoc, pointLoc, radiusKm) {
+  return getDistanceKm(userLoc, pointLoc) <= radiusKm;
+}
+
+// =========================
+// USER SETTINGS
+// =========================
+async function loadUserSettings() {
+  const raw = localStorage.getItem("userSettings");
+  if (!raw) return;
+
+  const settings = JSON.parse(raw);
+  if (!settings?.location) return;
+
+  userLocation = settings.location;
+
+  map.setCenter(userLocation);
+
+  if (userMarker) {
+    userMarker.setLngLat(userLocation);
+  } else {
+    userMarker = createUserMarker(userLocation);
+  }
+}
+
+// =========================
+// USER MARKER
+// =========================
+function createUserMarker(location) {
+  return new mapboxgl.Marker({ color: "blue" })
+    .setLngLat(location)
+    .addTo(map);
+}
+
+// =========================
+// MAP CLICK
+// =========================
+function setupMapClickHandler() {
+  map.on("click", async (event) => {
+    selectedLocation = [
+      event.lngLat.lng,
+      event.lngLat.lat,
+    ];
+
+    drawDestination(selectedLocation);
+    await getRoute(userLocation, selectedLocation);
+
+    document.getElementById("set-location-btn").style.display = "block";
+  });
+}
+
+// =========================
+// DESTINATION MARKER
+// =========================
+function drawDestination(location) {
+  const geojson = {
+    type: "FeatureCollection",
+    features: [
+      {
+        type: "Feature",
+        properties: {},
+        geometry: {
+          type: "Point",
+          coordinates: location,
         },
-      ],
+      },
+    ],
+  };
+
+  if (map.getSource("end")) {
+    map.getSource("end").setData(geojson);
+  } else {
+    map.addSource("end", {
+      type: "geojson",
+      data: geojson,
+    });
+
+    map.addLayer({
+      id: "end",
+      type: "circle",
+      source: "end",
+      paint: {
+        "circle-radius": 10,
+        "circle-color": "#f30",
+      },
+    });
+  }
+}
+
+// =========================
+// SET LOCATION BUTTON
+// =========================
+function setupSetLocationButton() {
+  const button = document.getElementById("set-location-btn");
+  if (!button) return;
+
+  button.addEventListener("click", handleSetLocation);
+}
+
+// =========================
+// LOCATION UPDATE + REFRESH
+// =========================
+function handleSetLocation() {
+  if (!selectedLocation) return;
+
+  // 1. update state
+  userLocation = selectedLocation;
+
+  // 2. move user marker
+  userMarker?.setLngLat(userLocation);
+
+  // 3. recenter
+  map.flyTo({
+    center: userLocation,
+    zoom: 15,
+  });
+
+  // 4. hide button
+  document.getElementById("set-location-btn").style.display = "none";
+
+  // 5. clear POIs
+  clearPOIMarkers();
+
+  // 6. clear route
+  clearMapLayer("route");
+
+  // 7. clear destination
+  clearMapLayer("end");
+
+  // 8. reload POIs
+  loadLocations();
+}
+
+// =========================
+// CLEAR HELPERS
+// =========================
+function clearPOIMarkers() {
+  locationMarkers.forEach(m => m.remove());
+  locationMarkers = [];
+}
+
+function clearMapLayer(id) {
+  if (map.getLayer(id)) map.removeLayer(id);
+  if (map.getSource(id)) map.removeSource(id);
+}
+
+// =========================
+// GEOLOCATION
+// =========================
+async function getUserLocation() {
+  const defaultLocation = [-123.0016, 49.2532];
+
+  if (!navigator.geolocation) return defaultLocation;
+
+  return new Promise((resolve) => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        resolve([
+          pos.coords.longitude,
+          pos.coords.latitude,
+        ]);
+      },
+      () => resolve(defaultLocation)
+    );
+  });
+}
+
+// =========================
+// ROUTING
+// =========================
+async function getRoute(start, end) {
+  try {
+    const res = await fetch(
+      `https://api.mapbox.com/directions/v5/mapbox/walking/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`
+    );
+
+    const json = await res.json();
+    if (!json.routes?.length) return;
+
+    const route = json.routes[0].geometry;
+
+    const geojson = {
+      type: "Feature",
+      geometry: route,
     };
 
-    // If the end point exists then replace it with a new one
-    // Otherwise, create a new visible circle marker layer.
-    if (map.getLayer("end")) {
-      map.getSource("end").setData(end);
+    if (map.getSource("route")) {
+      map.getSource("route").setData(geojson);
     } else {
+      map.addSource("route", {
+        type: "geojson",
+        data: geojson,
+      });
+
       map.addLayer({
-        id: "end",
-        type: "circle",
-        source: {
-          type: "geojson",
-          data: {
-            type: "FeatureCollection",
-            features: [
-              {
-                type: "Feature",
-                properties: {},
-                geometry: {
-                  type: "Point",
-                  coordinates: clickedLocation,
-                },
-              },
-            ],
-          },
+        id: "route",
+        type: "line",
+        source: "route",
+        layout: {
+          "line-join": "round",
+          "line-cap": "round",
         },
         paint: {
-          "circle-radius": 10,
-          "circle-color": "#f30",
+          "line-color": "#3887be",
+          "line-width": 5,
+          "line-opacity": 0.75,
         },
       });
     }
 
-    callback(clickedLocation);
-  });
-}
-
-// Gets the user's location using the Geolocation API
-async function getUserLocation() {
-  const defaultLocation = [-123.00163752324765, 49.25324576104826];
-
-  if (!navigator.geolocation) {
-    console.log("Geolocation not supported. Using default.");
-    return defaultLocation;
+    updateInstructions(json.routes[0]);
+  } catch (err) {
+    console.error("Route error:", err);
   }
-
-  // Wrap the async GPS call inside a Promise so we can use 'await'
-  return new Promise((resolve) => {
-    navigator.geolocation.getCurrentPosition(
-      // So if it work then user location is retrieved
-      (pos) => {
-        const coords = [pos.coords.longitude, pos.coords.latitude];
-
-        resolve(coords);
-      },
-
-      () => {
-        console.log("Geolocation failed. Using default.");
-
-        resolve(defaultLocation);
-      }
-    );
-  });
 }
 
-// Uses the Mapbox Directions API to get a walking route from start end.
-// Draws the route on the map and fills the sidebar with turn by turn instructions.
+// =========================
+// INSTRUCTIONS
+// =========================
+function updateInstructions(routeData) {
+  const el = document.getElementById("instructions");
+  if (!el) return;
 
-async function getRoute(map, start, end) {
-  const query = await fetch(
-    `https://api.mapbox.com/directions/v5/mapbox/walking/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
-    { method: "GET" }
-  );
+  const steps = routeData.legs?.[0]?.steps || [];
 
-  // Parse the response and extract the route geometry
-  const json = await query.json();
-  const data = json.routes[0];
-  const route = data.geometry.coordinates;
-  const geojson = {
-    type: "Feature",
-    properties: {},
-    geometry: {
-      type: "LineString",
-      coordinates: route,
-    },
-  };
-  // If the route already exists update it.
-  // If not add a new layer to draw the path on the map.
+  el.innerHTML = `
+    <p><strong>
+      Trip duration: ${Math.floor(routeData.duration / 60)} min
+    </strong></p>
 
-  if (map.getSource("route")) {
-    map.getSource("route").setData(geojson);
-  } else {
-    map.addLayer({
-      id: "route",
-      type: "line",
-      source: {
-        type: "geojson",
-        data: geojson,
-      },
-      layout: {
-        "line-join": "round",
-        "line-cap": "round",
-      },
-      paint: {
-        "line-color": "#3887be",
-        "line-width": 5,
-        "line-opacity": 0.75,
-      },
+    <ol>
+      ${steps.map(s => `<li>${s.maneuver.instruction}</li>`).join("")}
+    </ol>
+  `;
+}
+
+// =========================
+// LOAD LOCATIONS
+// =========================
+async function loadLocations() {
+  try {
+    const res = await fetch("/src/locations.JSON");
+    const locations = await res.json();
+
+    renderLocations(Array.isArray(locations) ? locations : [locations]);
+  } catch (err) {
+    console.error("Error loading locations JSON:", err);
+  }
+}
+
+// =========================
+// RENDER LOCATIONS (SOURCE OF TRUTH)
+// =========================
+function renderLocations(locations) {
+  clearPOIMarkers();
+
+  for (const loc of locations) {
+    const coords = loc?.geo?.coordinates;
+    if (!coords) continue;
+
+    if (!userLocation) continue;
+
+    if (!isWithinRadius(userLocation, coords, radius)) continue;
+
+    const marker = new mapboxgl.Marker()
+      .setLngLat(coords)
+      .addTo(map);
+
+    locationMarkers.push(marker);
+
+    marker.getElement().addEventListener("click", () => {
+      showInfoCard(loc);
     });
   }
-
-  // get the sidebar and add the instructions
-  const instructions = document.getElementById("instructions");
-  const steps = data.legs[0].steps;
-
-  let tripInstructions = "";
-  for (const step of steps) {
-    tripInstructions += `<li>${step.maneuver.instruction}</li>`;
-  }
-  instructions.innerHTML = `<p><strong>Trip duration: ${Math.floor(
-    data.duration / 60
-  )} min  </strong></p><ol>${tripInstructions}</ol>`;
 }
 
+// =========================
+// INFO CARD
+// =========================
+function showInfoCard(data) {
+  const card = document.getElementById("info-card");
+  if (!card) return;
 
+  const hoursHTML = Object.entries(data.hours || {})
+    .map(([day, schedule]) => {
+      if (!schedule) return `<li><strong>${day}:</strong> Closed`;
+
+      return `
+        <li>
+          <strong>${day}:</strong>
+          ${schedule.map(s => `${s.open} - ${s.close}`).join(", ")}
+        </li>
+      `;
+    })
+    .join("");
+
+  card.innerHTML = `
+    <h2>${data.name}</h2>
+    <p><strong>Address:</strong><br>${data.address}</p>
+    <p><strong>Tags:</strong> ${(data.tags || []).join(", ")}</p>
+
+    <h3>Hours</h3>
+    <ul>${hoursHTML}</ul>
+
+    <h3>Notes</h3>
+    <ul>
+      ${(data.notes || []).map(n => `<li>${n}</li>`).join("")}
+    </ul>
+
+    <h3>Links</h3>
+    <a href="${data.links?.[0] || "#"}" target="_blank">Website</a>
+  `;
+
+  card.classList.remove("hidden");
+}
