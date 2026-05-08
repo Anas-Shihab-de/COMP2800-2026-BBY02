@@ -137,3 +137,76 @@ give map box a box to have the map in, and style
   border-radius: 10px;
   border-width: 8px;
 }
+
+/*
+pick location button styling
+*/
+#set-location-btn {
+  position: absolute;
+  top: 80px;
+  left: 10px;
+  z-index: 1000;
+
+  padding: 10px 14px;
+  border: none;
+  border-radius: 6px;
+  background: #3887be;
+  color: white;
+  cursor: pointer;
+
+  display: none;
+}
+
+/*
+css for info card on side after click on icon
+*/
+.info-card {
+  position: absolute;
+  top: 80px;
+  right: 20px;
+  width: 300px;
+  max-height: 80vh;
+  overflow-y: auto;
+
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+
+  font-family: sans-serif;
+  z-index: 1000;
+}
+
+.hidden {
+  display: none;
+}
+
+
+/*
+style settings button
+*/
+.settings-btn {
+  display: inline-block;
+
+  padding: 8px 14px;
+  margin-left: 10px;
+
+  background-color: #3887be;
+  color: white;
+
+  border-radius: 6px;
+  text-decoration: none;
+
+  font-family: sans-serif;
+  font-size: 14px;
+
+  transition: background 0.2s ease;
+}
+
+.settings-btn:hover {
+  background-color: #2f6f99;
+}
+
+.settings-btn:active {
+  transform: scale(0.97);
+}
