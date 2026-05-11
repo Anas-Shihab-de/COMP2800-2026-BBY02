@@ -330,7 +330,7 @@ function updateInstructions(routeData) {
 // =========================
 async function loadLocations() {
   try {
-    const res = await fetch("/src/locations.JSON");
+    const res = await fetch("../resource/locations.JSON");
     const locations = await res.json();
 
     renderLocations(Array.isArray(locations) ? locations : [locations]);

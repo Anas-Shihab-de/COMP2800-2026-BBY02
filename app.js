@@ -28,7 +28,7 @@ const expireTime = 24 * 60 * 60 * 1000;
 
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
-app.use(express.static(__dirname + "/"));
+app.use(express.static(__dirname + "/public/"));
 
 app.use(mongoSanitizer(
     {replaceWith: "_"}
@@ -52,7 +52,7 @@ app.use(session({
 // - Add joi to prevent nosql injection
 
 app.get("/", (req, res) => {
-    res.redirect("index.html");
+    res.redirect("/html/index.html");
 });
 
 app.get('/api/authentication', async (req, res) => {
@@ -110,7 +110,7 @@ app.post('/api/signup', async (req, res) => {
         req.session.authenticated = true;
         req.session.email = email;
         req.session.cookie.maxAge = expireTime;
-        res.redirect("/src/See_All_Locations.html");
+        res.redirect("/html/See_All_Locations.html");
     } catch (error) {
         res.status(503).send('Error adding to userbase');
     }
@@ -126,9 +126,9 @@ app.post('/api/login', async (req, res) => {
             req.session.authenticated = true;
             req.session.email = result[0].email;
             req.session.cookie.maxAge = expireTime;
-            res.redirect("/src/See_All_Locations.html");
+            res.redirect("/html/See_All_Locations.html");
         } else {
-            res.redirect("/Login.html");
+            res.redirect("/html/Login.html");
         }
     } catch (error) {
         res.status(503).send('Error logging in');

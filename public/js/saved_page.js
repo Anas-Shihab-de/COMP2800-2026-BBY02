@@ -3,7 +3,7 @@ async function checkAuth() {
   const res = await fetch("/api/authentication");
   const auth = await res.json();
   if (!auth.authenticated) {
-    window.location.href = "/Login.html";
+    window.location.href = "../html/Login.html";
   }
 }
 checkAuth();

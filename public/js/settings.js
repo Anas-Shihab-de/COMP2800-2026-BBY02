@@ -1,9 +1,11 @@
-import mapboxgl from "mapbox-gl";
+const mapboxgl = window.mapboxgl;
 
 // =========================
-// MAPBOX TOKEN
+// MAPBOX ACCESS TOKEN
 // =========================
-mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
+const token = await fetch("/api/mapbox-token");
+const tokenParsed = await token.json();
+mapboxgl.accessToken = tokenParsed.token;
 
 // =========================
 // ELEMENTS

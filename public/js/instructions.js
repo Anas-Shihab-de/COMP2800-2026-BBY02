@@ -3,12 +3,14 @@ let currentIndex = 0;
 
 const imgEl = document.getElementById("slide-image");
 
+// Fetch works in local host, for some reason can't find the object in Render
+// I think it's trying to find the JSON inside instructions.html?
 async function loadSlideshow() {
-  const res = await fetch("/resource/slideshow/fileCollect.json");
+  const res = await fetch("../resource/slideshow/fileCollect.json");
   const data = await res.json();
 
   images = data.images.map(
-    (img) => `/resource/slideshow/${img}`
+    (img) => `../resource/slideshow/${img}`
   );
 
   showImage(0);
