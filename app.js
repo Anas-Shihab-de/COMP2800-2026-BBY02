@@ -7,6 +7,7 @@ const mongodb_project_database = process.env.MONGODB_PROJECT_DATABASE;
 const mongodb_sessions_database = process.env.MONGODB_SESSIONS_DATABASE;
 const mongodb_session_secret = process.env.MONGODB_SESSION_SECRET;
 const node_session_secret = process.env.NODE_SESSION_SECRET;
+const mapboxgl_token = process.env.MAPBOX_TOKEN;
 
 const bcrypt = require("bcrypt");
 const saltRounds = 12;
@@ -50,8 +51,17 @@ app.use(session({
 // TODO tasks for login:
 // - Add joi to prevent nosql injection
 
+app.get("/", (req, res) => {
+    res.redirect("index.html");
+});
+
 app.get('/api/authentication', async (req, res) => {
     res.json({authenticated: req.session.authenticated});
+});
+
+// Can't process env from browser, so index.html has to fetch it
+app.get("/api/mapbox-token", (req, res) => {
+    res.json({token: mapboxgl_token});
 });
 
 /*

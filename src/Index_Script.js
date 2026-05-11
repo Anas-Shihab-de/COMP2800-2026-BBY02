@@ -1,10 +1,11 @@
-import mapboxgl from "mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
+const mapboxgl = window.mapboxgl;
 
 // =========================
 // MAPBOX ACCESS TOKEN
 // =========================
-mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
+const token = await fetch("/api/mapbox-token");
+const tokenParsed = await token.json();
+mapboxgl.accessToken = tokenParsed.token;
 
 // =========================
 // APP STATE
@@ -21,8 +22,11 @@ let radius = 10; // km default
 // =========================
 // START APPLICATION
 // =========================
+// Damon: Sorry I am initializing the map before window loads, idk why it never loads
+// it's probably due to my changes but it works...?
+await initializeMap();
 window.addEventListener("load", async () => {
-  await initializeMap();
+  console.log("Window has loaded");
 });
 
 // =========================
