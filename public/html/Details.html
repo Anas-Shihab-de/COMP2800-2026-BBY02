@@ -94,7 +94,7 @@
       }
 
       .backdrop {
-        background-image: url("Images/PittMeadows.jpg");
+        background-image: url("../img/PittMeadows.jpg");
         top: 22vh;
         left: 0;
         right: 0;
@@ -419,79 +419,8 @@
     </style>
   </head>
   <body>
-    <main class="page">
-      <!-- header -->
-      <section class="header">
-        <img src="Images/PittMeadows.jpg" />
-
-        <div class="headerButtons">
-          <button class="backIcon"><img src="Icons/BackIcon.png" /></button>
-
-          <button class="bookmarkIcon">
-            <img src="Icons/BookmarkIcon.png" />
-          </button>
-        </div>
-      </section>
-
-      <!-- blurry backdrop image -->
-      <div class="backdrop"></div>
-
-      <!-- the black details box that contains all the information -->
-      <section class="detailsBox">
-        <div class="headingSection">
-          <div class="headingBlock">
-            <h1 class="locationName">Pitt Meadows Market</h1>
-            <p class="location">Pitt Meadows, BC</p>
-            <div class="relativePrice">$$</div>
-          </div>
-        </div>
-
-        <!-- address & number  -->
-        <div class="addressNumberSection">
-          <div class="addressBlock">
-            <span class="addressLine">7457 Edmonds St</span>
-            <span class="addressLine">Pitt Meadows, BC V3N 1B3</span>
-          </div>
-
-          <div class="phoneBlock">(604) 521-4242</div>
-        </div>
-
-        <!-- schedule & distance -->
-        <div class="scheduleDistanceSection">
-          <div class="scheduleBlock">
-            <div class="dateAndTimeIcon">
-              <img src="Icons/DateTimeIcon.png" />
-            </div>
-
-            <div class="dateAndTime">
-              <span>Saturday</span>
-              <span>12:30–2:00 p.m.</span>
-            </div>
-          </div>
-
-          <div class="distanceBlock">
-            <img src="Icons/DistanceIconWhite.png" />
-            <span class="distance">5 km</span>
-          </div>
-        </div>
-
-        <!-- other important info -->
-        <section class="importantSection">
-          <div class="importantHeading">Important Information</div>
-          <ul class="importantList">
-            <li>Bring your own reusable bags if possible.</li>
-            <li>Coupons and market money accepted at select vendors.</li>
-          </ul>
-        </section>
-
-        <!-- redirect link -->
-        <div class="redirectInfo">
-          <a href="#" class="redirectLink">
-            <img src="Icons/RedirectIcon.png" />
-            <span>See more on the website</span>
-          </a>
-        </div>
-      </section>
+    <main class="page" id="mainPage">
     </main>
+    <script src="../js/Details.js"></script>
   </body>
 </html>
