@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FoodHubBC – Location Details</title>
+    <link
+      href="https://fonts.googleapis.com/css?family=Darker Grotesque"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Darker Grotesque";
+        color: #fdfdfd;
+        display: flex;
+        justify-content: center;
+      }
+
+      .page {
+        width: 100%;
+        display: flex;
+        overflow: hidden;
+        flex-direction: column;
+        background: linear-gradient(
+          185deg,
+          rgba(16, 35, 27, 0.75) 0%,
+          rgba(10, 20, 16, 0.75) 40%,
+          rgba(5, 10, 8, 0.75) 100%
+        );
+        max-width: 430px;
+        min-height: 100vh;
+        position: relative;
+      }
+
+      .header {
+        height: 80vh;
+        position: relative;
+        overflow: hidden;
+        min-height: 210px;
+        max-height: 325px;
+      }
+
+      .header img {
+        width: 100%;
+        transform: scale(
+          1.1
+        ); /* zooms into the header image just slightly to make it fit appropriately */
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* for back icon and bookmark icon */
+      .headerButtons {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 2;
+        position: absolute;
+        top: 1.1rem;
+        left: 1rem;
+        right: 1rem;
+      }
+
+      .backIcon {
+        width: 2.1rem;
+        height: 2.1rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: transparent;
+        color: #fdfdfd;
+      }
+
+      .bookmarkIcon {
+        width: 2.6rem;
+        height: 2.6rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: none;
+      }
+
+      .bookmarkIcon img {
+        object-fit: contain;
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .backdrop {
+        background-image: url("Images/PittMeadows.jpg");
+        top: 22vh;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        filter: blur(20px);
+        opacity: 0.5;
+        transform: scale(1.1);
+        position: absolute;
+        background-size: cover;
+        background-position: center;
+      }
+
+      .detailsBox {
+        max-width: 93%;
+        height: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1.4rem;
+        z-index: 3;
+        margin-top: -10vh; /* overlaps with the header */
+        padding: 1.6rem 1.4rem 2rem;
+        position: relative;
+        border-radius: 2rem 1.8rem 0 0;
+        backdrop-filter: blur(
+          30px
+        ); /* makes black background color less opaque */
+        background: linear-gradient(
+          to bottom right,
+          rgba(0, 0, 0, 0.61),
+          rgba(0, 0, 0, 0.473),
+          rgba(0, 0, 0, 0.664)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        animation: risingBox 0.7s forwards;
+      }
+
+      @keyframes risingBox {
+        0% {
+          opacity: 0;
+          transform: translateY(2.5rem);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .headingSection {
+        position: relative;
+      }
+
+      .locationName {
+        font-size: 2rem;
+        font-weight: 200;
+        letter-spacing: 1px;
+        margin: 0;
+        text-align: center;
+        color: white;
+      }
+
+      /* location text; example: Pitt Meadows, BC*/
+      .location {
+        text-align: center;
+        margin: 0.1rem 0 0;
+        font-size: 1.3rem;
+        opacity: 0.85;
+      }
+
+      .relativePrice {
+        position: absolute;
+        right: -10px;
+        top: 2rem;
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: white;
+        padding: 0.25rem 0.7rem;
+      }
+
+      .addressNumberSection {
+        display: flex;
+        gap: 1.2rem;
+        align-items: flex-start;
+        justify-content: space-between;
+        font-size: 1.3rem;
+      }
+
+      .addressBlock {
+        max-width: 60%;
+        line-height: 1.25;
+      }
+
+      .addressLine {
+        display: block;
+      }
+
+      .phoneBlock {
+        font-size: 1.3rem;
+        font-weight: 550;
+        white-space: nowrap;
+        text-align: right;
+      }
+
+      .scheduleDistanceSection {
+        gap: 1.2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        font-size: 1.3rem;
+      }
+
+      .scheduleBlock {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.6rem;
+        max-width: 65%;
+      }
+
+      .dateAndTimeIcon {
+        width: 62px;
+        height: 62px;
+        flex-shrink: 0; /* never shrinks below 62x62 px*/
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .dateAndTimeIcon img {
+        width: 100%;
+        height: 100%;
+      }
+
+      .dateAndTime {
+        line-height: 1.25;
+      }
+
+      .dateAndTime span {
+        display: block;
+      }
+
+      .distanceBlock {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        white-space: nowrap;
+      }
+
+      .distanceBlock img {
+        width: 62px;
+        height: 62px;
+        object-fit: contain;
+      }
+
+      .distance {
+        font-size: 1.3rem;
+        font-weight: 600;
+      }
+
+      .importantInfoAndRedirectSection {
+        margin-top: 0.6rem;
+        text-align: center;
+      }
+
+      .importantHeading {
+        margin-bottom: 0.4rem;
+        letter-spacing: 0.06em;
+        font-size: 1.3rem;
+        font-weight: 650;
+      }
+
+      .importantList {
+        padding-left: 1.4rem;
+        margin: 0.2rem auto 0;
+        font-size: 1.3rem;
+      }
+
+      .redirectInfo {
+        margin-top: 1.4rem;
+        display: flex;
+        justify-content: center;
+      }
+
+      .redirectLink {
+        display: inline-flex; /* allows the text to appear inline with icon */
+        align-items: center;
+        text-decoration: none;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        gap: 0.55rem;
+        padding: 0.55rem 1.2rem;
+        border-radius: 999px;
+        font-size: 1.3rem;
+        font-weight: 650;
+        letter-spacing: 0.04em;
+        color: white;
+      }
+
+      .redirectLink img {
+        width: 23px;
+        height: 23px;
+        object-fit: contain;
+      }
+
+      @media (max-width: 360px) {
+        .locationName {
+          font-size: 1.7rem;
+        }
+
+        .relativePrice {
+          font-size: 1.25rem;
+        }
+
+        .addressNumberSection,
+        .scheduleDistanceSection {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .addressBlock,
+        .phoneBlock,
+        .scheduleBlock,
+        .distanceBlock {
+          max-width: 100%;
+          text-align: left;
+        }
+
+        .phoneBlock {
+          margin-top: 0.3rem;
+        }
+
+        .scheduleDistanceSection {
+          gap: 0.7rem;
+        }
+
+        .distanceBlock {
+          justify-content: flex-start;
+        }
+      }
+
+      @media (min-width: 700px) {
+        .page {
+          max-width: 700px;
+        }
+
+        .detailsBox {
+          margin-inline: auto;
+          max-width: 520px;
+          padding: 2rem 2.2rem 2.8rem;
+        }
+
+        .locationName {
+          font-size: 2.2rem;
+        }
+
+        .location {
+          font-size: 1.25rem;
+        }
+
+        .addressNumberSection,
+        .scheduleDistanceSection {
+          font-size: 1.15rem;
+        }
+
+        .importantList {
+          font-size: 1.1rem;
+        }
+      }
+
+      @media (min-width: 1100px) {
+        body {
+          background: linear-gradient(
+            185deg,
+            #6fae98 0%,
+            #4f7f6a 28%,
+            #3b5c4f 55%,
+            #2a443a 78%,
+            #1e332c 100%
+          );
+        }
+
+        .relativePrice {
+          margin-top: 15px;
+        }
+
+        .page {
+          max-width: 960px;
+          border-radius: 2.2rem;
+          margin: 2.5rem auto;
+          box-shadow: 0 30px 80px rgba(255, 120, 176, 0.425);
+          overflow: hidden;
+        }
+
+        .header {
+          height: 32vh;
+          max-height: 320px;
+        }
+
+        .detailsBox {
+          margin-top: -6vh;
+          max-width: 600px;
+        }
+
+        .locationName {
+          font-size: 2.5rem;
+        }
+
+        .location {
+          font-size: 1.3rem;
+        }
+
+        .relativePrice {
+          font-size: 1.5rem;
+        }
+
+        .addressNumberSection,
+        .scheduleDistanceSection {
+          font-size: 1.2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <!-- header -->
+      <section class="header">
+        <img src="Images/PittMeadows.jpg" />
+
+        <div class="headerButtons">
+          <button class="backIcon"><img src="Icons/BackIcon.png" /></button>
+
+          <button class="bookmarkIcon">
+            <img src="Icons/BookmarkIcon.png" />
+          </button>
+        </div>
+      </section>
+
+      <!-- blurry backdrop image -->
+      <div class="backdrop"></div>
+
+      <!-- the black details box that contains all the information -->
+      <section class="detailsBox">
+        <div class="headingSection">
+          <div class="headingBlock">
+            <h1 class="locationName">Pitt Meadows Market</h1>
+            <p class="location">Pitt Meadows, BC</p>
+            <div class="relativePrice">$$</div>
+          </div>
+        </div>
+
+        <!-- address & number  -->
+        <div class="addressNumberSection">
+          <div class="addressBlock">
+            <span class="addressLine">7457 Edmonds St</span>
+            <span class="addressLine">Pitt Meadows, BC V3N 1B3</span>
+          </div>
+
+          <div class="phoneBlock">(604) 521-4242</div>
+        </div>
+
+        <!-- schedule & distance -->
+        <div class="scheduleDistanceSection">
+          <div class="scheduleBlock">
+            <div class="dateAndTimeIcon">
+              <img src="Icons/DateTimeIcon.png" />
+            </div>
+
+            <div class="dateAndTime">
+              <span>Saturday</span>
+              <span>12:30–2:00 p.m.</span>
+            </div>
+          </div>
+
+          <div class="distanceBlock">
+            <img src="Icons/DistanceIconWhite.png" />
+            <span class="distance">5 km</span>
+          </div>
+        </div>
+
+        <!-- other important info -->
+        <section class="importantSection">
+          <div class="importantHeading">Important Information</div>
+          <ul class="importantList">
+            <li>Bring your own reusable bags if possible.</li>
+            <li>Coupons and market money accepted at select vendors.</li>
+          </ul>
+        </section>
+
+        <!-- redirect link -->
+        <div class="redirectInfo">
+          <a href="#" class="redirectLink">
+            <img src="Icons/RedirectIcon.png" />
+            <span>See more on the website</span>
+          </a>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
