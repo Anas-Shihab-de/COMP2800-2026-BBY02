@@ -182,6 +182,10 @@ app.post("/api/save-location", async (req, res) => {
   }
 });
 
+app.use((req, res) => {
+  res.status(404).sendFile(__dirname + "/public/404.html");
+});
+
 app.listen(PORT, () => {
   console.log("Server is running on port " + PORT);
 });
