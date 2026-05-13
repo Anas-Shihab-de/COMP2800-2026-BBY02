@@ -69,7 +69,7 @@ saveBtn.addEventListener("click", async () => {
     JSON.stringify(settings)
   );
 
-  setStatus("Settings saved ✔");
+  setStatus("Settings saved ");
 });
 
 // =========================

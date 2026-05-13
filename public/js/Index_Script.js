@@ -1,27 +1,21 @@
 const mapboxgl = window.mapboxgl;
 
-// =========================
-// MAPBOX ACCESS TOKEN
-// =========================
+//mapbox init
 const token = await fetch("/api/mapbox-token");
 const tokenParsed = await token.json();
 mapboxgl.accessToken = tokenParsed.token;
 
-// =========================
-// APP STATE
-// =========================
+
 let map;
 let userLocation;
 let selectedLocation = null;
 
 let userMarker = null;
-let locationMarkers = []; // 🔥 FIX: required for clearing POIs
+let locationMarkers = []; //required for clearing POIs
 
 let radius = 10; // km default
 
-// =========================
-// START APPLICATION
-// =========================
+//init
 // Damon: Sorry I am initializing the map before window loads, idk why it never loads
 // it's probably due to my changes but it works...?
 await initializeMap();
@@ -29,9 +23,7 @@ window.addEventListener("load", async () => {
   console.log("Window has loaded");
 });
 
-// =========================
-// INITIALIZE MAP
-// =========================
+// init map element
 async function initializeMap() {
   userLocation = await getUserLocation();
 
@@ -68,9 +60,7 @@ async function initializeMap() {
   }
 }
 
-// =========================
-// DISTANCE HELPERS
-// =========================
+// distance helpers
 function getDistanceKm(a, b) {
   const R = 6371;
 
@@ -114,18 +104,14 @@ async function loadUserSettings() {
   }
 }
 
-// =========================
-// USER MARKER
-// =========================
+// user pin
 function createUserMarker(location) {
   return new mapboxgl.Marker({ color: "blue" })
     .setLngLat(location)
     .addTo(map);
 }
 
-// =========================
-// MAP CLICK
-// =========================
+// click on map func
 function setupMapClickHandler() {
   map.on("click", async (event) => {
     selectedLocation = [
@@ -140,9 +126,7 @@ function setupMapClickHandler() {
   });
 }
 
-// =========================
-// DESTINATION MARKER
-// =========================
+// destination pin
 function drawDestination(location) {
   const geojson = {
     type: "FeatureCollection",
@@ -178,9 +162,7 @@ function drawDestination(location) {
   }
 }
 
-// =========================
-// SET LOCATION BUTTON
-// =========================
+// set location button
 function setupSetLocationButton() {
   const button = document.getElementById("set-location-btn");
   if (!button) return;
@@ -340,7 +322,7 @@ async function loadLocations() {
 }
 
 // =========================
-// RENDER LOCATIONS (SOURCE OF TRUTH)
+// RENDER LOCATIONS
 // =========================
 function renderLocations(locations) {
   clearPOIMarkers();
@@ -404,3 +386,31 @@ function showInfoCard(data) {
 
   card.classList.remove("hidden");
 }
+
+const slider = document.getElementById("radius-slider");
+const radiusLabel = document.getElementById("radius-value");
+
+// load saved radius if it exists
+const saved = JSON.parse(localStorage.getItem("userSettings"));
+if (saved?.radius) {
+  radius = saved.radius;
+  if (slider) slider.value = radius;
+  if (radiusLabel) radiusLabel.textContent = radius;
+}
+
+// update radius live
+slider?.addEventListener("input", () => {
+  radius = Number(slider.value);
+
+  if (radiusLabel) radiusLabel.textContent = radius;
+
+  //persist it
+  const settings =
+    JSON.parse(localStorage.getItem("userSettings")) || {};
+
+  settings.radius = radius;
+  localStorage.setItem("userSettings", JSON.stringify(settings));
+
+  // refresh everything
+  loadLocations();
+});
