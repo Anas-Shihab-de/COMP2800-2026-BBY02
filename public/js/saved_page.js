@@ -1,7 +1,7 @@
 /**
  * Todo list:
  * 1. filter tags
- * 2. saved page logic from each section (including tag[0])
+ * 2. saved page logic from each section (including tag[0]) --> needs to be tested.
  */
 
 // Check if authenticated
@@ -25,16 +25,33 @@ checkAuth();
 /**
  * Loads saved location only from the logged in user.
  * Load all locations and filter them to have only the same ids in the userSavedList.
+ *
+ * -- updated logic:
+ * -- To  get filtered by category (food pantries, farmers' market, local market) as well before rendering cards.
+ * -- If "saved_places button" is clicked from Home.html, this updated logic wouldn't be applied.
  * @param userEmail the email to find the logged in user's saved location
+ *
+ * https://medium.com/@louistrinh/get-url-parameters-in-javascript-efd99c5ddcaf
  */
 async function loadSavedLocations(userEmail) {
   const locations = await loadLocations();
   const userSavedList = await loadUserSavedList(userEmail);
 
-  const savedLocations = locations.filter((location) =>
+  // 1. filter by user
+  let savedLocations = locations.filter((location) =>
     userSavedList.includes(location._id),
   );
 
+  // 2. filter by category (optional)
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const category = urlParams.get("category");
+
+  if (category) {
+    savedLocations = savedLocations.filter((location) => {
+      location.tags[0] === category;
+    });
+  }
   renderCards(savedLocations);
 }
 
@@ -125,11 +142,6 @@ function renderCards(savedLocations) {
     });
   }
 }
-
-/**
- * Clicks the card and goes to deatiled page.
- *
- */
 
 /**
  * Changes bookmark icon as the user clicked and updates user's saved_list.
