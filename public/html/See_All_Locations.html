@@ -6,7 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>See All</title>
   <!-- Google Material Icons -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=arrow_back_ios,bookmark_heart,filter_list" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=arrow_back_ios,bookmark_heart,filter_list" />
   <!-- CSS -->
   <link rel="stylesheet" href="../css/See_All_Locations.css">
 </head>
@@ -36,6 +37,26 @@
   <main class="cards-grid" id="cards-grid">
 
   </main>
+
+  <!-- FILTER PANEL -->
+  <div id="filter-overlay" class="filter-overlay hidden"></div>
+  <div id="filter-panel" class="filter-panel hidden">
+
+    <div class="filter-header">
+      <h2>Filter Tags</h2>
+    </div>
+
+    <div class="filter-section">
+      <div id="filter-tags-container" class="filter-tags"></div>
+    </div>
+
+    <div class="filter-footer">
+      <button class="clear-btn" onclick="clearFilters()">Clear All</button>
+      <button class="apply-btn" onclick="applyFilters()">Apply</button>
+    </div>
+
+  </div>
+  <!-- FILTER PANEL -->
 
   <script src="../js/See_All_Locations.js"></script>
 
