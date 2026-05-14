@@ -8,6 +8,7 @@ const mongodb_sessions_database = process.env.MONGODB_SESSIONS_DATABASE;
 const mongodb_session_secret = process.env.MONGODB_SESSION_SECRET;
 const node_session_secret = process.env.NODE_SESSION_SECRET;
 const mapboxgl_token = process.env.MAPBOX_TOKEN;
+const apiKey = process.env.GEMINI_API_KEY;
 
 const bcrypt = require("bcrypt");
 const saltRounds = 12;
@@ -25,6 +26,10 @@ const MongoStore = require("connect-mongo").default;
 const Joi = require("joi");
 const mongoSanitizer = require("mongo-sanitizer").default;
 const expireTime = 24 * 60 * 60 * 1000;
+
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const ai = new GoogleGenerativeAI(apiKey);
+const model = ai.getGenerativeModel({ model: "gemini-3.1-flash-lite" });
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -54,6 +59,8 @@ app.use(
 app.get("/", (req, res) => {
   res.redirect("/html/index.html");
 });
+
+// TODO add routes because the server is falling to 404 automatically
 
 app.get("/api/authentication", async (req, res) => {
   res.json({
@@ -163,6 +170,25 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
+app.get("/api/ai/schedule/:location", async (req, res) => {
+  console.log("waiting");
+  const dateUTC = new Date(Date.now());
+  const dateLocal = dateUTC.toLocaleDateString();
+
+  const message = `Is ${req.params.location} open today? Note: if the location is undefined, please respond 'location is undefined'.`;
+    const result = await model.generateContent({
+      contents: [{
+        "parts": [{
+          "text": message
+        }],
+        "role": "user"
+      }],
+      systemInstruction: `Today is ${dateLocal}. You need to give information on whether a given location is open or not and a reason why (doesn't open on a certain day, not correct season, etc.)`
+    });
+    const response = await result.response;
+    res.json(response);
+});
+
 /**
  * saved_page.js : unsave / save the location from the user's saved_list
  *
@@ -211,9 +237,9 @@ app.post("/api/save-location", async (req, res) => {
   }
 });
 
-app.use((req, res) => {
-  res.status(404).sendFile(__dirname + "/html/404.html");
-});
+// app.use((req, res) => { until routes are added
+//   res.status(404).sendFile(__dirname + "/html/404.html");
+// });
 
 app.listen(PORT, () => {
   console.log("Server is running on port " + PORT);

@@ -29,6 +29,20 @@ async function loadLocation() {
 }
 loadLocation();
 
+async function checkAvailability() {
+    const btn = document.getElementById("availabilityBtn");
+    const text = document.getElementById("availabilityOutput");
+    btn.disabled = true;
+    const res = await fetch("/api/locations");
+    const locations = await res.json();
+    const location = locations.filter(loc => loc._id === locationId);
+    const res2 = await fetch(`/api/ai/schedule/${location[0].name}`);
+    const response = await res2.json();
+    console.log(response.candidates[0].content.parts[0].text);
+    text.value = response.candidates[0].content.parts[0].text;
+    btn.disabled = false;
+}
+
 /**
  * 
  * @param {*} locations 
@@ -95,11 +109,14 @@ function renderPage(location) {
             </section>
 
             <div class="redirectInfo">
-            <a href="#" class="redirectLink">
+            <a href="${location.links[0]}" class="redirectLink">
                 <img src="../img/RedirectIcon.png" />
                 <span>See more on the website</span>
             </a>
             </div>
+
+            <button onclick="checkAvailability()" id="availabilityBtn">Check Availability</button>
+            <textarea id="availabilityOutput" rows="6"></textarea>
         </section>
     `);
 }
