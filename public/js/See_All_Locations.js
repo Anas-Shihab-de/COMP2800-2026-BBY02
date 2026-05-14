@@ -3,6 +3,7 @@
  * So far the functions work as intended...or how I intend anyways LOL JSDoc commenting hell ahahah.
  * Might need to refactor code again, at least just for the calculating distance part since the card only shows
  * "X km" as a placeholder :( otherwise I think that's about it. Anyways please let me know if I need to change anything !!
+ * Updated: HAHHAHAHAH it works now
  */
 
 /**
@@ -36,6 +37,7 @@ const category = params.get("category");
 let allLocations = [];
 let userSavedList = [];
 let selectedTags = [];
+let userLocation = null; // global from Anas code
 
 /*
  * Display catagory title.
@@ -72,6 +74,8 @@ async function loadLocations() {
   const loggedInUser = users.find((user) => user.email === auth.email);
   userSavedList = loggedInUser?.saved_list || [];
 
+  userLocation = await getUserLocation();
+
   renderCards(allLocations);
   loadFilterTags();
 }
@@ -93,6 +97,11 @@ function renderCards(locations) {
       fillValue = "'FILL' 1";
     }
 
+      let distance = "N/A";
+      if (userLocation && locations[i].geo?.coordinates) {
+        distance = getDistanceKm(userLocation, locations[i].geo.coordinates) + " km";
+      }
+
     grid.insertAdjacentHTML(
       "beforeend",
       `
@@ -106,7 +115,7 @@ function renderCards(locations) {
         <div class="card-body">
           <p class="card-name">${locations[i].name}</p>
           <div class="card-meta">
-            <span class="meta-distance">X km</span>
+            <span class="meta-distance">${distance}</span>
             <span class="meta-price">$$</span>
           </div>
           <div class="card-tags">
@@ -296,3 +305,53 @@ function openSaved() {
   const category = urlParams.get("category");
   window.location.href = `/html/saved_page.html?category=${category}`;
 }
+
+/**
+ * Gets the user's current coordinates using the browser's geolocation API.
+ * 
+ * @returns the user's longitude and latitude
+ */
+async function getUserLocation() {
+  const defaultLocation = [-123.0016, 49.2532];
+
+  if (!navigator.geolocation) return defaultLocation;
+
+  return new Promise((resolve) => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        resolve([
+          pos.coords.longitude,
+          pos.coords.latitude,
+        ]);
+      },
+      () => resolve(defaultLocation)
+    );
+  });
+}
+
+/**
+ * Calculates the distance in kilometers between two coordinates.
+ * 
+ * @param {*} a longitude and latitude of point a
+ * @param {*} b longitude and latitude of point b
+ * 
+ * @returns distance in kilometers
+ */
+function getDistanceKm(a, b) {
+  const R = 6371;
+
+  const dLat = (b[1] - a[1]) * Math.PI / 180;
+  const dLon = (b[0] - a[0]) * Math.PI / 180;
+
+  const lat1 = a[1] * Math.PI / 180;
+  const lat2 = b[1] * Math.PI / 180;
+
+  const x =
+    Math.sin(dLat / 2) ** 2 +
+    Math.sin(dLon / 2) ** 2 *
+    Math.cos(lat1) *
+    Math.cos(lat2);
+
+  return Math.round(R * (2 * Math.asin(Math.sqrt(x))) * 10) / 10;
+}
+
