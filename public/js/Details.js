@@ -12,7 +12,7 @@ checkAuth();
 // Posted by Artem Barger, modified by community. See post 'Timeline' for change history
 // Retrieved 2026-05-13, License - CC BY-SA 4.0
 const urlParams = new URLSearchParams(window.location.search);
-const locationId = urlParams.get('id');
+const locationId = urlParams.get('locationId');
 
 
 /**

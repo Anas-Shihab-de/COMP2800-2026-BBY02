@@ -45,7 +45,7 @@ function renderCards(allLocations) {
         for (let i = 0; i < locations.length; i++) {
             row.insertAdjacentHTML("beforeend", `
             <article class="locationBox">
-                <a href="Details.html?id=${locations[i]._id}">
+                <a href="Details.html?locationId=${locations[i]._id}">
                     <div class="locationImage">
                     <img src="${locations[i].images[0]}" />
                     <span class="imageTag">Seasonal</span>
