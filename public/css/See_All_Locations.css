@@ -1,3 +1,9 @@
+/* 
+ * Nothing animated :( might attempt that lol.
+ * Still need to change the font mmmmm but it looks so different on my end sob sob
+ * The styling for the panel is still a work in progress :thumbsup:
+ */
+
 :root {
   --green-light: #d4f0dc;
   --green-mid:   #a8d9b4;
@@ -173,6 +179,75 @@ body {
   padding: 4px 12px;
   border-radius: var(--radius-btn);
 }
+
+/* FILTER PANEL */
+
+.filter-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 10;
+}
+
+.filter-panel {
+  position: fixed;
+  top: 56px;
+  right: 0;
+  height: 100%;
+  width: 80%;
+  max-width: 320px;
+  background: white;
+  z-index: 11;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow-y: auto;
+}
+
+.filter-tag {
+  margin-top: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 6px 14px;
+  background: white;
+  cursor: pointer;
+}
+
+.filter-tag.active {
+  background: black;
+  color: white;
+  border-color: black;
+}
+
+.clear-btn {
+  flex: 1;
+  padding: 10px;
+  border: 2px solid #1a1a1a;
+  border-radius: var(--radius-btn);
+  background: white;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.apply-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: var(--radius-btn);
+  background: #1a1a1a;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
+}
+
+/* FILTER PANEL */
 
 .db-placeholder,
 .empty-message {
