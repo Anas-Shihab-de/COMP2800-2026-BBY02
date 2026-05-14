@@ -33,44 +33,6 @@ async function loadLocation() {
 }
 loadLocation();
 
-// Pop-up challenge: initially written by Damon, then asked Copilot to improve/refactor the code.
-// Copilot improved it by adding checks to errors, using safer practice like encodeURIComponent(), and removing redundant code like a duplicate fetch for location info.
-// It also added extra stuff it was not asked to do like checking hours, but it was removed since it was inaccurate and not needed.
-async function checkAvailability() {
-    const btn = document.getElementById("availabilityBtn");
-    const text = document.getElementById("AIOutput");
-    const originalLabel = btn.textContent;
-    btn.disabled = true;
-    btn.textContent = "Checking...";
-    text.value = "";
-
-    try {
-        if (!currentLocation) {
-            throw new Error("Location not loaded");
-        }
-
-        const res2 = await fetch(
-            `/api/ai/schedule/${encodeURIComponent(currentLocation.name)}/${encodeURIComponent(currentLocation.address)}`
-        );
-
-        if (!res2.ok) {
-            throw new Error(`AI request failed with status ${res2.status}`);
-        }
-
-        const response = await res2.json();
-        text.value = response?.candidates?.[0]?.content?.parts?.[0]?.text ||
-            "No availability information was returned.";
-    } catch (error) {
-        console.error(error);
-        text.value = "Unable to check availability right now. Please try again later.";
-    } finally {
-        btn.disabled = false;
-        btn.textContent = originalLabel;
-    }
-}
-
-// TODO chat function
-
 /**
  * 
  * @param {*} locations 
@@ -141,14 +103,13 @@ function renderPage(location) {
                 <img src="../img/RedirectIcon.png" />
                 <span>See more on the website</span>
             </a>
+            <a id="chatBtn" class="redirectLink"><span>Ask Questions (AI)</span></a>
+            <a onclick="checkAvailability()" id="availabilityBtn" class="redirectLink"><span>Check Availability (AI)</span></a>
             </div>
-
-            <button id="chatBtn">What Can I Expect?</button>
-            <button onclick="checkAvailability()" id="availabilityBtn">Check Availability</button>
-            <textarea id="AIOutput" rows="6"></textarea>
+            <textarea id="AIOutput" rows="10" readonly></textarea>
         </section>
 
-        <!-- Chat Overlay -->
+        <!-- Chat Overlay - Popup challenge - Code made by Copilot -->
         <div id="chatOverlay" class="chat-overlay">
             <div class="chat-container">
                 <div class="chat-header">
@@ -167,7 +128,47 @@ function renderPage(location) {
     setupChatEventListeners();
 }
 
-// Chat functionality setup
+// Pop-up challenge: initially written by Damon, then asked Copilot to improve/refactor the code.
+// Copilot improved it by adding checks to errors, using safer practice like encodeURIComponent(), and removing redundant code like a duplicate fetch for location info.
+// It also added extra stuff it was not asked to do like checking hours, but it was removed since it was inaccurate and not needed.
+async function checkAvailability() {
+    const btn = document.getElementById("availabilityBtn");
+    const text = document.getElementById("AIOutput");
+    const originalLabel = btn.textContent;
+
+    btn.disabled = true;
+    btn.textContent = "Checking...";
+    text.value = "";
+
+    try 
+    {
+        if (!currentLocation) {
+            throw new Error("Location not loaded");
+        }
+
+        const res = await fetch(`/api/ai/schedule/${encodeURIComponent(currentLocation.name)}/${encodeURIComponent(currentLocation.address)}`);
+
+        if (!res.ok) {
+            throw new Error(`AI request failed with status ${res.status}`);
+        }
+
+        const aiResponse = await res.json();
+        text.value = aiResponse?.candidates?.[0]?.content?.parts?.[0]?.text || "No availability information was returned.";
+    } 
+    catch (error) 
+    {
+        console.error(error);
+        text.value = "Unable to check availability right now. Please try again later.";
+    } 
+    finally 
+    {
+        btn.disabled = false;
+        btn.textContent = originalLabel;
+    }
+}
+
+// Pop-up challenge: Chat functionality setup - Made entirely by Copilot
+// Only a few style changes made or an extra comment here and there
 function setupChatEventListeners() {
     const chatBtn = document.getElementById('chatBtn');
     const chatOverlay = document.getElementById('chatOverlay');
@@ -234,8 +235,7 @@ function setupChatEventListeners() {
             }
 
             const data = await response.json();
-            const aiResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-                "Sorry, I couldn't generate a response right now.";
+            const aiResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't generate a response right now.";
 
             addMessage(aiResponse, 'ai');
         } catch (error) {
@@ -255,8 +255,3 @@ function setupChatEventListeners() {
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 }
-
-// Chat functionality
-document.addEventListener('DOMContentLoaded', function() {
-    // Event listeners are now set up in setupChatEventListeners() called from renderPage
-});
