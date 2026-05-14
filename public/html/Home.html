@@ -28,6 +28,11 @@
         );
       }
 
+      a {
+        text-decoration: none !important;
+        color: inherit;
+      }
+
       .page {
         width: 100%;
         flex-direction: column;
@@ -276,12 +281,15 @@
         gap: 3vw;
         margin-top: 2vw;
         padding: 1vw 0;
-        overflow-x: auto;
+        overflow: visble;
         scrollbar-width: none;
       }
 
       .filterButton {
-        box-shadow: 0 0 20px rgba(255, 105, 155, 0.678);
+        box-shadow:
+          0 0 12px rgba(255, 255, 255, 0.692),
+          0 0 22px rgba(255, 255, 255, 0.35),
+          inset 0 0 8px rgba(255, 255, 255, 0.25);
         background: black;
         color: white;
         font-size: 3.55vw;
@@ -294,8 +302,22 @@
         font-weight: 500;
         animation: cherryFade 0.9s ease forwards;
         transition:
-          box-shadow 0.8s ease,
-          transform 0.8s ease;
+          transform 0.3s ease,
+          box-shadow 0.35s ease;
+      }
+
+      /* Creates the glowing effect upon selection */
+      .filterButton:active {
+        box-shadow:
+          0 0 30px rgba(255, 255, 255, 0.85),
+          0 0 60px rgba(248, 139, 167, 0.55),
+          inset 0 0 12px rgba(255, 255, 255, 0.35);
+        background: rgba(0, 0, 0, 0.75);
+      }
+
+      #savedLocationsButton {
+        color: white;
+        background-color: rgb(2, 39, 25);
       }
 
       /* The page transition upon loading in */
@@ -489,11 +511,17 @@
       </header>
 
       <div class="filterBar">
-        <button class="filterButton">Free</button>
+        <button class="filterButton" id="savedLocationsButton">
+          Saved Locations
+        </button>
         <button class="filterButton">Culturally Diverse</button>
         <button class="filterButton">&lt; 5km away</button>
 
-        <img src="../img/settingsIcon.png" class="settingsIcon" />
+        <img
+          src="../img/settingsIcon.png"
+          class="settingsIcon"
+          id="settingsButton"
+        />
       </div>
 
       <section class="newSection">
@@ -508,8 +536,7 @@
           <a href="#" class="seeAll">See all pantries</a>
         </div>
 
-        <div class="rowOfLocations" id="pantriesRow">
-        </div>
+        <div class="rowOfLocations" id="pantriesRow"></div>
       </section>
 
       <!-- Farmers markets -->
@@ -524,8 +551,7 @@
           <a href="#" class="seeAll">See all markets</a>
         </div>
 
-        <div class="rowOfLocations" id="farmersMarketsRow">
-        </div>
+        <div class="rowOfLocations" id="farmersMarketsRow"></div>
       </section>
 
       <!-- Local Food Markets -->
@@ -538,8 +564,7 @@
           <a href="#" class="seeAll">See all markets</a>
         </div>
 
-        <div class="rowOfLocations" id="localFoodMarketsRow">
-        </div>
+        <div class="rowOfLocations" id="localFoodMarketsRow"></div>
       </section>
     </main>
     <script src="../js/Home.js"></script>

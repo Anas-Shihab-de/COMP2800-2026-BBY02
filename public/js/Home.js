@@ -9,18 +9,18 @@ async function checkAuth() {
 checkAuth();
 
 const rowCategories = [
-    {
-        id: "pantriesRow", 
-        category: "Food Pantry"
-    },
-    {
-        id: "farmersMarketsRow", 
-        category: "Farmers Market"
-    },
-    {
-        id: "localFoodMarketsRow", 
-        category: "Local Market"
-    }
+  {
+    id: "pantriesRow",
+    category: "Food Pantry",
+  },
+  {
+    id: "farmersMarketsRow",
+    category: "Farmers Market",
+  },
+  {
+    id: "localFoodMarketsRow",
+    category: "Local Market",
+  },
 ];
 
 /**
@@ -35,15 +35,19 @@ async function loadLocations() {
 loadLocations();
 
 /**
- * 
- * @param {*} locations 
+ *
+ * @param {*} locations
  */
 function renderCards(allLocations) {
-    for (let i = 0; i < rowCategories.length; i++) {
-        let row = document.getElementById(rowCategories[i].id);
-        let locations = allLocations.filter(location => location.tags[0] === rowCategories[i].category);
-        for (let i = 0; i < locations.length; i++) {
-            row.insertAdjacentHTML("beforeend", `
+  for (let i = 0; i < rowCategories.length; i++) {
+    let row = document.getElementById(rowCategories[i].id);
+    let locations = allLocations.filter(
+      (location) => location.tags[0] === rowCategories[i].category,
+    );
+    for (let i = 0; i < locations.length; i++) {
+      row.insertAdjacentHTML(
+        "beforeend",
+        `
             <article class="locationBox">
                 <a href="Details.html?locationId=${locations[i]._id}">
                     <div class="locationImage">
@@ -65,14 +69,25 @@ function renderCards(allLocations) {
                 </div>
 
                 <div class="tagRow">
-                    ${locations[i].tags.map(tag => {
-                    return '<span class="tag">' + tag + '</span>'
-                    }).join('')}
+                    ${locations[i].tags
+                      .map((tag) => {
+                        return '<span class="tag">' + tag + "</span>";
+                      })
+                      .join("")}
                 </div>
                 </div>
                 </a>
             </article>
-            `);
-        }
+            `,
+      );
     }
+  }
 }
+
+/**
+ * Redirects to the Settings page when the Settings icon is clicked.
+ */
+const settingsButton = document.getElementById("settingsButton");
+settingsButton.addEventListener("click", () => {
+  window.location.href = "Settings2.html";
+});
