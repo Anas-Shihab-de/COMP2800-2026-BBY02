@@ -170,12 +170,13 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
-app.get("/api/ai/schedule/:location", async (req, res) => {
+app.get("/api/ai/schedule/:location/:address", async (req, res) => {
   console.log("waiting");
   const dateUTC = new Date(Date.now());
   const dateLocal = dateUTC.toLocaleDateString();
 
-  const message = `Is ${req.params.location} open today? Note: if the location is undefined, please respond 'location is undefined'.`;
+  const message = `Is ${req.params.location} open today (Address: ${req.params.address}? Note: if the location or address is undefined, please respond 'location/address is undefined'.`;
+  try {
     const result = await model.generateContent({
       contents: [{
         "parts": [{
@@ -187,6 +188,10 @@ app.get("/api/ai/schedule/:location", async (req, res) => {
     });
     const response = await result.response;
     res.json(response);
+  } catch (error) {
+    console.log(error);
+    res.json(null);
+  }
 });
 
 /**

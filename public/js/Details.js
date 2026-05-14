@@ -33,13 +33,18 @@ async function checkAvailability() {
     const btn = document.getElementById("availabilityBtn");
     const text = document.getElementById("availabilityOutput");
     btn.disabled = true;
+    text.value = "";
     const res = await fetch("/api/locations");
     const locations = await res.json();
     const location = locations.filter(loc => loc._id === locationId);
-    const res2 = await fetch(`/api/ai/schedule/${location[0].name}`);
-    const response = await res2.json();
-    console.log(response.candidates[0].content.parts[0].text);
-    text.value = response.candidates[0].content.parts[0].text;
+    const res2 = await fetch(`/api/ai/schedule/${location[0].name}/${location[0].address}`);
+    if (!res2) {
+        text.value = "Something failed - blame it on Gemini";
+    } else {
+        const response = await res2.json();
+        console.log(response.candidates[0].content.parts[0].text);
+        text.value = response.candidates[0].content.parts[0].text;
+    }
     btn.disabled = false;
 }
 
