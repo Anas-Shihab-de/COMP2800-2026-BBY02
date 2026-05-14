@@ -171,7 +171,6 @@ app.post("/api/login", async (req, res) => {
 });
 
 app.get("/api/ai/schedule/:location/:address", async (req, res) => {
-  console.log("waiting");
   const dateUTC = new Date(Date.now());
   const dateLocal = dateUTC.toLocaleDateString();
 
@@ -191,6 +190,81 @@ app.get("/api/ai/schedule/:location/:address", async (req, res) => {
   } catch (error) {
     console.log(error);
     res.json(null);
+  }
+});
+
+app.post("/api/ai/chat/:location/:address", async (req, res) => {
+  const { question } = req.body;
+
+  if (!question || typeof question !== 'string' || question.trim().length === 0) {
+    return res.status(400).json({ error: "Question is required and must be a non-empty string." });
+  }
+
+  const location = req.params.location;
+  const address = req.params.address;
+
+  if (!location || !address) {
+    return res.status(400).json({ error: "Location and address parameters are required." });
+  }
+
+  // Guardrails: Check if the question is related to the location
+  const guardrailPrompt = `Analyze this question: "${question}"
+  Is this question asking about the restaurant/location "${location}" at "${address}"?
+  Answer only "YES" or "NO". If it's asking about food, pricing, atmosphere, service, hours, menu, or any aspect of this specific location, answer YES.
+  If it's asking about unrelated topics like geography, science, history, or general knowledge not related to this location, answer NO.`;
+
+  try {
+    const guardrailResult = await model.generateContent({
+      contents: [{
+        "parts": [{ "text": guardrailPrompt }],
+        "role": "user"
+      }],
+      systemInstruction: "You are a strict guardrail system. Only respond with YES or NO based on whether the question is about the specific restaurant/location provided."
+    });
+
+    const guardrailResponse = await guardrailResult.response;
+    const guardrailText = guardrailResponse.text().trim().toUpperCase();
+
+    if (guardrailText !== 'YES') {
+      return res.json({
+        candidates: [{
+          content: {
+            parts: [{
+              text: "I'm sorry, I can only answer questions about this specific location. Please ask about the food, pricing, atmosphere, or other details related to this restaurant."
+            }]
+          }
+        }]
+      });
+    }
+
+    // If guardrail passes, generate the actual response
+    const chatPrompt = `You are a helpful assistant answering questions about the restaurant "${location}" located at "${address}".
+
+Question: ${question}
+
+Please provide a helpful, accurate response based on what you know about restaurants and typical dining experiences. Keep your response concise and relevant to the location.`;
+
+    const result = await model.generateContent({
+      contents: [{
+        "parts": [{ "text": chatPrompt }],
+        "role": "user"
+      }],
+      systemInstruction: `You are answering questions about a specific restaurant location. Provide helpful information about food, pricing, atmosphere, service, or other restaurant-related topics. Keep responses concise and focused on the dining experience.`
+    });
+
+    const response = await result.response;
+    res.json(response);
+  } catch (error) {
+    console.log('Chat API error:', error);
+    res.status(500).json({
+      candidates: [{
+        content: {
+          parts: [{
+            text: "Sorry, I'm having trouble processing your question right now. Please try again later."
+          }]
+        }
+      }]
+    });
   }
 });
 
