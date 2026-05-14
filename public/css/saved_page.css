@@ -46,6 +46,8 @@
   --color-primary-variant: var(--color-green-light);
   --color-accent: var(--color-orange-dark);
   --color-text: var(--color-black);
+
+  --radius-btn: 20px;
 }
 
 * {
@@ -273,4 +275,102 @@ body {
     font-size: 60px;
     margin-right: 30px;
   }
+}
+
+/*======= Card Tags CSS =========*/
+
+.card-name {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.card-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--subtext);
+  margin-bottom: 10px;
+}
+
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag {
+  background: var(--tag-bg);
+  color: var(--tag-text);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: var(--radius-btn);
+}
+
+/* ======= Filter CSS =========*/
+
+.filter-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 10;
+}
+
+.filter-panel {
+  position: fixed;
+  top: 56px;
+  right: 0;
+  height: 100%;
+  width: 80%;
+  max-width: 320px;
+  background: white;
+  z-index: 11;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow-y: auto;
+}
+
+.filter-tag {
+  margin-top: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 6px 14px;
+  background: white;
+  cursor: pointer;
+}
+
+.filter-tag.active {
+  background: black;
+  color: white;
+  border-color: black;
+}
+
+.clear-btn {
+  flex: 1;
+  padding: 10px;
+  border: 2px solid #1a1a1a;
+  border-radius: var(--radius-btn);
+  background: white;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.apply-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: var(--radius-btn);
+  background: #1a1a1a;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
 }

@@ -1,7 +1,7 @@
 /**
- * Todo list:
- * 1. filter tags
- * 2. saved page logic from each section (including tag[0]) --> needs to be tested.
+ * TODO:
+ * Update distance and price information in card section
+ * Update CSS so that all the page has the same header and the card section, bg
  */
 
 // Check if authenticated
@@ -17,10 +17,9 @@ async function checkAuth() {
 }
 checkAuth();
 
-/**
- * Reference: COMP1800_202530_BBY21 project
- * https://github.com/RuleOfSix/1800_202530_BBY21
- */
+// Global variables for tags logic
+let initialSavedLocations = [];
+let selectedTags = [];
 
 /**
  * Loads saved location only from the logged in user.
@@ -31,7 +30,10 @@ checkAuth();
  * -- If "saved_places button" is clicked from Home.html, this updated logic wouldn't be applied.
  * @param userEmail the email to find the logged in user's saved location
  *
+ * Reference: COMP1800_202530_BBY21 project
+ * https://github.com/RuleOfSix/1800_202530_BBY21
  * https://medium.com/@louistrinh/get-url-parameters-in-javascript-efd99c5ddcaf
+ * https://frontendinterviewquestions.medium.com/remove-double-quotes-from-string-in-javascript-3262def24f38
  */
 async function loadSavedLocations(userEmail) {
   const locations = await loadLocations();
@@ -48,11 +50,20 @@ async function loadSavedLocations(userEmail) {
   const category = urlParams.get("category");
 
   if (category) {
+    const trimmedCategory = category.replace(/"/g, "").trim().toLowerCase();
     savedLocations = savedLocations.filter((location) => {
-      location.tags[0] === category;
+      if (location.tags && location.tags[0]) {
+        return location.tags[0].trim().toLowerCase() === trimmedCategory;
+      }
+      return false;
     });
   }
+
+  // 3. copy filtered savedlocations for tags logic
+  initialSavedLocations = savedLocations;
+
   renderCards(savedLocations);
+  loadFilterTags();
 }
 
 /**
@@ -78,8 +89,6 @@ async function loadUserSavedList(userEmail) {
     return [];
   }
 }
-
-loadSavedLocations();
 
 /**
  * @param savedLocations locations that filtered by user saved list.
@@ -115,6 +124,17 @@ function renderCards(savedLocations) {
         </div>
         <div class="card__text-container">
             <h3 class="card__title">${savedLocations[i].name}</h3>
+            <div class="card-meta">
+            <span class="meta-distance">X km</span>
+            <span class="meta-price">$$</span>
+          </div>
+          <div class="card-tags">
+            ${savedLocations[i].tags
+              .map((tag) => {
+                return '<span class="tag">' + tag + "</span>";
+              })
+              .join("")}
+          </div>
         </div>
     </article>
     `,
@@ -215,3 +235,136 @@ const backBtn = document.querySelector(".header__back-btn");
 backBtn.addEventListener("click", () => {
   window.history.back();
 });
+
+/**
+ * ========================================================
+ * Filter button logic based from See_All_Locations.js
+ * Filters item from the user's saved_list (intialSavedList) not from the whole list.
+ * ========================================================
+ */
+
+// filter button
+document.getElementById("filter-btn").addEventListener("click", openFilters);
+document
+  .getElementById("filter-overlay")
+  .addEventListener("click", closeFilters);
+
+/**
+ * Opens the filter panel overlay
+ */
+function openFilters() {
+  const panel = document.getElementById("filter-panel");
+  const overlay = document.getElementById("filter-overlay");
+
+  if (panel.classList.contains("hidden")) {
+    panel.classList.remove("hidden");
+    overlay.classList.remove("hidden");
+  } else {
+    closeFilters();
+  }
+}
+
+/**
+ * Closes the filter panel overlay
+ */
+function closeFilters() {
+  document.getElementById("filter-panel").classList.add("hidden");
+  document.getElementById("filter-overlay").classList.add("hidden");
+}
+
+/**
+ * Load all the tags from the database.
+ */
+function loadFilterTags() {
+  const allTags = [];
+  for (let i = 0; i < initialSavedLocations.length; i++) {
+    for (let j = 0; j < initialSavedLocations[i].tags.length; j++) {
+      if (!allTags.includes(initialSavedLocations[i].tags[j])) {
+        allTags.push(initialSavedLocations[i].tags[j]);
+      }
+    }
+  }
+  renderFilterTags("filter-tags-container", allTags);
+}
+
+/**
+ * Renders the filter tags
+ *
+ * @param {*} containerId the container id
+ * @param {*} tags the list of tags
+ */
+function renderFilterTags(containerId, tags) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = "";
+  for (let i = 0; i < tags.length; i++) {
+    container.insertAdjacentHTML(
+      "beforeend",
+      `
+      <button class="filter-tag" onclick="toggleTag(this, '${tags[i]}')">${tags[i]}</button>
+    `,
+    );
+  }
+}
+
+/**
+ * Toggles the filter tag as selected/unselected.
+ *
+ * @param {*} btn the button that was clicked
+ * @param {*} tag the filter tag
+ */
+function toggleTag(btn, tag) {
+  let found = false;
+  for (let i = 0; i < selectedTags.length; i++) {
+    if (selectedTags[i] === tag) {
+      found = true;
+      break;
+    }
+  }
+  if (found) {
+    const newTags = [];
+    for (let i = 0; i < selectedTags.length; i++) {
+      if (selectedTags[i] !== tag) {
+        newTags.push(selectedTags[i]);
+      }
+    }
+    selectedTags = newTags;
+    btn.classList.remove("active");
+  } else {
+    selectedTags.push(tag);
+    btn.classList.add("active");
+  }
+}
+
+/**
+ * Filters by the exact tags that the use chooses and re-renders the
+ */
+function applyFilters() {
+  const filtered = [];
+  for (let i = 0; i < initialSavedLocations.length; i++) {
+    let matchesAll = true;
+    for (let j = 0; j < selectedTags.length; j++) {
+      if (!initialSavedLocations[i].tags.includes(selectedTags[j])) {
+        matchesAll = false;
+        break;
+      }
+    }
+    if (matchesAll) {
+      filtered.push(initialSavedLocations[i]);
+    }
+  }
+  renderCards(filtered);
+  closeFilters();
+}
+
+/**
+ * Clears all tags selected.
+ */
+function clearFilters() {
+  selectedTags = [];
+  const filterTags = document.querySelectorAll(".filter-tag");
+  for (let i = 0; i < filterTags.length; i++) {
+    filterTags[i].classList.remove("active");
+  }
+  renderCards(initialSavedLocations);
+  closeFilters();
+}
