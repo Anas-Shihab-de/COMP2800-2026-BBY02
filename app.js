@@ -8,6 +8,7 @@ const mongodb_sessions_database = process.env.MONGODB_SESSIONS_DATABASE;
 const mongodb_session_secret = process.env.MONGODB_SESSION_SECRET;
 const node_session_secret = process.env.NODE_SESSION_SECRET;
 const mapboxgl_token = process.env.MAPBOX_TOKEN;
+const apiKey = process.env.GEMINI_API_KEY;
 
 const bcrypt = require("bcrypt");
 const saltRounds = 12;
@@ -25,6 +26,10 @@ const MongoStore = require("connect-mongo").default;
 const Joi = require("joi");
 const mongoSanitizer = require("mongo-sanitizer").default;
 const expireTime = 24 * 60 * 60 * 1000;
+
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const ai = new GoogleGenerativeAI(apiKey);
+const model = ai.getGenerativeModel({ model: "gemini-3.1-flash-lite" });
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -54,6 +59,8 @@ app.use(
 app.get("/", (req, res) => {
   res.redirect("/html/index.html");
 });
+
+// TODO add routes because the server is falling to 404 automatically
 
 app.get("/api/authentication", async (req, res) => {
   res.json({
@@ -163,6 +170,85 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
+app.get("/api/ai/schedule/:location/:address", async (req, res) => {
+  const dateUTC = new Date(Date.now());
+  const dateLocal = dateUTC.toLocaleDateString();
+
+  const message = `Is ${req.params.location} open today (Address: ${req.params.address}? 
+                  Note: if the location or address is undefined, please respond 'location/address is undefined'.`;
+  try {
+    const result = await model.generateContent({
+      contents: [{
+        "parts": [{
+          "text": message
+        }],
+        "role": "user"
+      }],
+      systemInstruction: `Today is ${dateLocal}. You need to give information on whether a given location is open or not and a reason why 
+                          (doesn't open on a certain day, not correct season, etc.)`
+    });
+    const response = await result.response;
+    res.json(response);
+  } catch (error) {
+    console.log(error);
+    res.json(null);
+  }
+});
+
+// Pop-up challenge: Chat functionality setup - Made entirely by Copilot
+// Made some changes to its prompting and removed an extra prompt request which was doubling expenses.
+// Copilot's logical flow remained basically untouched though.
+app.post("/api/ai/chat/:location/:address", async (req, res) => {
+  const question = req.body.question;
+
+  if (!question || typeof question !== 'string' || question.trim().length === 0) {
+    return res.status(400).json({ error: "Question is required and must be a non-empty string." });
+  }
+
+  const location = req.params.location;
+  const address = req.params.address;
+
+  if (!location || !address) {
+    return res.status(400).json({ error: "Location and address parameters are required." });
+  }
+
+  const chatPrompt = `You are a helpful assistant answering questions about the restaurant "${location}" located at "${address}". Question: ${question}
+                      Please provide a helpful, accurate response regarding food, pricing, or related topics based on your research of the location specific to the address. 
+                      Keep your response concise and relevant to the location.`;
+
+  // Guardrail config so the AI stays on topic
+  const guardrailPrompt = `You are answering questions about a specific food location. Possible types of locations are: food bank, farmers market, or other local market.
+                          Provide helpful information about food, pricing, or related topics. If the question is not related to the location at its address and its asking 
+                          about anything else like geography, science, history, or general knowledge not related to this location, politely remind the user that you will 
+                          only answer food topics for this location only. Keep responses concise and relevant to the exact location.`
+
+  try {
+    const result = await model.generateContent({
+      contents: [{
+        "parts": [{ "text": chatPrompt }],
+        "role": "user"
+      }],
+      systemInstruction: guardrailPrompt
+    });
+
+    const response = await result.response;
+    res.json(response);
+  }
+  catch (error) 
+  {
+    console.log('Chat API error:', error);
+    res.status(500).json({
+      candidates: [{
+        content: {
+          parts: [{
+            text: "Sorry, I'm having trouble processing your question right now. Please try again later."
+          }]
+        }
+      }]
+    });
+  }
+});
+
 /**
  * saved_page.js : unsave / save the location from the user's saved_list
  *
@@ -211,9 +297,9 @@ app.post("/api/save-location", async (req, res) => {
   }
 });
 
-app.use((req, res) => {
-  res.status(404).sendFile(__dirname + "/html/404.html");
-});
+// app.use((req, res) => { until routes are added
+//   res.status(404).sendFile(__dirname + "/html/404.html");
+// });
 
 app.listen(PORT, () => {
   console.log("Server is running on port " + PORT);
