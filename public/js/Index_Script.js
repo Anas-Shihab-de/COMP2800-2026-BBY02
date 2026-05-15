@@ -125,6 +125,7 @@ function setupMapClickHandler() {
     await getRoute(userLocation, selectedLocation);
 
     document.getElementById("set-location-btn").style.display = "block";
+    document.getElementById("use-current-location-btn").style.display = "block";
   });
 }
 
