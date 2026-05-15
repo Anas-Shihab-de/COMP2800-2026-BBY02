@@ -1,14 +1,5 @@
-/*
- * YOUCHHH gonna remove this comment later but whoever is reading this
- * So far the functions work as intended...or how I intend anyways LOL JSDoc commenting hell ahahah.
- * Might need to refactor code again, at least just for the calculating distance part since the card only shows
- * "X km" as a placeholder :( otherwise I think that's about it. Anyways please let me know if I need to change anything !!
- * Updated: HAHHAHAHAH it works now
- */
-
 /**
  * Check if authenticated
- *
  */
 async function checkAuth() {
   const res = await fetch("/api/authentication");
@@ -37,7 +28,9 @@ const category = params.get("category");
 let allLocations = [];
 let userSavedList = [];
 let selectedTags = [];
-let userLocation = null; // global from Anas code
+let userLocation = null;
+let currentSort = "distance"; //default
+
 
 /*
  * Display catagory title.
@@ -277,7 +270,8 @@ function applyFilters() {
       filtered.push(allLocations[i]);
     }
   }
-  renderCards(filtered);
+  currentSort = document.getElementById("sort-select").value;
+  renderCards(sortLocations(filtered));
   closeFilters();
 }
 
@@ -286,7 +280,12 @@ function applyFilters() {
  */
 function clearFilters() {
   selectedTags = [];
+  currentSort = "distance";
+
+  document.getElementById("sort-select").value = "distance";
+
   const filterTags = document.querySelectorAll(".filter-tag");
+
   for (let i = 0; i < filterTags.length; i++) {
     filterTags[i].classList.remove("active");
   }
@@ -355,3 +354,52 @@ function getDistanceKm(a, b) {
   return Math.round(R * (2 * Math.asin(Math.sqrt(x))) * 10) / 10;
 }
 
+/**
+ * Sorts locations by the current sort setting.
+ * 
+ * @param {*} locations the list of locations to sort
+ * 
+ * @returns sorted list of locations
+ */
+function sortLocations(locations) {
+  const sorted = [];
+  for (let i = 0; i < locations.length; i++) {
+    sorted.push(locations[i]);
+  }
+
+  for (let i = 0; i < sorted.length; i++) {
+    for (let j = i + 1; j < sorted.length; j++) {
+      let shouldSwap = false;
+
+      if (currentSort === "distance") {
+        let distanceA = 9999;
+        let distanceB = 9999;
+        if (userLocation && sorted[i].geo && sorted[i].geo.coordinates) {
+          distanceA = getDistanceKm(userLocation, sorted[i].geo.coordinates);
+        }
+        if (userLocation && sorted[j].geo && sorted[j].geo.coordinates) {
+          distanceB = getDistanceKm(userLocation, sorted[j].geo.coordinates);
+        }
+        if (distanceA > distanceB) {
+          shouldSwap = true;
+        }
+      }
+
+      if (currentSort === "name") {
+        const nameA = sorted[i].name.toLowerCase();
+        const nameB = sorted[j].name.toLowerCase();
+        if (nameA > nameB) {
+          shouldSwap = true;
+        }
+      }
+
+      if (shouldSwap) {
+        const temp = sorted[i];
+        sorted[i] = sorted[j];
+        sorted[j] = temp;
+      }
+    }
+  }
+
+  return sorted;
+}
