@@ -239,6 +239,34 @@
         bottom: 1rem;
       }
     }
+    #map {
+  position: relative;
+  z-index: 1;
+}
+
+#map-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 0, 0, 0.35);
+  pointer-events: none;
+  z-index: 2;
+
+  /* SHARP hole in center */
+  -webkit-mask-image: radial-gradient(
+    circle 80px at center,
+    transparent 0 80px,
+    black 80px 100%
+  );
+
+  mask-image: radial-gradient(
+    circle 80px at center,
+    transparent 0 80px,
+    black 80px 100%
+  );
+
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
 
   </style>
 </head>
@@ -331,10 +359,11 @@
   </section>
 
   <!-- MAP -->
+
   <section class="mapSection">
 
     <div id="map"></div>
-
+    <div id="map-overlay"></div>
     <div id="instructions"></div>
 
     <p id="status"></p>

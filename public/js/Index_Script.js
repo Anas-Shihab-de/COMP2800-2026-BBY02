@@ -85,6 +85,46 @@ function isWithinRadius(userLoc, pointLoc, radiusKm) {
   return getDistanceKm(userLoc, pointLoc) <= radiusKm;
 }
 
+
+const overlay = document.getElementById("map-overlay");
+
+//update mask on slider touch
+function updateMapMask(radiusKm) {
+
+  const center = map.getCenter();
+  const zoom = map.getZoom();
+
+  // meters per pixel at current view
+  const mpp = metersPerPixel(center.lat, zoom);
+
+  const radiusMeters = radiusKm * 1000;
+  const radiusPx = radiusMeters / mpp;
+
+  const rect = map.getCanvas().getBoundingClientRect();
+
+  const centerX = rect.width / 2;
+  const centerY = rect.height / 2;
+
+  const mask = `radial-gradient(circle ${radiusPx}px at ${centerX}px ${centerY}px,
+    transparent 0 ${radiusPx}px,
+    black ${radiusPx}px 100%)`;
+
+  overlay.style.webkitMaskImage = mask;
+  overlay.style.maskImage = mask;
+}
+
+//helper to get right size from zoom in/out map for mask
+function metersPerPixel(lat, zoom) {
+  const earthCircumference = 40075016.686; // meters
+  return earthCircumference * Math.cos(lat * Math.PI / 180) / Math.pow(2, zoom + 8);
+}
+
+//helper that updates mask upon zoom
+map.on('move', () => updateMapMask(radius));
+map.on('zoom', () => updateMapMask(radius));
+map.on('rotate', () => updateMapMask(radius));
+map.on('pitch', () => updateMapMask(radius));
+
 // =========================
 // USER SETTINGS
 // =========================
@@ -390,6 +430,9 @@ function showInfoCard(data) {
   card.classList.remove("hidden");
 }
 
+
+
+//slider code
 const slider = document.getElementById("radius-slider");
 const radiusLabel = document.getElementById("radius-value");
 
@@ -414,8 +457,12 @@ slider?.addEventListener("input", () => {
   settings.radius = radius;
   localStorage.setItem("userSettings", JSON.stringify(settings));
 
-  // refresh everything
+  // update mask
+  updateMapMask(radius);
+
+  //refresh all
   loadLocations();
+
 });
 
 //set user location to current location button logic
