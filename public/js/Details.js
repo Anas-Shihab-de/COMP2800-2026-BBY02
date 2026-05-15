@@ -1,8 +1,8 @@
 /**
  * TODO:
- * See all Location
- * Clipboard
- * distance
+ * calculate distance for details and saved_page
+ * Update clipboard alert as Modal UI
+ * telephone number from DB and $$
  */
 
 //global variables
@@ -11,6 +11,13 @@ const locationId = urlParams.get("locationId");
 let userEmail = "";
 let updatedSavedList = [];
 let isSaved = false;
+const areas = [
+  "Downtown",
+  "Burnaby",
+  "Coquitlam",
+  "New Westminster",
+  "Richimond",
+];
 
 // Check if authenticated
 async function checkAuth() {
@@ -47,7 +54,7 @@ async function loadLocation() {
   // draw the page first
   await renderPage(location[0]);
 
-  // upate the bookmark status whether it is saved or not
+  // update the bookmark status whether it is saved or not
   await updateBookmark();
 }
 
@@ -94,9 +101,57 @@ async function updateBookmark() {
 /**
  *
  * @param {*} locations
+ * https://www.w3schools.com/Jsref/tryit.asp?filename=tryjsref_getday
+ * https://www.w3schools.com/howto/howto_js_copy_clipboard.asp
  */
-function renderPage(location) {
+async function renderPage(location) {
   const page = document.getElementById("mainPage");
+  const areaName = areas.filter((area) => location.address.includes(area));
+  const dayOfWeek = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+
+  // get today's working hours of the location
+  const date = new Date();
+  const today = dayOfWeek[date.getDay()];
+  const workingHour = await findWorkingHours(location.hours, today);
+  let workingHourText = "";
+
+  if (workingHour.open != "Closed") {
+    workingHourText = `${workingHour.open} – ${workingHour.close}`;
+  } else {
+    workingHourText = `Closed`;
+  }
+
+  // get full working hours of the location
+  let fullSchdule = "";
+  let timeText = "";
+
+  for (const day in location.hours) {
+    let formattedDay = day.charAt(0).toUpperCase() + day.slice(1);
+    const hours = location.hours[day];
+    if (hours && hours.length > 0) {
+      timeText = `${hours[0].open} – ${hours[0].close}`;
+    } else {
+      timeText = `Closed`;
+    }
+
+    fullSchdule += `
+    <li>
+        <span>${formattedDay}: </span>
+        <span>${timeText}</span>
+    </li>
+    `;
+  }
+
+  // calcualte distance based on the location's coordinate
+
   page.insertAdjacentHTML(
     "beforeend",
     `
@@ -122,7 +177,7 @@ function renderPage(location) {
             <div class="headingSection">
             <div class="headingBlock">
                 <h1 class="locationName">${location.name}</h1>
-                <p class="location">Pitt Meadows, BC</p>
+                <p class="location">${areaName}, BC</p>
                 <div class="relativePrice">$$</div>
             </div>
             </div>
@@ -142,8 +197,12 @@ function renderPage(location) {
                 </div>
 
                 <div class="dateAndTime">
-                <span>Saturday</span>
-                <span>12:30–2:00 p.m.</span>
+                <div class= "dayAndDropdown">
+                     <span>${today}</span>
+                    <span class="material-symbols-outlined material-symbols-outlined-dropdown">arrow_drop_down</span>
+                
+                </div>
+                <span>${workingHourText}</span>
                 </div>
             </div>
 
@@ -151,6 +210,12 @@ function renderPage(location) {
                 <img src="../img/DistanceIconWhite.png" />
                 <span class="distance">5 km</span>
             </div>
+            </div>
+
+            <div class="fullScheduleSection" style="display: none;">
+                <ul>
+                   ${fullSchdule}
+                </ul>
             </div>
 
             <section class="importantSection">
@@ -165,7 +230,7 @@ function renderPage(location) {
             </section>
 
             <div class="redirectInfo">
-            <a href="#" class="redirectLink">
+            <a href="${location.links[0]}" class="redirectLink">
                 <img src="../img/RedirectIcon.png" />
                 <span>See more on the website</span>
             </a>
@@ -175,17 +240,54 @@ function renderPage(location) {
     `,
   );
 
-  // back button
+  addAllButtonListeners(location, locationId);
+}
+
+/**
+ * Add event listeners for each icons/buttons
+ * @param {*} location the object that contains the info
+ * @param {*} locationId the location object's db id
+ */
+function addAllButtonListeners(location, locationId) {
+  // 1. back button
   const backBtn = document.querySelector(".backIcon");
   backBtn.addEventListener("click", () => {
     window.history.back();
   });
 
-  // bookmark button to save/unsave location
+  // 2. bookmark button to save/unsave location
   const saveBtn = document.querySelector(".card__save-btn");
   saveBtn.addEventListener("click", () => {
     toggleSaveBtn(locationId);
     console.log("bookmark button clicked");
+  });
+
+  // 3. clipboard button for address so that user can easily lookk for the place
+  const clipboardBtn = document.querySelector(".addressBlock");
+  clipboardBtn.addEventListener("click", () => {
+    navigator.clipboard.writeText(location.address);
+    alert(`Address copied: ${location.address}`);
+  });
+
+  // 4. schedule button to see the whole working schedule
+  const scheduleBtn = document.querySelector(".scheduleBlock");
+  const fullSchedule = document.querySelector(".fullScheduleSection");
+  const dropdownIcon = document.querySelector(
+    ".material-symbols-outlined-dropdown",
+  );
+
+  scheduleBtn.addEventListener("click", (event) => {
+    if (event.target.closest(".redirectLink")) {
+      return;
+    }
+
+    if (fullSchedule.style.display === "none") {
+      fullSchedule.style.display = "block";
+      dropdownIcon.innerText = "arrow_drop_up";
+    } else {
+      fullSchedule.style.display = "none";
+      dropdownIcon.innerText = "arrow_drop_down";
+    }
   });
 }
 
@@ -248,5 +350,40 @@ async function savePlace(locationId) {
 
   if (response.ok) {
     console.log(`saved location: ${locationId}`);
+  }
+}
+
+/**
+ * Find today's working hours from the database
+ * @param {*} locationHours Object that contains days of the week and open/close time
+ * @param {*} today day of the week
+ * @returns open, close hours when the location is open today.
+ *
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/values
+ */
+async function findWorkingHours(locationHours, today) {
+  if (!locationHours) {
+    return;
+  }
+  // format as how day of week is stored in Location databse
+  const formattedDay = today.slice(0, 3).toLowerCase();
+  const workingHours = locationHours[formattedDay];
+
+  if (workingHours && workingHours.length > 0) {
+    const workingHoursValue = Object.values(workingHours[0]);
+    const openTime = workingHoursValue[0];
+    const closeTime = workingHoursValue[1];
+
+    return {
+      open: openTime,
+      close: closeTime,
+    };
+  } else {
+    // when there is no data in woringHours since it is closed
+    return {
+      open: "Closed",
+      close: "",
+    };
   }
 }

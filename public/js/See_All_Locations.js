@@ -24,9 +24,9 @@ checkAuth();
  * we can add/remove/change catagories :p
  */
 const CATEGORIES = {
-  pantries: { title: "Community Food Pantries" },
-  farmers: { title: "BC Farmers Markets" },
-  markets: { title: "Local Food Markets" },
+  "Food Pantry": { title: "Community Food Pantries" },
+  "Farmers Market": { title: "BC Farmers Markets" },
+  "Local Market": { title: "Local Food Markets" },
 };
 
 const params = new URLSearchParams(window.location.search);
@@ -72,7 +72,25 @@ async function loadLocations() {
   const loggedInUser = users.find((user) => user.email === auth.email);
   userSavedList = loggedInUser?.saved_list || [];
 
-  renderCards(allLocations);
+  // copy all location before filtering
+  let filteredLocations = allLocations;
+
+  // filter by category
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const category = urlParams.get("category");
+
+  if (category) {
+    const trimmedCategory = category.replace(/"/g, "").trim().toLowerCase();
+    filteredLocations = allLocations.filter((location) => {
+      if (location.tags && location.tags[0]) {
+        return location.tags[0].trim().toLowerCase() === trimmedCategory;
+      }
+      return false;
+    });
+  }
+
+  renderCards(filteredLocations);
   loadFilterTags();
 }
 loadLocations();

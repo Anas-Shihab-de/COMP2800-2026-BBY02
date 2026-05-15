@@ -9,18 +9,18 @@ async function checkAuth() {
 checkAuth();
 
 const rowCategories = [
-    {
-        id: "pantriesRow", 
-        category: "Food Pantry"
-    },
-    {
-        id: "farmersMarketsRow", 
-        category: "Farmers Market"
-    },
-    {
-        id: "localFoodMarketsRow", 
-        category: "Local Market"
-    }
+  {
+    id: "pantriesRow",
+    category: "Food Pantry",
+  },
+  {
+    id: "farmersMarketsRow",
+    category: "Farmers Market",
+  },
+  {
+    id: "localFoodMarketsRow",
+    category: "Local Market",
+  },
 ];
 
 /**
@@ -35,15 +35,19 @@ async function loadLocations() {
 loadLocations();
 
 /**
- * 
- * @param {*} locations 
+ *
+ * @param {*} locations
  */
 function renderCards(allLocations) {
-    for (let i = 0; i < rowCategories.length; i++) {
-        let row = document.getElementById(rowCategories[i].id);
-        let locations = allLocations.filter(location => location.tags[0] === rowCategories[i].category);
-        for (let i = 0; i < locations.length; i++) {
-            row.insertAdjacentHTML("beforeend", `
+  for (let i = 0; i < rowCategories.length; i++) {
+    let row = document.getElementById(rowCategories[i].id);
+    let locations = allLocations.filter(
+      (location) => location.tags[0] === rowCategories[i].category,
+    );
+    for (let i = 0; i < locations.length; i++) {
+      row.insertAdjacentHTML(
+        "beforeend",
+        `
             <article class="locationBox">
                 <a href="Details.html?locationId=${locations[i]._id}">
                     <div class="locationImage">
@@ -65,14 +69,45 @@ function renderCards(allLocations) {
                 </div>
 
                 <div class="tagRow">
-                    ${locations[i].tags.map(tag => {
-                    return '<span class="tag">' + tag + '</span>'
-                    }).join('')}
+                    ${locations[i].tags
+                      .map((tag) => {
+                        return '<span class="tag">' + tag + "</span>";
+                      })
+                      .join("")}
                 </div>
                 </div>
                 </a>
             </article>
-            `);
-        }
+            `,
+      );
     }
+  }
+
+  addSeeAllButtonsListener();
+}
+
+/**
+ * adds button listener to go to See_All_Locations.html with category
+ */
+function addSeeAllButtonsListener() {
+  //1. Food Pantry
+  const seeAllPantries = document.getElementById("seeAllPantries");
+  seeAllPantries.addEventListener("click", () => {
+    const category = "Food Pantry";
+    window.location.href = `/html/See_All_Locations.html?category=${category}`;
+  });
+
+  //2. Farmers Market
+  const seeAllFarmers = document.getElementById("seeAllFarmers");
+  seeAllFarmers.addEventListener("click", () => {
+    const category = "Farmers Market";
+    window.location.href = `/html/See_All_Locations.html?category=${category}`;
+  });
+
+  //3. Local Market
+  const seeAllLocals = document.getElementById("seeAllLocals");
+  seeAllLocals.addEventListener("click", () => {
+    const category = "Local Market";
+    window.location.href = `/html/See_All_Locations.html?category=${category}`;
+  });
 }
