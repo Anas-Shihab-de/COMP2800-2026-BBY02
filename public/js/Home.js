@@ -47,47 +47,53 @@ function renderCards(allLocations) {
       (location) => location.tags[0] === rowCategories[i].category,
     );
 
-    let distance = "N/A";
-    if (userLocation && locations[i].geo?.coordinates) {
-      distance =
-        getDistanceKm(userLocation, locations[i].geo.coordinates) + " km";
-    }
     for (let i = 0; i < locations.length; i++) {
-      row.insertAdjacentHTML(
-        "beforeend",
-        `
-            <article class="locationBox">
-                <a href="Details.html?locationId=${locations[i]._id}">
-                    <div class="locationImage">
-                    <img src="${locations[i].images[0]}" />
-                    <span class="imageTag">Seasonal</span>
-                    </div>
+      let distance = "N/A";
+      let distanceNumeric = 0;
+      if (userLocation && locations[i].geo?.coordinates) {
+        distanceNumeric = getDistanceKm(userLocation, locations[i].geo.coordinates);
+        distance = distanceNumeric + " km";
+      }
+      let userSettings = JSON.parse(localStorage.getItem("userSettings"));
+      if (distanceNumeric > userSettings.radius) {
+        console.log(locations[i].name + " is too far");
+      } else {
+        row.insertAdjacentHTML(
+          "beforeend",
+          `
+              <article class="locationBox">
+                  <a href="Details.html?locationId=${locations[i]._id}">
+                      <div class="locationImage">
+                      <img src="${locations[i].images[0]}" />
+                      <span class="imageTag">Seasonal</span>
+                      </div>
 
-                <div class="hubInfo">
-                <h3 class="locationName">${locations[i].name}</h3>
+                  <div class="hubInfo">
+                  <h3 class="locationName">${locations[i].name}</h3>
 
-                <div class="locationDetails">
-                    <div class="distanceInfo">
-                    <span class="locationIcon"
-                        ><img src="../img/locationIcon.png"
-                    /></span>
-                    <span class="locationDistanceKm">${distance}</span>
-                    </div>
-                    <span class="relativePrice">$$</span>
-                </div>
+                  <div class="locationDetails">
+                      <div class="distanceInfo">
+                      <span class="locationIcon"
+                          ><img src="../img/locationIcon.png"
+                      /></span>
+                      <span class="locationDistanceKm">${distance}</span>
+                      </div>
+                      <span class="relativePrice">$$</span>
+                  </div>
 
-                <div class="tagRow">
-                    ${locations[i].tags
-                      .map((tag) => {
-                        return '<span class="tag">' + tag + "</span>";
-                      })
-                      .join("")}
-                </div>
-                </div>
-                </a>
-            </article>
-            `,
-      );
+                  <div class="tagRow">
+                      ${locations[i].tags
+                        .map((tag) => {
+                          return '<span class="tag">' + tag + "</span>";
+                        })
+                        .join("")}
+                  </div>
+                  </div>
+                  </a>
+              </article>
+              `,
+          );
+        }
     }
   }
 

@@ -12,6 +12,8 @@ let updatedSavedList = [];
 let isSaved = false;
 //for distance logic
 let userLocation = null;
+//global location saved - part of Copilot's refactor
+let currentLocation = null;
 const areas = [
   "Downtown",
   "Burnaby",
@@ -36,20 +38,14 @@ async function checkAuth() {
 checkAuth();
 
 /**
- * Source - https://stackoverflow.com/a/901144
- * Posted by Artem Barger, modified by community. See post 'Timeline' for change history
- * Retrieved 2026-05-13, License - CC BY-SA 4.0
- */
-
-/**
  * Loads in locations from the database.
  */
 async function loadLocation() {
   const res = await fetch("/api/locations");
   const locations = await res.json();
-  const location = await locations.filter((loc) => loc._id === locationId);
+  currentLocation = locations.find(loc => loc._id === locationId);
 
-  if (!location) {
+  if (!currentLocation) {
     window.location.href = "../html/404.html";
     return;
   }
@@ -58,7 +54,7 @@ async function loadLocation() {
   userLocation = await getUserLocation();
 
   // draw the page first
-  await renderPage(location[0]);
+  await renderPage(currentLocation);
 
   // update the bookmark status whether it is saved or not
   await updateBookmark();
@@ -247,14 +243,160 @@ async function renderPage(location) {
                 <img src="../img/RedirectIcon.png" />
                 <span>See more on the website</span>
             </a>
+            <a id="chatBtn" class="redirectLink"><span>Ask Questions (AI)</span></a>
+            <a onclick="checkAvailability()" id="availabilityBtn" class="redirectLink"><span>Check Availability (AI)</span></a>
             </div>
+            <textarea id="AIOutput" rows="10" readonly></textarea>
         </section>
-     
-    `,
-  );
 
-  addAllButtonListeners(location, locationId);
+        <!-- Chat Overlay - Popup challenge - Code made by Copilot -->
+        <div id="chatOverlay" class="chat-overlay">
+            <div class="chat-container">
+                <div class="chat-header">
+                    <h3>Ask about this location</h3>
+                    <button id="closeChatBtn" class="close-btn">&times;</button>
+                </div>
+                <div id="chatMessages" class="chat-messages"></div>
+                <div class="chat-input-container">
+                    <input type="text" id="chatInput" placeholder="Ask about vegan food, pricing, etc..." maxlength="200">
+                    <button id="sendChatBtn">Send</button>
+                </div>
+            </div>
+        </div>
+        </div>
+    `);
+    setupChatEventListeners();
+    addAllButtonListeners(location, locationId);
 }
+
+// Pop-up challenge: initially written by Damon, then asked Copilot to improve/refactor the code.
+// Copilot improved it by adding checks to errors, using safer practice like encodeURIComponent(), and removing redundant code like a duplicate fetch for location info.
+// It also added extra stuff it was not asked to do like checking hours, but it was removed since it was inaccurate and not needed.
+async function checkAvailability() {
+    const btn = document.getElementById("availabilityBtn");
+    const text = document.getElementById("AIOutput");
+    const originalLabel = btn.textContent;
+
+    btn.disabled = true;
+    btn.textContent = "Checking...";
+    text.value = "";
+
+    try 
+    {
+        if (!currentLocation) {
+            throw new Error("Location not loaded");
+        }
+
+        const res = await fetch(`/api/ai/schedule/${encodeURIComponent(currentLocation.name)}/${encodeURIComponent(currentLocation.address)}`);
+
+        if (!res.ok) {
+            throw new Error(`AI request failed with status ${res.status}`);
+        }
+
+        const aiResponse = await res.json();
+        text.value = aiResponse?.candidates?.[0]?.content?.parts?.[0]?.text || "No availability information was returned.";
+    } 
+    catch (error) 
+    {
+        console.error(error);
+        text.value = "Unable to check availability right now. Please try again later.";
+    } 
+    finally 
+    {
+        btn.disabled = false;
+        btn.textContent = originalLabel;
+    }
+}
+
+// Pop-up challenge: Chat functionality setup - Made entirely by Copilot
+// Only a few style changes made or an extra comment here and there
+function setupChatEventListeners() {
+    const chatBtn = document.getElementById('chatBtn');
+    const chatOverlay = document.getElementById('chatOverlay');
+    const closeChatBtn = document.getElementById('closeChatBtn');
+    const chatInput = document.getElementById('chatInput');
+    const sendChatBtn = document.getElementById('sendChatBtn');
+    const chatMessages = document.getElementById('chatMessages');
+
+    if (!chatBtn || !chatOverlay) return; // Elements not yet rendered
+
+    // Open chat overlay
+    chatBtn.addEventListener('click', function() {
+        chatOverlay.style.display = 'block';
+        chatInput.focus();
+    });
+
+    // Close chat overlay
+    closeChatBtn.addEventListener('click', function() {
+        chatOverlay.style.display = 'none';
+    });
+
+    // Close overlay when clicking outside
+    chatOverlay.addEventListener('click', function(e) {
+        if (e.target === chatOverlay) {
+            chatOverlay.style.display = 'none';
+        }
+    });
+
+    // Send message on button click
+    sendChatBtn.addEventListener('click', sendChatMessage);
+
+    // Send message on Enter key
+    chatInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendChatMessage();
+        }
+    });
+
+    async function sendChatMessage() {
+        const message = chatInput.value.trim();
+        if (!message) return;
+
+        // Add user message to chat
+        addMessage(message, 'user');
+        chatInput.value = '';
+        sendChatBtn.disabled = true;
+        sendChatBtn.textContent = 'Sending...';
+
+        try {
+            const response = await fetch(
+                `/api/ai/chat/${encodeURIComponent(currentLocation.name)}/${encodeURIComponent(currentLocation.address)}`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ question: message })
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(`Chat request failed with status ${response.status}`);
+            }
+
+            const data = await response.json();
+            const aiResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't generate a response right now.";
+
+            addMessage(aiResponse, 'ai');
+        } catch (error) {
+            console.error('Chat error:', error);
+            addMessage("Sorry, I'm having trouble responding right now. Please try again.", 'ai');
+        } finally {
+            sendChatBtn.disabled = false;
+            sendChatBtn.textContent = 'Send';
+        }
+    }
+
+    function addMessage(text, type) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${type}`;
+        messageDiv.textContent = text;
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+}
+
 
 /**
  * Add event listeners for each icons/buttons
@@ -446,3 +588,4 @@ function getDistanceKm(a, b) {
 
   return Math.round(R * (2 * Math.asin(Math.sqrt(x))) * 10) / 10;
 }
+
