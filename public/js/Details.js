@@ -1,6 +1,5 @@
 /**
  * TODO:
- * calculate distance for details and saved_page
  * Update clipboard alert as Modal UI
  * telephone number from DB and $$
  */
@@ -11,12 +10,16 @@ const locationId = urlParams.get("locationId");
 let userEmail = "";
 let updatedSavedList = [];
 let isSaved = false;
+//for distance logic
+let userLocation = null;
 const areas = [
   "Downtown",
   "Burnaby",
-  "Coquitlam",
   "New Westminster",
   "Richimond",
+  "Coquitlam",
+  "Port Moody",
+  "Port Coquitlam",
 ];
 
 // Check if authenticated
@@ -50,6 +53,9 @@ async function loadLocation() {
     window.location.href = "../html/404.html";
     return;
   }
+
+  // get userLocation to calculate distance
+  userLocation = await getUserLocation();
 
   // draw the page first
   await renderPage(location[0]);
@@ -151,6 +157,13 @@ async function renderPage(location) {
   }
 
   // calcualte distance based on the location's coordinate
+  let distance = "N/A";
+  console.log(`userLocation: ${userLocation}`);
+  console.log(location.geo?.coordinates);
+  if (userLocation && location.geo?.coordinates) {
+    distance = getDistanceKm(userLocation, location.geo.coordinates) + " km";
+    console.log(distance);
+  }
 
   page.insertAdjacentHTML(
     "beforeend",
@@ -208,7 +221,7 @@ async function renderPage(location) {
 
             <div class="distanceBlock">
                 <img src="../img/DistanceIconWhite.png" />
-                <span class="distance">5 km</span>
+                <span class="distance">${distance} </span>
             </div>
             </div>
 
@@ -386,4 +399,50 @@ async function findWorkingHours(locationHours, today) {
       close: "",
     };
   }
+}
+
+/**
+ * Gets the user's current coordinates using the browser's geolocation API.
+ * getUserLocation  from See_All_Locations.js
+ *
+ * @returns the user's longitude and latitude
+ */
+async function getUserLocation() {
+  const defaultLocation = [-123.0016, 49.2532];
+
+  if (!navigator.geolocation) return defaultLocation;
+
+  return new Promise((resolve) => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        resolve([pos.coords.longitude, pos.coords.latitude]);
+      },
+      () => resolve(defaultLocation),
+    );
+  });
+}
+
+/**
+ * Calculates the distance in kilometers between two coordinates.
+ * getDistanceKm code from See_All_Locations.js
+ *
+ * @param {*} a longitude and latitude of point a
+ * @param {*} b longitude and latitude of point b
+ *
+ * @returns distance in kilometers
+ */
+function getDistanceKm(a, b) {
+  const R = 6371;
+
+  const dLat = ((b[1] - a[1]) * Math.PI) / 180;
+  const dLon = ((b[0] - a[0]) * Math.PI) / 180;
+
+  const lat1 = (a[1] * Math.PI) / 180;
+  const lat2 = (b[1] * Math.PI) / 180;
+
+  const x =
+    Math.sin(dLat / 2) ** 2 +
+    Math.sin(dLon / 2) ** 2 * Math.cos(lat1) * Math.cos(lat2);
+
+  return Math.round(R * (2 * Math.asin(Math.sqrt(x))) * 10) / 10;
 }

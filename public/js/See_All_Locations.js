@@ -31,6 +31,8 @@ let selectedTags = [];
 let userLocation = null;
 let currentSort = "distance"; //default
 
+let filteredLocations; // to show by category
+
 /*
  * Display catagory title.
  * If there isn't a catagory title, then set it to the default name.
@@ -69,7 +71,7 @@ async function loadLocations() {
   userLocation = await getUserLocation();
 
   // copy all location before filtering
-  let filteredLocations = allLocations;
+  filteredLocations = allLocations;
 
   // filter by category
   const queryString = window.location.search;
@@ -86,6 +88,7 @@ async function loadLocations() {
     });
   }
 
+  console.log(filteredLocations);
   renderCards(filteredLocations);
   loadFilterTags();
 }
@@ -213,10 +216,10 @@ function closeFilters() {
  */
 function loadFilterTags() {
   const allTags = [];
-  for (let i = 0; i < allLocations.length; i++) {
-    for (let j = 0; j < allLocations[i].tags.length; j++) {
-      if (!allTags.includes(allLocations[i].tags[j])) {
-        allTags.push(allLocations[i].tags[j]);
+  for (let i = 0; i < filteredLocations.length; i++) {
+    for (let j = 0; j < filteredLocations[i].tags.length; j++) {
+      if (!allTags.includes(filteredLocations[i].tags[j])) {
+        allTags.push(filteredLocations[i].tags[j]);
       }
     }
   }
@@ -276,16 +279,16 @@ function toggleTag(btn, tag) {
  */
 function applyFilters() {
   const filtered = [];
-  for (let i = 0; i < allLocations.length; i++) {
+  for (let i = 0; i < filteredLocations.length; i++) {
     let matchesAll = true;
     for (let j = 0; j < selectedTags.length; j++) {
-      if (!allLocations[i].tags.includes(selectedTags[j])) {
+      if (!filteredLocations[i].tags.includes(selectedTags[j])) {
         matchesAll = false;
         break;
       }
     }
     if (matchesAll) {
-      filtered.push(allLocations[i]);
+      filtered.push(filteredLocations[i]);
     }
   }
   currentSort = document.getElementById("sort-select").value;
@@ -307,7 +310,7 @@ function clearFilters() {
   for (let i = 0; i < filterTags.length; i++) {
     filterTags[i].classList.remove("active");
   }
-  renderCards(allLocations);
+  renderCards(filteredLocations);
   closeFilters();
 }
 
@@ -316,7 +319,6 @@ function clearFilters() {
  */
 function openSaved() {
   // to send url with the current category
-  // this logic can be updated after seeall button from Home.html is done
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const category = urlParams.get("category");

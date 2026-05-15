@@ -333,6 +333,19 @@ body {
   overflow-y: auto;
 }
 
+/* SORTING OPTION */
+.sort-select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: var(--radius-btn);
+  font-size: 13px;
+  cursor: pointer;
+  background: white;
+  color: var(--text);
+}
+/* SORTING OPTION */
+
 .filter-tag {
   margin-top: 1rem;
   border: 1px solid #ccc;

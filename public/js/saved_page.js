@@ -1,8 +1,15 @@
 /**
  * TODO:
- * Update distance and price information in card section
  * Update CSS so that all the page has the same header and the card section, bg
  */
+
+// Global variables
+// for tags logic
+let initialSavedLocations = [];
+let selectedTags = [];
+//for distance logic
+let userLocation = null;
+let currentSort = "distance"; //default
 
 // Check if authenticated
 async function checkAuth() {
@@ -16,10 +23,6 @@ async function checkAuth() {
   }
 }
 checkAuth();
-
-// Global variables for tags logic
-let initialSavedLocations = [];
-let selectedTags = [];
 
 /**
  * Loads saved location only from the logged in user.
@@ -62,6 +65,10 @@ async function loadSavedLocations(userEmail) {
   // 3. copy filtered savedlocations for tags logic
   initialSavedLocations = savedLocations;
 
+  // get userLocation to calculate distance
+  userLocation = await getUserLocation();
+
+  // draw the page
   renderCards(savedLocations);
   loadFilterTags();
 }
@@ -105,6 +112,13 @@ function renderCards(savedLocations) {
     const savedLocationId = savedLocations[i]._id;
     const imagePath = savedLocations[i].images[0];
 
+    // calcualte distance based on the location's coordinate
+    let distance = "N/A";
+    if (userLocation && savedLocations[i].geo?.coordinates) {
+      distance =
+        getDistanceKm(userLocation, savedLocations[i].geo.coordinates) + " km";
+    }
+
     grid.insertAdjacentHTML(
       "beforeend",
       `<article class="card" data-id="${savedLocationId}">
@@ -125,7 +139,7 @@ function renderCards(savedLocations) {
         <div class="card__text-container">
             <h3 class="card__title">${savedLocations[i].name}</h3>
             <div class="card-meta">
-            <span class="meta-distance">X km</span>
+            <span class="meta-distance">${distance}</span>
             <span class="meta-price">$$</span>
           </div>
           <div class="card-tags">
@@ -352,7 +366,8 @@ function applyFilters() {
       filtered.push(initialSavedLocations[i]);
     }
   }
-  renderCards(filtered);
+  currentSort = document.getElementById("sort-select").value;
+  renderCards(sortLocations(filtered));
   closeFilters();
 }
 
@@ -367,4 +382,102 @@ function clearFilters() {
   }
   renderCards(initialSavedLocations);
   closeFilters();
+}
+
+/**
+ * Gets the user's current coordinates using the browser's geolocation API.
+ * getUserLocation  from See_All_Locations.js
+ *
+ * @returns the user's longitude and latitude
+ */
+async function getUserLocation() {
+  const defaultLocation = [-123.0016, 49.2532];
+
+  if (!navigator.geolocation) return defaultLocation;
+
+  return new Promise((resolve) => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        resolve([pos.coords.longitude, pos.coords.latitude]);
+      },
+      () => resolve(defaultLocation),
+    );
+  });
+}
+
+/**
+ * Calculates the distance in kilometers between two coordinates.
+ * getDistanceKm code from See_All_Locations.js
+ *
+ * @param {*} a longitude and latitude of point a
+ * @param {*} b longitude and latitude of point b
+ *
+ * @returns distance in kilometers
+ */
+function getDistanceKm(a, b) {
+  const R = 6371;
+
+  const dLat = ((b[1] - a[1]) * Math.PI) / 180;
+  const dLon = ((b[0] - a[0]) * Math.PI) / 180;
+
+  const lat1 = (a[1] * Math.PI) / 180;
+  const lat2 = (b[1] * Math.PI) / 180;
+
+  const x =
+    Math.sin(dLat / 2) ** 2 +
+    Math.sin(dLon / 2) ** 2 * Math.cos(lat1) * Math.cos(lat2);
+
+  return Math.round(R * (2 * Math.asin(Math.sqrt(x))) * 10) / 10;
+}
+
+/**
+ * Sorts locations by the current sort setting.
+ * sortLocations code from See_All_Locations.js
+ *
+ * @param {*} locations the list of locations to sort
+ *
+ * @returns sorted list of locations
+ */
+
+function sortLocations(initialSavedLocations) {
+  const sorted = [];
+  for (let i = 0; i < initialSavedLocations.length; i++) {
+    sorted.push(initialSavedLocations[i]);
+  }
+
+  for (let i = 0; i < sorted.length; i++) {
+    for (let j = i + 1; j < sorted.length; j++) {
+      let shouldSwap = false;
+
+      if (currentSort === "distance") {
+        let distanceA = 9999;
+        let distanceB = 9999;
+        if (userLocation && sorted[i].geo && sorted[i].geo.coordinates) {
+          distanceA = getDistanceKm(userLocation, sorted[i].geo.coordinates);
+        }
+        if (userLocation && sorted[j].geo && sorted[j].geo.coordinates) {
+          distanceB = getDistanceKm(userLocation, sorted[j].geo.coordinates);
+        }
+        if (distanceA > distanceB) {
+          shouldSwap = true;
+        }
+      }
+
+      if (currentSort === "name") {
+        const nameA = sorted[i].name.toLowerCase();
+        const nameB = sorted[j].name.toLowerCase();
+        if (nameA > nameB) {
+          shouldSwap = true;
+        }
+      }
+
+      if (shouldSwap) {
+        const temp = sorted[i];
+        sorted[i] = sorted[j];
+        sorted[j] = temp;
+      }
+    }
+  }
+
+  return sorted;
 }
