@@ -153,7 +153,7 @@ app.post("/api/login", async (req, res) => {
       req.session.authenticated = true;
       req.session.email = result[0].email;
       req.session.cookie.maxAge = expireTime;
-      res.redirect("/html/See_All_Locations.html");
+      res.redirect("/html/Home.html");
     } else {
       console.log("login redirect");
       res.redirect("/html/Login.html");
