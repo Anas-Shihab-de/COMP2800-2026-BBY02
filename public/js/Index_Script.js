@@ -36,15 +36,17 @@ async function initializeMap() {
 
   map.addControl(new mapboxgl.NavigationControl());
 
-  map.once("load", async () => {
-    userMarker = createUserMarker(userLocation);
+map.once("load", async () => {
+  userMarker = createUserMarker(userLocation);
 
-    setupMapClickHandler();
-    setupSetLocationButton();
+  setupMapClickHandler();
+  setupSetLocationButton();
 
-    await loadUserSettings();
-    await loadLocations();
-  });
+  setupCurrentLocationButton();
+
+  await loadUserSettings();
+  await loadLocations();
+});
 
   // load settings early (safe defaults)
   try {
@@ -414,3 +416,67 @@ slider?.addEventListener("input", () => {
   // refresh everything
   loadLocations();
 });
+
+//set user location to current location button logic
+function setupCurrentLocationButton() {
+  const button = document.getElementById( //init button
+    "use-current-location-btn"
+  );
+
+  if (!button) return;
+
+  button.addEventListener(
+    "click",
+    setUserPinToCurrentLocation
+  );
+}
+
+async function setUserPinToCurrentLocation() { //func for button
+
+  const currentLocation = await new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        resolve([
+          pos.coords.longitude,
+          pos.coords.latitude
+        ]);
+      },
+      reject,
+      {
+        enableHighAccuracy: false,
+        timeout: 20000,
+        maximumAge: 60000
+      }
+    );
+  });
+
+  userLocation = currentLocation;
+
+  if (userMarker) {
+    userMarker.setLngLat(userLocation);
+  } else {
+    userMarker = createUserMarker(userLocation);
+  }
+
+  map.flyTo({
+    center: userLocation,
+    zoom: 15,
+  });
+
+  const settings =
+    JSON.parse(localStorage.getItem("userSettings")) || {};
+
+  settings.location = userLocation;
+
+  localStorage.setItem(
+    "userSettings",
+    JSON.stringify(settings)
+  );
+
+  clearMapLayer("route");
+  clearMapLayer("end");
+  clearPOIMarkers();
+
+  await loadLocations();
+
+}
