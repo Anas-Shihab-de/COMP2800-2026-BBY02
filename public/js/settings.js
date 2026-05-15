@@ -3,7 +3,9 @@ const mapboxgl = window.mapboxgl;
 // =========================
 // MAPBOX ACCESS TOKEN
 // =========================
-const token = await fetch("/api/mapbox-token");
+const token = await fetch("/api/mapbox-token", {
+  credentials: "include",
+});
 const tokenParsed = await token.json();
 mapboxgl.accessToken = tokenParsed.token;
 
@@ -17,7 +19,7 @@ const radiusLabel = document.getElementById("radius-value");
 const status = document.getElementById("status");
 
 // =========================
-// LOAD EXISTING SETTINGS
+// LOAD EXISTING SETTINGS (LOCAL)
 // =========================
 const saved = getSettings();
 
@@ -25,7 +27,7 @@ if (saved.address) {
   addressInput.value = saved.address;
 }
 
-if (saved.radius) {
+if (saved.radius !== undefined) {
   slider.value = saved.radius;
   radiusLabel.textContent = saved.radius;
 }
@@ -64,16 +66,15 @@ saveBtn.addEventListener("click", async () => {
     location: coords,
   };
 
-  localStorage.setItem(
-    "userSettings",
-    JSON.stringify(settings)
-  );
+  // =========================
+  // SAVE LOCALLY
+  // =========================
+  localStorage.setItem("userSettings", JSON.stringify(settings));
 
-  setStatus("Settings saved ");
-});
+
 
 // =========================
-// GET SETTINGS
+// GET LOCAL SETTINGS
 // =========================
 function getSettings() {
   return (
@@ -86,7 +87,27 @@ function getSettings() {
 }
 
 // =========================
-// GEOCODE ADDRESS
+// SAVE TO MONGODB (AUTH USER)
+// =========================
+async function saveSettingsToMongo(settings) {
+  const res = await fetch("/api/save-settings", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include", // sends login session/cookie
+    body: JSON.stringify(settings),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to save to database");
+  }
+
+  return await res.json();
+}
+
+// =========================
+// GEOCODE ADDRESS (MAPBOX)
 // =========================
 async function geocodeAddress(address) {
   try {
@@ -97,17 +118,19 @@ async function geocodeAddress(address) {
     const res = await fetch(url);
     const data = await res.json();
 
-    return data.features?.[0]?.center || null;
-  }
+    if (!data.features || data.features.length === 0) {
+      return null;
+    }
 
-  catch (err) {
+    return data.features[0].center;
+  } catch (err) {
     console.error(err);
     return null;
   }
 }
 
 // =========================
-// UI STATUS HELPER
+// STATUS HELPER
 // =========================
 function setStatus(msg) {
   status.textContent = msg;

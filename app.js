@@ -215,6 +215,30 @@ app.use((req, res) => {
   res.status(404).sendFile(__dirname + "/html/404.html");
 });
 
+app.post("/api/save-settings", async (req, res) => {
+  if (!req.session.email) {
+    return res.status(401).send("Not logged in");
+  }
+
+  try {
+    const settings = req.body.settings;
+
+    const usersCollection = client
+      .db(mongodb_project_database)
+      .collection("Users");
+
+    await usersCollection.updateOne(
+      { email: req.session.email },
+      { $set: { settings: settings } }
+    );
+
+    res.status(200).send("Settings saved");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error saving settings");
+  }
+});
+
 app.listen(PORT, () => {
   console.log("Server is running on port " + PORT);
 });
