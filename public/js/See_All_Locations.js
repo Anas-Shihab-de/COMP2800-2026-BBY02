@@ -16,9 +16,9 @@ checkAuth();
  * we can add/remove/change catagories :p
  */
 const CATEGORIES = {
-  pantries: { title: "Community Food Pantries" },
-  farmers: { title: "BC Farmers Markets" },
-  markets: { title: "Local Food Markets" },
+  "Food Pantry": { title: "Community Food Pantries" },
+  "Farmers Market": { title: "BC Farmers Markets" },
+  "Local Market": { title: "Local Food Markets" },
 };
 
 const params = new URLSearchParams(window.location.search);
@@ -30,7 +30,6 @@ let userSavedList = [];
 let selectedTags = [];
 let userLocation = null;
 let currentSort = "distance"; //default
-
 
 /*
  * Display catagory title.
@@ -69,7 +68,25 @@ async function loadLocations() {
 
   userLocation = await getUserLocation();
 
-  renderCards(allLocations);
+  // copy all location before filtering
+  let filteredLocations = allLocations;
+
+  // filter by category
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const category = urlParams.get("category");
+
+  if (category) {
+    const trimmedCategory = category.replace(/"/g, "").trim().toLowerCase();
+    filteredLocations = allLocations.filter((location) => {
+      if (location.tags && location.tags[0]) {
+        return location.tags[0].trim().toLowerCase() === trimmedCategory;
+      }
+      return false;
+    });
+  }
+
+  renderCards(filteredLocations);
   loadFilterTags();
 }
 loadLocations();
@@ -90,10 +107,11 @@ function renderCards(locations) {
       fillValue = "'FILL' 1";
     }
 
-      let distance = "N/A";
-      if (userLocation && locations[i].geo?.coordinates) {
-        distance = getDistanceKm(userLocation, locations[i].geo.coordinates) + " km";
-      }
+    let distance = "N/A";
+    if (userLocation && locations[i].geo?.coordinates) {
+      distance =
+        getDistanceKm(userLocation, locations[i].geo.coordinates) + " km";
+    }
 
     grid.insertAdjacentHTML(
       "beforeend",
@@ -307,7 +325,7 @@ function openSaved() {
 
 /**
  * Gets the user's current coordinates using the browser's geolocation API.
- * 
+ *
  * @returns the user's longitude and latitude
  */
 async function getUserLocation() {
@@ -318,47 +336,42 @@ async function getUserLocation() {
   return new Promise((resolve) => {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        resolve([
-          pos.coords.longitude,
-          pos.coords.latitude,
-        ]);
+        resolve([pos.coords.longitude, pos.coords.latitude]);
       },
-      () => resolve(defaultLocation)
+      () => resolve(defaultLocation),
     );
   });
 }
 
 /**
  * Calculates the distance in kilometers between two coordinates.
- * 
+ *
  * @param {*} a longitude and latitude of point a
  * @param {*} b longitude and latitude of point b
- * 
+ *
  * @returns distance in kilometers
  */
 function getDistanceKm(a, b) {
   const R = 6371;
 
-  const dLat = (b[1] - a[1]) * Math.PI / 180;
-  const dLon = (b[0] - a[0]) * Math.PI / 180;
+  const dLat = ((b[1] - a[1]) * Math.PI) / 180;
+  const dLon = ((b[0] - a[0]) * Math.PI) / 180;
 
-  const lat1 = a[1] * Math.PI / 180;
-  const lat2 = b[1] * Math.PI / 180;
+  const lat1 = (a[1] * Math.PI) / 180;
+  const lat2 = (b[1] * Math.PI) / 180;
 
   const x =
     Math.sin(dLat / 2) ** 2 +
-    Math.sin(dLon / 2) ** 2 *
-    Math.cos(lat1) *
-    Math.cos(lat2);
+    Math.sin(dLon / 2) ** 2 * Math.cos(lat1) * Math.cos(lat2);
 
   return Math.round(R * (2 * Math.asin(Math.sqrt(x))) * 10) / 10;
 }
 
 /**
  * Sorts locations by the current sort setting.
- * 
+ *
  * @param {*} locations the list of locations to sort
- * 
+ *
  * @returns sorted list of locations
  */
 function sortLocations(locations) {

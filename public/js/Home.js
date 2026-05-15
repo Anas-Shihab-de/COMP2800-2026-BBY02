@@ -82,12 +82,32 @@ function renderCards(allLocations) {
       );
     }
   }
+
+  addSeeAllButtonsListener();
 }
 
 /**
- * Redirects to the Settings page when the Settings icon is clicked.
+ * adds button listener to go to See_All_Locations.html with category
  */
-const settingsButton = document.getElementById("settingsButton");
-settingsButton.addEventListener("click", () => {
-  window.location.href = "Settings2.html";
-});
+function addSeeAllButtonsListener() {
+  //1. Food Pantry
+  const seeAllPantries = document.getElementById("seeAllPantries");
+  seeAllPantries.addEventListener("click", () => {
+    const category = "Food Pantry";
+    window.location.href = `/html/See_All_Locations.html?category=${category}`;
+  });
+
+  //2. Farmers Market
+  const seeAllFarmers = document.getElementById("seeAllFarmers");
+  seeAllFarmers.addEventListener("click", () => {
+    const category = "Farmers Market";
+    window.location.href = `/html/See_All_Locations.html?category=${category}`;
+  });
+
+  //3. Local Market
+  const seeAllLocals = document.getElementById("seeAllLocals");
+  seeAllLocals.addEventListener("click", () => {
+    const category = "Local Market";
+    window.location.href = `/html/See_All_Locations.html?category=${category}`;
+  });
+}
