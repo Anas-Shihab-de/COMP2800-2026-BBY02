@@ -119,7 +119,7 @@ function renderCards(locations) {
     grid.insertAdjacentHTML(
       "beforeend",
       `
-      <div class="card">
+      <div class="card" data-location-id="${locations[i]._id}">
         <div class="card-image-wrapper">
           <img src="${locations[i].images?.[0] || ""}" alt="Location name" class="card-image">
           <button class="bookmark-btn" onclick="toggleSave(event, '${locations[i]._id}')">
@@ -143,6 +143,16 @@ function renderCards(locations) {
       </div>
     `,
     );
+
+    const lastCard = grid.lastElementChild;
+    lastCard.addEventListener("click", (event) => {
+      if (event.target.closest(".bookmark-btn")) {
+        return;
+      }
+      const locationId = lastCard.getAttribute("data-location-id");
+      window.location.href = `Details.html?locationId=${locationId}`;
+    });
+    
   }
 }
 
