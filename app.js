@@ -276,26 +276,51 @@ app.post("/api/unsave-location", async (req, res) => {
   }
 });
 
-app.post("/api/save-location", async (req, res) => {
-  const locationId = req.body.savedLocationId;
+
+
+app.post("/api/save-user-data", async (req, res) => {
+  const updates = req.body; // entire JSON payload
   const userEmail = req.session.email;
 
   try {
-    const usersCollection = await client
+    const usersCollection = client
       .db(mongodb_project_database)
       .collection("Users");
 
     const result = await usersCollection.updateOne(
       { email: userEmail }, // filter
-      { $push: { saved_list: locationId } },
+      { $set: updates }     // update all provided fields
     );
 
-    return res.status(200).send("location saved");
+    return res.status(200).send("User data updated");
   } catch (error) {
     console.log(error);
-    return res.status(503).send("Error saving location");
+    return res.status(503).send("Error updating user data");
   }
 });
+
+
+app.post("/api/save-location-data", async (req, res) => {
+  const updates = req.body; // entire JSON payload
+  const placeName = req.body.name; //name of place
+
+  try {
+    const usersCollection = client
+      .db(mongodb_project_database)
+      .collection("Locations");
+
+    const result = await usersCollection.updateOne(
+      { name: placeName }, // filter
+      { $set: updates }     // update all provided fields
+    );
+
+    return res.status(200).send("Location data updated");
+  } catch (error) {
+    console.log(error);
+    return res.status(503).send("Error updating location data");
+  }
+});
+
 
 // app.use((req, res) => { until routes are added
 //   res.status(404).sendFile(__dirname + "/html/404.html");

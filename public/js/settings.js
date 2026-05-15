@@ -69,6 +69,14 @@ saveBtn.addEventListener("click", async () => {
     JSON.stringify(settings)
   );
 
+  await fetch("/api/save-user-data", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(settings)
+  });
+
   setStatus("Settings saved ");
 });
 
