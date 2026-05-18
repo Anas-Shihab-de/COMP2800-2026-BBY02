@@ -1,5 +1,14 @@
 /**
- * Check if authenticated
+ * CREDITS
+ *
+ * Min:
+ * Damon:
+ * Danielle: Wrote 90% of the code.
+ * Sofia: Refactored comments, changed variable names & template code.
+ */
+
+/**
+ * Verifies authentication prior to accessing the See All page.
  */
 async function checkAuth() {
   const res = await fetch("/api/authentication");
@@ -11,9 +20,7 @@ async function checkAuth() {
 checkAuth();
 
 /*
- * The catagories that we currently have :thumbsup:
- * If there are any other catagories to add here lemme know otherwise
- * we can add/remove/change catagories :p
+ * Maps each category name to its header on the page.
  */
 const CATEGORIES = {
   "Food Pantry": { title: "Community Food Pantries" },
@@ -24,93 +31,106 @@ const CATEGORIES = {
 const params = new URLSearchParams(window.location.search);
 const category = params.get("category");
 
-// Global variables
 let allLocations = [];
 let userSavedList = [];
-let selectedTags = [];
-let userLocation = null;
-let currentSort = "distance"; //default
 
-let filteredLocations; // to show by category
+// User's chosen tag filters
+let selectedTags = [];
+// User's chosen location
+let userLocation = null;
+// Current method used to sort
+let currentSort = "distance";
+// List of locations after filtering
+let filteredLocations;
 
 /*
- * Display catagory title.
- * If there isn't a catagory title, then set it to the default name.
+ * Sets page title to the category name, or uses a default value.
  */
 if (CATEGORIES[category]) {
-  document.getElementById("page-title").textContent =
+  document.getElementById("headerText").textContent =
     CATEGORIES[category].title;
 } else {
-  document.getElementById("page-title").textContent = "Food Locations";
+  document.getElementById("headerText").textContent = "Food Locations";
 }
 
-// Event listeners when a certain button is clicked
+// Event listeners
 document
-  .getElementById("back-btn")
+  .getElementById("backButton")
   .addEventListener("click", () => history.back());
-document.getElementById("filter-btn").addEventListener("click", openFilters);
-document.getElementById("saved-btn").addEventListener("click", openSaved);
+document.getElementById("filterButton").addEventListener("click", openFilters);
+document.getElementById("saveButton").addEventListener("click", openSaved);
 document
-  .getElementById("filter-overlay")
+  .getElementById("filterPanelBg")
   .addEventListener("click", closeFilters);
 
 /**
- * Loads in locations from the database and renders the cards afterwards.
+ * Loads in all locations and user data.
+ *
+ * Applies category filters, re-renders the locations.
  */
 async function loadLocations() {
   const locRes = await fetch("/api/locations");
   allLocations = await locRes.json();
 
-  const authRes = await fetch("/api/authentication");
+  const authRes = await fetch("/api/authentication", {
+    credentials: "include",
+  });
   const auth = await authRes.json();
+
   const usersRes = await fetch("/api/users");
   const users = await usersRes.json();
+
+  // Loads the user's saved_list
   const loggedInUser = users.find((user) => user.email === auth.email);
   userSavedList = loggedInUser?.saved_list || [];
+  userLocation = auth.selectedlocation ?? [-123.0016, 49.2532];
 
-  userLocation = await getUserLocation();
-
-  // copy all location before filtering
+  // Copies all locations prior to filtering
   filteredLocations = allLocations;
 
-  // filter by category
-  const queryString = window.location.search;
-  const urlParams = new URLSearchParams(queryString);
+  const queryText = window.location.search;
+  const urlParams = new URLSearchParams(queryText);
   const category = urlParams.get("category");
 
   if (category) {
-    const trimmedCategory = category.replace(/"/g, "").trim().toLowerCase();
+    // Formats the URL category to remove quotes and spaces; Standardizes to all lowercase
+    const urlCategory = category.replaceAll('"', "").trim().toLowerCase();
+
+    // Only shows locations with a first tag matching the category
     filteredLocations = allLocations.filter((location) => {
-      if (location.tags && location.tags[0]) {
-        return location.tags[0].trim().toLowerCase() === trimmedCategory;
+      const firstTag = location.tags?.[0];
+
+      if (!firstTag) {
+        return false;
       }
-      return false;
+
+      return firstTag.trim().toLowerCase() === urlCategory;
     });
   }
 
-  console.log(filteredLocations);
   renderCards(filteredLocations);
   loadFilterTags();
 }
 loadLocations();
 
 /**
- * Renders each location card with its image, name, distance, price, and tags
+ * Renders each location onto the page.
  *
  * @param {*} locations the list of locations
  */
 function renderCards(locations) {
-  const grid = document.getElementById("cards-grid");
+  const grid = document.getElementById("locationsGrid");
+
+  // Clears previous boxes
   grid.innerHTML = "";
 
+  // Checks if the location is saved
   for (let i = 0; i < locations.length; i++) {
     const isSaved = userSavedList.includes(locations[i]._id);
-    let fillValue = "'FILL' 0";
-    if (isSaved) {
-      fillValue = "'FILL' 1";
-    }
+    const badgeText = locations[i].featuredTag || "";
 
-    let distance = "N/A";
+    // Calculates the distance, defaults to 0
+    let distance = "0";
     if (userLocation && locations[i].geo?.coordinates) {
       distance =
         getDistanceKm(userLocation, locations[i].geo.coordinates) + " km";
@@ -119,40 +139,63 @@ function renderCards(locations) {
     grid.insertAdjacentHTML(
       "beforeend",
       `
-      <div class="card" data-location-id="${locations[i]._id}">
-        <div class="card-image-wrapper">
-          <img src="${locations[i].images?.[0] || ""}" alt="Location name" class="card-image">
-          <button class="bookmark-btn" onclick="toggleSave(event, '${locations[i]._id}')">
-            <span class="material-symbols-outlined" style="font-variation-settings: ${fillValue}">bookmark_heart</span>
-          </button>
+  <article class="locationBox" data-location-id="${locations[i]._id}">
+    
+    <button 
+      class="bookmarkButton" 
+      onclick="toggleSave(event, '${locations[i]._id}')"
+    >
+    <span class="${
+      isSaved
+        ? "material-symbols-outlined material-symbols-outlined-bookmark"
+        : "material-symbols-outlined material-symbols-outlined-bookmark-unsave"
+    }">
+        bookmark
+      </span>
+    </button>
+
+    <a href="Details.html?locationId=${locations[i]._id}">
+      
+      <div class="locationImage">
+        <img src="${locations[i].images?.[0] || ""}" alt="${locations[i].name}" />
+        <span class="imageTag">${locations[i].featuredTag || ""}</span>
+      </div>
+
+      <div class="hubInfo">
+        <h3 class="locationName">${locations[i].name}</h3>
+
+        <div class="locationDetails">
+          <div class="distanceInfo">
+            <span class="locationIcon">
+              <img src="../img/locationIcon.png" />
+            </span>
+            <span class="locationDistanceKm">${distance}</span>
+          </div>
+
+          <span class="relativePrice">$$</span>
         </div>
-        <div class="card-body">
-          <p class="card-name">${locations[i].name}</p>
-          <div class="card-meta">
-            <span class="meta-distance">${distance}</span>
-            <span class="meta-price">$$</span>
-          </div>
-          <div class="card-tags">
-            ${locations[i].tags
-              .map((tag) => {
-                return '<span class="tag">' + tag + "</span>";
-              })
-              .join("")}
-          </div>
+
+        <div class="tagRow">
+          ${locations[i].tags
+            .map((tag) => `<span class="tag">${tag}</span>`)
+            .join("")}
         </div>
       </div>
-    `,
+
+    </a>
+  </article>
+  `,
     );
 
+    // Makes the last box clickable, ignores clicks made on the bookmark icon
     const lastCard = grid.lastElementChild;
     lastCard.addEventListener("click", (event) => {
-      if (event.target.closest(".bookmark-btn")) {
+      if (event.target.closest(".bookmarkButton")) {
         return;
       }
       const locationId = lastCard.getAttribute("data-location-id");
       window.location.href = `Details.html?locationId=${locationId}`;
     });
-    
   }
 }
 
@@ -165,12 +208,15 @@ function renderCards(locations) {
 async function toggleSave(event, locationId) {
   event.stopPropagation();
   const btn = event.currentTarget;
-  const icon = btn.querySelector(".material-symbols-outlined");
+  const icon =
+    btn.querySelector(".material-symbols-outlined-bookmark") ||
+    btn.querySelector(".material-symbols-outlined-bookmark-unsave");
 
   if (userSavedList.includes(locationId)) {
     // Unsaved state
     userSavedList = userSavedList.filter((id) => id !== locationId);
-    icon.style.fontVariationSettings = "'FILL' 0";
+    icon.classList.remove("material-symbols-outlined-bookmark");
+    icon.classList.add("material-symbols-outlined-bookmark-unsave");
     await fetch("/api/unsave-location", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -179,7 +225,8 @@ async function toggleSave(event, locationId) {
   } else {
     // Saved state
     userSavedList.push(locationId);
-    icon.style.fontVariationSettings = "'FILL' 1";
+    icon.classList.remove("material-symbols-outlined-bookmark-unsave");
+    icon.classList.add("material-symbols-outlined-bookmark");
     await fetch("/api/save-location", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -201,8 +248,8 @@ function openLocation(locationId) {
  * Opens the filter panel overlay
  */
 function openFilters() {
-  const panel = document.getElementById("filter-panel");
-  const overlay = document.getElementById("filter-overlay");
+  const panel = document.getElementById("filterPanel");
+  const overlay = document.getElementById("filterPanelBg");
   console.log("panel classes:", panel.classList);
 
   if (panel.classList.contains("hidden")) {
@@ -217,8 +264,8 @@ function openFilters() {
  * Closes the filter panel overlay
  */
 function closeFilters() {
-  document.getElementById("filter-panel").classList.add("hidden");
-  document.getElementById("filter-overlay").classList.add("hidden");
+  document.getElementById("filterPanel").classList.add("hidden");
+  document.getElementById("filterPanelBg").classList.add("hidden");
 }
 
 /**
@@ -329,30 +376,10 @@ function clearFilters() {
  */
 function openSaved() {
   // to send url with the current category
-  const queryString = window.location.search;
-  const urlParams = new URLSearchParams(queryString);
+  const queryText = window.location.search;
+  const urlParams = new URLSearchParams(queryText);
   const category = urlParams.get("category");
   window.location.href = `/html/saved_page.html?category=${category}`;
-}
-
-/**
- * Gets the user's current coordinates using the browser's geolocation API.
- *
- * @returns the user's longitude and latitude
- */
-async function getUserLocation() {
-  const defaultLocation = [-123.0016, 49.2532];
-
-  if (!navigator.geolocation) return defaultLocation;
-
-  return new Promise((resolve) => {
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        resolve([pos.coords.longitude, pos.coords.latitude]);
-      },
-      () => resolve(defaultLocation),
-    );
-  });
 }
 
 /**
