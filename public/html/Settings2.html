@@ -45,23 +45,34 @@
 
       .header {
         display: flex;
+        background: rgba(255, 255, 255, 0.1);
         align-items: center;
-        padding: 0.8rem 0.5rem;
-        gap: 0.8rem;
+        justify-content: flex-start;
+        padding: 20px 20px;
+        gap: 14px;
+        box-shadow:
+          0 4px 14px rgba(255, 255, 255, 0.12),
+          0 0 22px rgba(255, 200, 220, 0.18);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.18);
       }
 
       .heading {
-        font-size: 2.45rem;
+        font-size: 3.5rem;
         letter-spacing: 0.8px;
         font-weight: 600;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(90deg, #b2ffb9, #ffffff);
+        background-clip: text;
+        color: transparent;
         text-shadow: 0 0 10px rgba(255, 220, 220, 0.55);
       }
 
       .backIcon {
         margin-top: 5px;
         margin-left: 10px;
-        width: 28px;
-        height: 28px;
+        width: 30px;
+        height: 30px;
         filter: drop-shadow(0 0 6px rgba(255, 200, 200, 0.4));
       }
 
@@ -69,7 +80,9 @@
         display: flex;
         flex-direction: column;
         gap: 2rem; /* controls vertical spacing between buttons */
-        padding: 2rem 1.4rem;
+        padding: 1.2rem 1.4rem;
+        max-width: 600px;
+        margin: 0 auto;
       }
 
       .settingsButton {
@@ -95,13 +108,14 @@
 
       .settingsButton.pinkRose:hover {
         background: rgba(0, 0, 0, 0.45);
+        transform: translateY(-8px);
         box-shadow: 0 10px 26px rgba(255, 150, 169, 0.63);
       }
 
       .settingsButton:hover {
         background: rgba(4, 92, 23, 0.274);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 18px rgba(255, 255, 255, 0.397);
+        transform: translateY(-8px);
+        box-shadow: 0 8px 22px rgba(255, 255, 255, 0.397);
       }
 
       .toggleText {
@@ -409,28 +423,6 @@
       }
 
       @media (min-width: 1025px) {
-        .header {
-          justify-content: center;
-          position: relative;
-          padding-top: 2rem;
-        }
-
-        .backIcon {
-          top: 58%;
-          transform: translateY(-50%);
-          position: absolute;
-          left: 45rem;
-          margin: 0;
-          width: 34px;
-          height: 34px;
-        }
-
-        .heading {
-          letter-spacing: 1.2px;
-          text-align: center;
-          font-size: 3.4rem;
-        }
-
         .settingsSection {
           padding-top: 5rem;
           gap: 3rem;
@@ -491,7 +483,7 @@
   <body>
     <div class="page">
       <header class="header">
-        <img src="/img/BackIcon.png" class="backIcon" alt="Back" />
+        <img src="/img/BackIcon.png" class="backIcon" />
         <h1 class="heading">Settings</h1>
       </header>
 
@@ -515,6 +507,8 @@
         <button class="settingsButton pinkRose">
           Clear All Saved Locations
         </button>
+
+        <button class="settingsButton pinkRose" id="logoutBtn">Logout</button>
       </main>
     </div>
 
@@ -524,7 +518,7 @@
         <button id="closePopupButton" class="closePopupButton">✕</button>
         <h2 id="distanceMsgHeading">Preferred distance</h2>
         <p><span id="distanceKm">5</span> km</p>
-        <input type="range" id="distanceSlider" min="1" max="20" value="5" />
+        <input type="range" id="distanceSlider" min="1" max="10" value="5" />
         <button id="saveButton">Save</button>
       </div>
     </div>
@@ -547,64 +541,132 @@
     </div>
 
     <script>
-      // Preferred Location Popup
+      // Popup box for preferred distance
       const preferredDistanceButton = document.getElementById(
         "preferredDistanceButton",
       );
+
       const distanceSlider = document.getElementById("distanceSlider");
       const distanceKm = document.getElementById("distanceKm");
       const distancePopup = document.getElementById("distancePopup");
       const closePopupButton = document.getElementById("closePopupButton");
       const saveButton = document.getElementById("saveButton");
+      const yesButton = document.getElementById("yesButton");
+      const clearButton = document.querySelector(".pinkRose");
+      const noButton = document.getElementById("noButton");
+      const clearPopup = document.getElementById("clearPopup");
 
+      // Opens the popup box
       preferredDistanceButton.addEventListener("click", () => {
         distancePopup.style.display = "flex";
       });
 
+      // Closes the popup
       closePopupButton.addEventListener("click", () => {
         distancePopup.style.display = "none";
       });
 
-      // Updates the text when the slider moves
+      // Updates distance text above slider
       distanceSlider.addEventListener("input", () => {
         distanceKm.textContent = distanceSlider.value;
       });
 
-      saveButton.addEventListener("click", () => {
-        const selectedKm = distanceSlider.value;
+      /**
+       * Loads in the user's selected radius (chosen on the Map) from the database.
+       */
+      async function loadUserRadius() {
+        try {
+          const response = await fetch("/api/authentication", {
+            credentials: "include",
+          });
 
-        distancePopup.style.display = "none";
+          const auth = await response.json();
+
+          // Defaults to a 5km radius if one is not selected
+          const savedRadius = auth.selectedradius ?? 5;
+
+          distanceSlider.value = savedRadius;
+
+          distanceKm.textContent = savedRadius;
+        } catch (error) {
+          console.error("There was a problem loading the radius:", error);
+        }
+      }
+      loadUserRadius();
+
+      /**
+       * Saves the user's newly selected radius.
+       */
+      saveButton.addEventListener("click", async () => {
+        // Converts string to number
+        const newRadius = Number(distanceSlider.value);
+
+        try {
+          const res = await fetch("/api/updateradius", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ radius: newRadius }),
+          });
+
+          if (res.ok) {
+            alert("Preferred distance saved.");
+            distancePopup.style.display = "none";
+          } else {
+            alert("There was a problem saving your distance.");
+          }
+        } catch (error) {
+          console.error("Problem saving the radius:", error);
+          alert("There was a problem saving your radius.");
+        }
       });
 
-      // Clear Saved Locations Popup
-      const clearButton = document.querySelector(".pinkRose");
-      const clearPopup = document.getElementById("clearPopup");
-      const closeButton = document.getElementById("closeButton");
-      const noButton = document.getElementById("noButton");
-      const yesButton = document.getElementById("yesButton");
+      /**
+       * Clears all saved locations belonging to a user.
+       */
+      yesButton.addEventListener("click", async () => {
+        try {
+          const res = await fetch("/api/clearSavedList", {
+            method: "POST",
+            credentials: "include",
+          });
 
-      // Opens popup
+          if (res.ok) {
+            alert("Saved locations cleared.");
+          } else {
+            alert("There was a problem clearing saved locations.");
+          }
+        } catch (error) {
+          console.error("Problem clearing saved locations:", error);
+          alert("There was a problem clearing saved locations.");
+        }
+
+        clearPopup.style.display = "none";
+      });
+
+      // Opens the Are you sure? popup
       clearButton.addEventListener("click", () => {
         clearPopup.style.display = "flex";
       });
 
-      closeButton.addEventListener("click", () => {
-        clearPopup.style.display = "none";
-      });
-
+      // Closes popup
       noButton.addEventListener("click", () => {
         clearPopup.style.display = "none";
       });
 
-      yesButton.addEventListener("click", () => {
-        // we could add more storage features here
-        clearPopup.style.display = "none";
+      // Redirects to Map page
+      document
+        .getElementById("setLocationButton")
+        .addEventListener("click", () => {
+          window.location.href = "/html/SofiasMap.html";
+        });
+
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        window.location.href = "/logout";
       });
 
-      // Redirects to the map page
-      const setLocationButton = document.getElementById("setLocationButton");
-      setLocationButton.addEventListener("click", () => {
-        window.location.href = "Map.html";
+      document.querySelector(".backIcon").addEventListener("click", () => {
+        window.history.back();
       });
     </script>
   </body>

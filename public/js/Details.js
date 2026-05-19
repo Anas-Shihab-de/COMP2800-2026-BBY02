@@ -1,33 +1,47 @@
 /**
- * TODO:
- * Update clipboard alert as Modal UI
- * telephone number from DB and $$
+ * CREDITS
+ *
+ * Min: Wrote all logic for the details page.
+ * Damon: AI-feature logic.
+ * Danielle: Wrote helper function for distance between coordinates
+ * Sofia: Refactored Min's comments, fixed geolocation logic to pull from db,
+ *        made minor changes to pull $$, phone #, and backdrop image from db
  */
 
-//global variables
+// Extracts the location id from the query string
 const urlParams = new URLSearchParams(window.location.search);
 const locationId = urlParams.get("locationId");
+
+// Used to represent the state of user's current email, saved list, etc
 let userEmail = "";
 let updatedSavedList = [];
 let isSaved = false;
-//for distance logic
+
+// Represents the user's geolocation
 let userLocation = null;
-//global location saved - part of Copilot's refactor
+
+// List of regions - part of Copilot's refactor
 let currentLocation = null;
 const areas = [
-  "Downtown",
+  "Vancouver",
   "Burnaby",
   "New Westminster",
-  "Richimond",
+  "Richmond",
   "Coquitlam",
   "Port Moody",
   "Port Coquitlam",
 ];
 
-// Check if authenticated
+/**
+ * Checks the user is authenticated prior to accessing
+ * the details page.
+ *
+ * Redirects to login page if not authenticated.
+ */
 async function checkAuth() {
   const res = await fetch("/api/authentication");
   const auth = await res.json();
+
   if (!auth.authenticated) {
     window.location.href = "../html/Login.html";
   } else {
@@ -35,6 +49,7 @@ async function checkAuth() {
     await loadLocation();
   }
 }
+
 checkAuth();
 
 /**
@@ -43,26 +58,32 @@ checkAuth();
 async function loadLocation() {
   const res = await fetch("/api/locations");
   const locations = await res.json();
-  currentLocation = locations.find(loc => loc._id === locationId);
+  currentLocation = locations.find((loc) => loc._id === locationId);
 
+  // Redirects to 404 page if geolocation doesn't exist
   if (!currentLocation) {
     window.location.href = "../html/404.html";
     return;
   }
 
-  // get userLocation to calculate distance
-  userLocation = await getUserLocation();
+  // Loads the user's saved location from the database
+  const response = await fetch("/api/authentication", {
+    credentials: "include",
+  });
+  const auth = await response.json();
+  userLocation = auth.selectedlocation;
 
-  // draw the page first
+  // Renders the page first
   await renderPage(currentLocation);
 
-  // update the bookmark status whether it is saved or not
+  // Updates the bookmark icon depending on whether it is saved or not
   await updateBookmark();
 }
 
 /**
- * Loads saved_list in users from the database (helper method)
- * @param userEmail the email to find the logged in user's saved location
+ * Loads saved_list from users in the database (helper method).
+ *
+ * @param userEmail the email used to find the logged in user's saved location
  */
 async function loadUserSavedList() {
   const res = await fetch("/api/users");
@@ -77,20 +98,20 @@ async function loadUserSavedList() {
 }
 
 /**
- * Check if this location is saved using user's saved_list
- * @param {*} userEmail to get user's saved_list
+ * Updates the bookmark icon based on whether or not
+ * a location is in a user's saved_list.
  */
 async function updateBookmark() {
   const userSavedList = await loadUserSavedList(userEmail);
   isSaved = userSavedList.includes(locationId);
 
-  // copy the user save list
+  // Keeps a copy of the user's saved_list
   updatedSavedList = userSavedList;
 
   const saveBtn = document.querySelector(".card__save-btn");
   const bookmarkIcon = saveBtn.querySelector(".bookmark");
 
-  // change UI based on status
+  // Changes UI based on status
   if (isSaved) {
     bookmarkIcon.classList.remove("material-symbols-outlined-bookmark-unsave");
     bookmarkIcon.classList.add("material-symbols-outlined-bookmark");
@@ -101,14 +122,20 @@ async function updateBookmark() {
 }
 
 /**
+ * Renders the entire details page for a single location.
  *
  * @param {*} locations
+ *
+ * References:
  * https://www.w3schools.com/Jsref/tryit.asp?filename=tryjsref_getday
  * https://www.w3schools.com/howto/howto_js_copy_clipboard.asp
  */
 async function renderPage(location) {
   const page = document.getElementById("mainPage");
+
+  // Gets the area name from the address
   const areaName = areas.filter((area) => location.address.includes(area));
+
   const dayOfWeek = [
     "Sunday",
     "Monday",
@@ -119,7 +146,7 @@ async function renderPage(location) {
     "Saturday",
   ];
 
-  // get today's working hours of the location
+  // Calculates today's working hours for a location
   const date = new Date();
   const today = dayOfWeek[date.getDay()];
   const workingHour = await findWorkingHours(location.hours, today);
@@ -131,7 +158,7 @@ async function renderPage(location) {
     workingHourText = `Closed`;
   }
 
-  // get full working hours of the location
+  // Gets the full working hours of a location
   let fullSchdule = "";
   let timeText = "";
 
@@ -152,13 +179,12 @@ async function renderPage(location) {
     `;
   }
 
-  // calcualte distance based on the location's coordinate
-  let distance = "N/A";
-  console.log(`userLocation: ${userLocation}`);
-  console.log(location.geo?.coordinates);
+  // Default text if distance cannot be calculated
+  let distance = "0";
+
   if (userLocation && location.geo?.coordinates) {
+    // Uses Danielle's helper function
     distance = getDistanceKm(userLocation, location.geo.coordinates) + " km";
-    console.log(distance);
   }
 
   page.insertAdjacentHTML(
@@ -180,14 +206,14 @@ async function renderPage(location) {
             </div>
         </section>
 
-        <div class="backdrop"></div>
+        <div class="backdrop" style="background-image: url('${location.images[0]}');"></div>
 
         <section class="detailsBox">
             <div class="headingSection">
             <div class="headingBlock">
                 <h1 class="locationName">${location.name}</h1>
                 <p class="location">${areaName}, BC</p>
-                <div class="relativePrice">$$</div>
+                <div class="relativePrice">${location.relativePrice}</div>
             </div>
             </div>
 
@@ -196,7 +222,7 @@ async function renderPage(location) {
                 <span class="addressLine">${location.address}</span>
             </div>
 
-            <div class="phoneBlock">(604) 521-4242</div>
+            <div class="phoneBlock">${location.phone}</div>
             </div>
 
             <div class="scheduleDistanceSection">
@@ -264,144 +290,162 @@ async function renderPage(location) {
             </div>
         </div>
         </div>
-    `);
-    setupChatEventListeners();
-    addAllButtonListeners(location, locationId);
+    `,
+  );
+  setupChatEventListeners();
+  addAllButtonListeners(location, locationId);
 }
-
-// Pop-up challenge: initially written by Damon, then asked Copilot to improve/refactor the code.
-// Copilot improved it by adding checks to errors, using safer practice like encodeURIComponent(), and removing redundant code like a duplicate fetch for location info.
-// It also added extra stuff it was not asked to do like checking hours, but it was removed since it was inaccurate and not needed.
-async function checkAvailability() {
-    const btn = document.getElementById("availabilityBtn");
-    const text = document.getElementById("AIOutput");
-    const originalLabel = btn.textContent;
-
-    btn.disabled = true;
-    btn.textContent = "Checking...";
-    text.value = "";
-
-    try 
-    {
-        if (!currentLocation) {
-            throw new Error("Location not loaded");
-        }
-
-        const res = await fetch(`/api/ai/schedule/${encodeURIComponent(currentLocation.name)}/${encodeURIComponent(currentLocation.address)}`);
-
-        if (!res.ok) {
-            throw new Error(`AI request failed with status ${res.status}`);
-        }
-
-        const aiResponse = await res.json();
-        text.value = aiResponse?.candidates?.[0]?.content?.parts?.[0]?.text || "No availability information was returned.";
-    } 
-    catch (error) 
-    {
-        console.error(error);
-        text.value = "Unable to check availability right now. Please try again later.";
-    } 
-    finally 
-    {
-        btn.disabled = false;
-        btn.textContent = originalLabel;
-    }
-}
-
-// Pop-up challenge: Chat functionality setup - Made entirely by Copilot
-// Only a few style changes made or an extra comment here and there
-function setupChatEventListeners() {
-    const chatBtn = document.getElementById('chatBtn');
-    const chatOverlay = document.getElementById('chatOverlay');
-    const closeChatBtn = document.getElementById('closeChatBtn');
-    const chatInput = document.getElementById('chatInput');
-    const sendChatBtn = document.getElementById('sendChatBtn');
-    const chatMessages = document.getElementById('chatMessages');
-
-    if (!chatBtn || !chatOverlay) return; // Elements not yet rendered
-
-    // Open chat overlay
-    chatBtn.addEventListener('click', function() {
-        chatOverlay.style.display = 'block';
-        chatInput.focus();
-    });
-
-    // Close chat overlay
-    closeChatBtn.addEventListener('click', function() {
-        chatOverlay.style.display = 'none';
-    });
-
-    // Close overlay when clicking outside
-    chatOverlay.addEventListener('click', function(e) {
-        if (e.target === chatOverlay) {
-            chatOverlay.style.display = 'none';
-        }
-    });
-
-    // Send message on button click
-    sendChatBtn.addEventListener('click', sendChatMessage);
-
-    // Send message on Enter key
-    chatInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            sendChatMessage();
-        }
-    });
-
-    async function sendChatMessage() {
-        const message = chatInput.value.trim();
-        if (!message) return;
-
-        // Add user message to chat
-        addMessage(message, 'user');
-        chatInput.value = '';
-        sendChatBtn.disabled = true;
-        sendChatBtn.textContent = 'Sending...';
-
-        try {
-            const response = await fetch(
-                `/api/ai/chat/${encodeURIComponent(currentLocation.name)}/${encodeURIComponent(currentLocation.address)}`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ question: message })
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error(`Chat request failed with status ${response.status}`);
-            }
-
-            const data = await response.json();
-            const aiResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't generate a response right now.";
-
-            addMessage(aiResponse, 'ai');
-        } catch (error) {
-            console.error('Chat error:', error);
-            addMessage("Sorry, I'm having trouble responding right now. Please try again.", 'ai');
-        } finally {
-            sendChatBtn.disabled = false;
-            sendChatBtn.textContent = 'Send';
-        }
-    }
-
-    function addMessage(text, type) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `chat-message ${type}`;
-        messageDiv.textContent = text;
-        chatMessages.appendChild(messageDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-}
-
 
 /**
- * Add event listeners for each icons/buttons
- * @param {*} location the object that contains the info
- * @param {*} locationId the location object's db id
+ * Pop-up challenge: initially written by Damon, then asked Copilot
+ * to improve/refactor the code.
+ *
+ * Copilot improved it by adding error checks, using safer practices
+ * like encodeURIComponent(), and removing redundant code like
+ * a duplicate fetch for location info.
+ *
+ * It also added extra stuff it was not asked to do like checking hours.
+ *
+ * This was removed since it was inaccurate and not needed.
+ */
+async function checkAvailability() {
+  const btn = document.getElementById("availabilityBtn");
+  const text = document.getElementById("AIOutput");
+  const originalLabel = btn.textContent;
+
+  btn.disabled = true;
+  btn.textContent = "Checking...";
+  text.value = "";
+
+  try {
+    if (!currentLocation) {
+      throw new Error("Location not loaded");
+    }
+
+    const res = await fetch(
+      `/api/ai/schedule/${encodeURIComponent(currentLocation.name)}/${encodeURIComponent(currentLocation.address)}`,
+    );
+
+    if (!res.ok) {
+      throw new Error(`AI request failed with status ${res.status}`);
+    }
+
+    const aiResponse = await res.json();
+    text.value =
+      aiResponse?.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "No availability information was returned.";
+  } catch (error) {
+    console.error(error);
+    text.value =
+      "Unable to check availability right now. Please try again later.";
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalLabel;
+  }
+}
+
+/**
+ * Pop-up challenge: Chat functionality setup - Made entirely by Copilot.
+ *
+ * Only a few stylistic changes were made, or an extra comment here and there.
+ */
+function setupChatEventListeners() {
+  const chatBtn = document.getElementById("chatBtn");
+  const chatOverlay = document.getElementById("chatOverlay");
+  const closeChatBtn = document.getElementById("closeChatBtn");
+  const chatInput = document.getElementById("chatInput");
+  const sendChatBtn = document.getElementById("sendChatBtn");
+  const chatMessages = document.getElementById("chatMessages");
+
+  if (!chatBtn || !chatOverlay) return; // Elements not yet rendered
+
+  // Open chat overlay
+  chatBtn.addEventListener("click", function () {
+    chatOverlay.style.display = "block";
+    chatInput.focus();
+  });
+
+  // Close chat overlay
+  closeChatBtn.addEventListener("click", function () {
+    chatOverlay.style.display = "none";
+  });
+
+  // Close overlay when clicking outside
+  chatOverlay.addEventListener("click", function (e) {
+    if (e.target === chatOverlay) {
+      chatOverlay.style.display = "none";
+    }
+  });
+
+  // Send message on button click
+  sendChatBtn.addEventListener("click", sendChatMessage);
+
+  // Send message on Enter key
+  chatInput.addEventListener("keypress", function (e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendChatMessage();
+    }
+  });
+
+  async function sendChatMessage() {
+    const message = chatInput.value.trim();
+    if (!message) return;
+
+    // Add user message to chat
+    addMessage(message, "user");
+    chatInput.value = "";
+    sendChatBtn.disabled = true;
+    sendChatBtn.textContent = "Sending...";
+
+    try {
+      const response = await fetch(
+        `/api/ai/chat/${encodeURIComponent(currentLocation.name)}/${encodeURIComponent(currentLocation.address)}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ question: message }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Chat request failed with status ${response.status}`);
+      }
+
+      const data = await response.json();
+      const aiResponse =
+        data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+        "Sorry, I couldn't generate a response right now.";
+
+      addMessage(aiResponse, "ai");
+    } catch (error) {
+      console.error("Chat error:", error);
+      addMessage(
+        "Sorry, I'm having trouble responding right now. Please try again.",
+        "ai",
+      );
+    } finally {
+      sendChatBtn.disabled = false;
+      sendChatBtn.textContent = "Send";
+    }
+  }
+
+  function addMessage(text, type) {
+    const messageDiv = document.createElement("div");
+    messageDiv.className = `chat-message ${type}`;
+    messageDiv.textContent = text;
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+}
+
+/**
+ * Adds event listeners for every button and icon.
+ *
+ * @param {*} location the location being displayed
+ * @param {*} locationId the database id of the location
  */
 function addAllButtonListeners(location, locationId) {
   // 1. back button
@@ -417,14 +461,14 @@ function addAllButtonListeners(location, locationId) {
     console.log("bookmark button clicked");
   });
 
-  // 3. clipboard button for address so that user can easily lookk for the place
+  // 3. clipboard button to easily copy an address into Google Maps
   const clipboardBtn = document.querySelector(".addressBlock");
   clipboardBtn.addEventListener("click", () => {
     navigator.clipboard.writeText(location.address);
     alert(`Address copied: ${location.address}`);
   });
 
-  // 4. schedule button to see the whole working schedule
+  // 4. schedule button to view the whole working schedule
   const scheduleBtn = document.querySelector(".scheduleBlock");
   const fullSchedule = document.querySelector(".fullScheduleSection");
   const dropdownIcon = document.querySelector(
@@ -447,8 +491,10 @@ function addAllButtonListeners(location, locationId) {
 }
 
 /**
- * Changes bookmark icon as the user clicked and updates user's saved_list.
- * @pararm savedLocationsId the id of each card that needs to be updated.
+ * Updates the appearance of the bookmark icon and updates
+ * the user's saved_list.
+ *
+ * @param {string} locationId the location id to save/unsave
  */
 async function toggleSaveBtn(locationId) {
   const saveBtn = document.querySelector(".card__save-btn");
@@ -472,9 +518,9 @@ async function toggleSaveBtn(locationId) {
 }
 
 /**
+ * Removes a location id from the user's saved_list in the database (helper method).
  *
- * Removes a savedlocation ID to the user's saved_list in the database. (helper method)
- * @param locationId the id of each card that needs to be updated.
+ * @param {string} locationId the location id to be removed
  */
 async function unsavePlace(locationId) {
   const response = await fetch("/api/unsave-location", {
@@ -491,8 +537,9 @@ async function unsavePlace(locationId) {
 }
 
 /**
- * Adds a savedlocation ID to the user's saved_list in the database. (helper method)
- * @param locationId the id of each card that needs to be updated.
+ * Adds a location id from the user's saved_list in the database (helper method).
+ *
+ * @param {string} locationId the id to be added
  */
 async function savePlace(locationId) {
   const response = await fetch("/api/save-location", {
@@ -509,11 +556,13 @@ async function savePlace(locationId) {
 }
 
 /**
- * Find today's working hours from the database
- * @param {*} locationHours Object that contains days of the week and open/close time
- * @param {*} today day of the week
- * @returns open, close hours when the location is open today.
+ * Finds today's working hours.
  *
+ * @param {*} locationHours object containing the hours for each day
+ * @param {*} today day of the week
+ * @returns open, close hours
+ *
+ * References:
  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/values
  */
@@ -521,7 +570,7 @@ async function findWorkingHours(locationHours, today) {
   if (!locationHours) {
     return;
   }
-  // format as how day of week is stored in Location databse
+  // Formats the weekday to match the format in the database (i.e. mon)
   const formattedDay = today.slice(0, 3).toLowerCase();
   const workingHours = locationHours[formattedDay];
 
@@ -535,7 +584,7 @@ async function findWorkingHours(locationHours, today) {
       close: closeTime,
     };
   } else {
-    // when there is no data in woringHours since it is closed
+    // When no data is available for working hours, it is closed
     return {
       open: "Closed",
       close: "",
@@ -544,37 +593,17 @@ async function findWorkingHours(locationHours, today) {
 }
 
 /**
- * Gets the user's current coordinates using the browser's geolocation API.
- * getUserLocation  from See_All_Locations.js
- *
- * @returns the user's longitude and latitude
- */
-async function getUserLocation() {
-  const defaultLocation = [-123.0016, 49.2532];
-
-  if (!navigator.geolocation) return defaultLocation;
-
-  return new Promise((resolve) => {
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        resolve([pos.coords.longitude, pos.coords.latitude]);
-      },
-      () => resolve(defaultLocation),
-    );
-  });
-}
-
-/**
  * Calculates the distance in kilometers between two coordinates.
- * getDistanceKm code from See_All_Locations.js
  *
- * @param {*} a longitude and latitude of point a
- * @param {*} b longitude and latitude of point b
+ * Uses the Haversine formula.
+ *
+ * @param {*} a longitude, latitude of point a
+ * @param {*} b longitude, latitude of point b
  *
  * @returns distance in kilometers
  */
 function getDistanceKm(a, b) {
-  const R = 6371;
+  const R = 6371; // radius of the earth in km
 
   const dLat = ((b[1] - a[1]) * Math.PI) / 180;
   const dLon = ((b[0] - a[0]) * Math.PI) / 180;
@@ -588,4 +617,3 @@ function getDistanceKm(a, b) {
 
   return Math.round(R * (2 * Math.asin(Math.sqrt(x))) * 10) / 10;
 }
-
