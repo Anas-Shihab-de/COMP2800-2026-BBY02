@@ -173,8 +173,8 @@ app.post("/api/signup", async (req, res) => {
       email: email,
       password: hashedPassword,
       saved_list: [],
-      Instructions_Upon_Login = true,
-      first_login = true,
+      Instructions_Upon_Login: true,
+      first_login: true,
     });
 
     req.session.authenticated = true;
