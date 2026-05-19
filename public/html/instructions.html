@@ -3,37 +3,24 @@
 <head>
     <meta charset="UTF-8" />
     <title>Instructions</title>
-    <style>
-        #slideshow {
-          width: 80%;
-          margin: auto;
-          text-align: center;
-        }
+    <link rel="stylesheet" href="../css/Instructions.css">
 
-        #slideshow img {
-          width: 100%;
-          max-height: 500px;
-          object-fit: contain;
-        }
-
-        .controls {
-          margin-top: 10px;
-        }
-    </style>
     <script type="module" src="../js/instructions.js"></script>
+
 </head>
 <body>
 
-<h1>Instructions</h1>
+<h1 class="title">Instructions</h1>
 
-<div id="slideshow">
-    <img id="slide-image" src="" />
-</div>
+<div class="videoBox">
+<video width="640" height="360">
+    <source src="../img/instructionVideo.mp4" type="video/mp4">
+    ok, who forgot to push the video to dev?
+</video></div>
 
-<div class="controls">
-    <button id="prev">Prev</button>
-    <button id="next">Next</button>
-</div>
+
+    <button class="next">Home</button>
+
 
 </body>
 </html>
