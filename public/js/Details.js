@@ -220,6 +220,8 @@ async function renderPage(location) {
             <div class="addressNumberSection">
             <div class="addressBlock">
                 <span class="addressLine">${location.address}</span>
+                 <button class = "saveButton">Copy Address</button>
+
             </div>
 
             <div class="phoneBlock">${location.phone}</div>

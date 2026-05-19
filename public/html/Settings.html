@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Darker Grotesque"
+      rel="stylesheet"
+    />
+    <title>FoodHubBC - Settings</title>
+    <link rel="stylesheet" href="../css/Settings.css">
+  </head>
+
+  <body>
+    <div class="page">
+      <header class="header">
+        <img src="/img/BackIcon.png" class="backIcon" />
+        <h1 class="heading">Settings</h1>
+      </header>
+
+      <main class="settingsSection">
+        <button id="setLocationButton" class="settingsButton">
+          Set your location
+        </button>
+
+        <button id="preferredDistanceButton" class="settingsButton">
+          Preferred Location Distance
+        </button>
+
+        <div class="toggleSection">
+          <label class="toggleButton">
+            <input type="checkbox" id="tutorialToggle" />
+            <span class="pinkSlider"></span>
+          </label>
+          <p class="toggleText">Show in-app tutorial upon login</p>
+        </div>
+
+        <button class="settingsButton pinkRose">
+          Clear All Saved Locations
+        </button>
+
+        <button class="settingsButton pinkRose" id="logoutBtn">Logout</button>
+      </main>
+    </div>
+
+    <!-- preferred distance popup -->
+    <div id="distancePopup" class="distancePopup">
+      <div class="distanceContainer">
+        <button id="closePopupButton" class="closePopupButton">✕</button>
+        <h2 id="distanceMsgHeading">Preferred distance</h2>
+        <p><span id="distanceKm">5</span> km</p>
+        <input type="range" id="distanceSlider" min="1" max="10" value="5" />
+        <button id="saveButton">Save</button>
+      </div>
+    </div>
+
+    <!-- saved locations popup -->
+    <div id="clearPopup" class="distancePopup">
+      <div class="distanceContainer">
+        <button id="closeButton" class="closePopupButton">✕</button>
+
+        <h2 id="savedMsgHeading">Clear Saved Locations</h2>
+        <p id="savedMsgText">
+          Are you sure you want to clear all saved locations?
+        </p>
+
+        <div class="clearButtons">
+          <button id="noButton" class="noButton">No</button>
+          <button id="yesButton" class="yesButton">Yes</button>
+        </div>
+      </div>
+    </div>
+
+    <script src = "../js/Settings.js"></script>
+  </body>
+</html>

@@ -357,7 +357,7 @@ function isOpenNow(hours) {
 }
 
 document.getElementById("settingsButton").addEventListener("click", () => {
-  window.location.href = "/html/Settings2.html";
+  window.location.href = "/html/Settings.html";
 });
 
 // Switches between showing all locations or only those within radius

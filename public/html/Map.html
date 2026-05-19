@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FoodHubBC – Map</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Mapbox -->
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v3.23.1/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <script
+      defer
+      src="https://api.mapbox.com/mapbox-gl-js/v3.23.1/mapbox-gl.js"
+    ></script>
+
+    <link rel="stylesheet" href="../css/Map.css">
+  </head>
+
+  <body>
+    <main class="page">
+      <div class="header">Choose a location to see what's available!</div>
+
+      <div class="mapBox">
+        <div id="map"></div>
+        <div id="map-overlay"></div>
+
+        <!-- kept from original code, but hidden -->
+        <div id="instructions"></div>
+        <div id="info-card" class="info-card"></div>
+        <p id="status"></p>
+      </div>
+
+      <section class="controls">
+        <div class="boxRegionSelector">
+          <label for="regionSelector" id="selectRegion">Select a Region</label>
+          <select id="regionSelector">
+            <option value="">– Choose a region –</option>
+            <option value="downtownVancouver">Downtown Vancouver</option>
+            <option value="burnaby">Burnaby</option>
+            <option value="newWest">New West</option>
+            <option value="richmond">Richmond</option>
+            <option value="coquitlam">Coquitlam</option>
+          </select>
+        </div>
+
+        <h2 id="selectDistance">Select your Distance</h2>
+
+        <div class="sliderSection">
+          <span class="sliderValueKm"
+            ><span id="radius-value">10</span> km</span
+          >
+          <div class="slider">
+            <input
+              id="radius-slider"
+              type="range"
+              min="1"
+              max="10"
+              value="10"
+              step="1"
+            />
+          </div>
+        </div>
+
+        <div class="useLocation" id="use-current-location-btn">
+          <img src="/img/PlaneIcon.png" alt="" />
+          <span>Use my current location</span>
+        </div>
+
+        <button class="chooseButton" id="set-location-btn">
+          Choose this location
+        </button>
+      </section>
+    </main>
+    <script src="../js/Map.js"></script>
+  </body>
+</html>

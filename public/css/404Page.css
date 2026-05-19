@@ -1,0 +1,192 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem;
+  overflow: hidden;
+  font-family: "Darker Grotesque";
+  color: #fdfdfd;
+  background: linear-gradient(
+    185deg,
+    #6fae98 0%,
+    #4f7f6a 28%,
+    #3b5c4f 55%,
+    #2a443a 78%,
+    #1e332c 100%
+  );
+  position: relative;
+}
+
+/* blurred background layer */
+body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top left, rgba(255,255,255,0.08), transparent 35%),
+    radial-gradient(circle at bottom right, rgba(255,255,255,0.05), transparent 40%);
+  filter: blur(30px);
+  opacity: 0.8;
+}
+
+/* main glass container */
+.errorPage {
+  width: 100%;
+  max-width: 460px;
+  padding: 2.8rem 2rem;
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  border-radius: 2rem;
+  overflow: hidden;
+
+  background: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 0.62),
+    rgba(0, 0, 0, 0.46),
+    rgba(0, 0, 0, 0.68)
+  );
+
+  border: 1px solid rgba(255, 255, 255, 0.22);
+
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.45),
+    inset 0 1px 1px rgba(255, 255, 255, 0.06);
+
+  animation: fadeUp 0.7s ease forwards;
+}
+
+/* subtle top shine */
+.errorPage::before {
+  content: "";
+  position: absolute;
+  top: -120px;
+  left: -60px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  filter: blur(20px);
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(2rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.errorCode {
+  margin: 0;
+  font-size: 6rem;
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: 0.06em;
+  color: white;
+  text-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.45),
+    0 0 20px rgba(255, 255, 255, 0.06);
+}
+
+.errorMessage {
+  margin: 0 auto 2rem;
+  max-width: 320px;
+  font-size: 1.3rem;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+/* button matching site style */
+.homeButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 170px;
+  padding: 0.8rem 1.5rem;
+  border-radius: 999px;
+  text-decoration: none;
+
+  font-family: "Darker Grotesque";
+  font-size: 1.2rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+
+  color: white;
+
+  background: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 0.58),
+    rgba(0, 0, 0, 0.42)
+  );
+
+  border: 1px solid rgba(255, 255, 255, 0.22);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.42),
+    inset 0 1px 1px rgba(255, 255, 255, 0.08);
+
+  transition:
+    transform 0.2s ease,
+    background 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.homeButton:hover {
+  transform: translateY(-2px);
+
+  background: linear-gradient(
+    to bottom right,
+    rgba(0, 0, 0, 0.68),
+    rgba(0, 0, 0, 0.52)
+  );
+
+  box-shadow:
+    0 16px 34px rgba(0, 0, 0, 0.5),
+    inset 0 1px 1px rgba(255, 255, 255, 0.12);
+}
+
+.homeButton:active {
+  transform: translateY(0);
+}
+
+.homeButton:focus {
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgba(111, 174, 152, 0.25),
+    0 12px 28px rgba(0, 0, 0, 0.42);
+}
+
+@media (max-width: 420px) {
+  .errorPage {
+    padding: 2.3rem 1.5rem;
+  }
+
+  .errorCode {
+    font-size: 4.8rem;
+  }
+
+  .errorTitle {
+    font-size: 1.7rem;
+  }
+
+  .errorMessage {
+    font-size: 1.15rem;
+  }
+}
