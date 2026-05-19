@@ -210,9 +210,16 @@ app.post("/api/login", async (req, res) => {
       req.session.authenticated = true;
       req.session.email = result[0].email;
       req.session.cookie.maxAge = expireTime;
-      req.session.first_log_in = false;
+
+        //change first log in database
+      await usersCollection.updateOne(
+        { email: result[0].email },
+        { $set: { first_login: false } }
+      );
+
+
       //check inside a check
-      if(result[0].Instructions_Upon_login === true){
+      if(result[0].Instructions_Upon_Login === true){
         return res.redirect("/html/instructions.html");
       }
       res.redirect("/html/Home.html");
@@ -470,25 +477,41 @@ app.post("/api/clearSavedList", async (req, res) => {
 //change instructions for toggle
 app.post("/api/settings/tutorial", async (req, res) => {
   try {
-    const value = req.body.Instructions_Upon_login;
+    const value = req.body.Instructions_Upon_Login;
 
     await client
       .db(mongodb_project_database)
       .collection("Users")
       .updateOne(
         { email: req.session.email },
-        { $set: { Instructions_Upon_login: value } }
+        { $set: { Instructions_Upon_Login: value } }
       );
 
-    res.status(200).send("Updated successfully");
+   res.status(200).json({
+     message: "Updated successfully",
+     email: req.session.email
+   });
   } catch (err) {
     res.status(500).send("Failed to update setting");
   }
 });
 
 
+//get current logged in user
+app.post("/api/user", async (req, res) => {
+  try {
+    const user = await client
+      .db(mongodb_project_database)
+      .collection("Users")
+      .findOne({ email: req.session.email });
 
+    if (!user) return res.status(404).send("User not found");
 
+    res.json(user);
+  } catch (err) {
+    res.status(500).send("Failed to get user");
+  }
+});
 
 
 

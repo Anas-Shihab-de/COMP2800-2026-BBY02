@@ -51,6 +51,34 @@
       }
       loadUserRadius();
 
+//change toggle inital dsiplay based off user preference
+fetch("/api/user", {
+  method: "POST",
+  credentials: "include",
+  headers: {
+    "Accept": "application/json"
+  }
+})
+  .then(res => {
+    if (!res.ok) throw new Error("Failed to load user");
+    return res.json();
+  })
+  .then(user => {
+    const toggle = document.querySelector("#tutorialToggle");
+
+    if (!toggle) return;
+
+
+    toggle.checked = user.Instructions_Upon_Login === true;
+  })
+  .catch(err => {
+    console.error("Error loading tutorial toggle state:", err);
+  });
+
+
+
+
+
       /**
        * Saves the user's newly selected radius.
        */
@@ -127,28 +155,29 @@
       });
 
       //toggle code
-      document.addEventListener("DOMContentLoaded", () => {
-        const toggle = document.getElementById("tutorialToggle");
+     document.addEventListener("DOMContentLoaded", () => {
+       const toggle = document.getElementById("tutorialToggle");
 
-        toggle.addEventListener("change", async (e) => {
-          const enabled = e.target.checked;
+       toggle.addEventListener("change", async (e) => {
+         const enabled = e.target.checked;
 
-          try {
-            const res = await fetch("/api/settings/tutorial", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({
-                Instructions_Upon_login: enabled
-              })
-            });
+         try {
+           const res = await fetch("/api/settings/tutorial", {
+             method: "POST",
+             credentials: "include",
+             headers: {
+               "Content-Type": "application/json"
+             },
+             body: JSON.stringify({
+               Instructions_Upon_Login: enabled
+             })
+           });
 
-            if (!res.ok) {
-              console.error("Failed to update setting");
-            }
-          } catch (err) {
-            console.error("Error updating setting:", err);
-          }
-        });
-      });
+           if (!res.ok) {
+             console.error("Failed to update setting");
+           }
+         } catch (err) {
+           console.error("Error updating setting:", err);
+         }
+       });
+     });

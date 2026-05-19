@@ -1,19 +1,35 @@
-fetch("/api/users")
-  .then(res => {
+fetch("/api/user", {
+  method: "POST",
+  credentials: "include",
+  headers: {
+    "Accept": "application/json"
+  }
+})
+  .then(async (res) => {
+    const contentType = res.headers.get("content-type");
+
     if (!res.ok) {
-      throw new Error("Network response was not ok");
+      const text = await res.text();
+      throw new Error(text || "Network response was not ok");
     }
+
+    if (!contentType || !contentType.includes("application/json")) {
+      const text = await res.text();
+      throw new Error("Expected JSON but got: " + text);
+    }
+
     return res.json();
   })
   .then(data => {
-    const session = data.find(s => s.first_login === true);
+    const button = document.querySelector(".next");
+    if (!button) return;
 
-    document.querySelector(".next").addEventListener("click", (e) => {
+    const session = data;
+
+    button.addEventListener("click", (e) => {
       e.preventDefault();
 
-      const firstLogin = session?.first_login;
-
-      if (firstLogin === true) {
+      if (session?.first_login === true) {
         window.location.href = "Map.html";
       } else {
         window.location.href = "Home.html";
