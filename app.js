@@ -173,13 +173,15 @@ app.post("/api/signup", async (req, res) => {
       email: email,
       password: hashedPassword,
       saved_list: [],
+      Instructions_Upon_Login = true,
+      first_login = true,
     });
 
     req.session.authenticated = true;
     req.session.email = email;
     req.session.cookie.maxAge = expireTime;
 
-    res.redirect("/html/SofiasMap.html");
+    res.redirect("/html/Map.html");
   } catch (error) {
     res.status(503).send("There was a problem adding the user to db.");
   }
@@ -209,7 +211,11 @@ app.post("/api/login", async (req, res) => {
       req.session.authenticated = true;
       req.session.email = result[0].email;
       req.session.cookie.maxAge = expireTime;
-
+      req.session.first_log_in = false;
+      //check inside a check
+      if(result[0].Instructions_Upon_login === true){
+        return res.redirect("/html/instructions.html");
+      }
       res.redirect("/html/Home.html");
     } else {
       res.redirect("/html/Login.html");
@@ -462,6 +468,32 @@ app.post("/api/clearSavedList", async (req, res) => {
   }
 });
 
+//change instructions for toggle
+app.post("/api/settings/tutorial", async (req, res) => {
+  try {
+    const value = req.body.Instructions_Upon_login;
+
+    await client
+      .db(mongodb_project_database)
+      .collection("Users")
+      .updateOne(
+        { email: req.session.email },
+        { $set: { Instructions_Upon_login: value } }
+      );
+
+    res.status(200).send("Updated successfully");
+  } catch (err) {
+    res.status(500).send("Failed to update setting");
+  }
+});
+
+
+
+
+
+
+
+
 app.use(express.static(__dirname + "/public/"));
 
 /**
@@ -472,6 +504,14 @@ app.get("/logout", (req, res) => {
     res.redirect("/html/Login.html");
   });
 });
+
+// 404 handler, go to 404 page
+
+app.use((req, res) => {
+ res.status(404).redirect("/html/404.html");
+    });
+
+
 
 app.listen(PORT, () => {
   console.log("Server is running at http://localhost:" + PORT);
