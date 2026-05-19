@@ -146,7 +146,7 @@ app.get("/api/sessions", async (req, res) => {
       .toArray();
     res.json(sessions);
   } catch (error) {
-    res.status(500).send("There was a roblem retrieving session data.");
+    res.status(500).send("There was a problem retrieving session data.");
   }
 });
 
@@ -173,15 +173,14 @@ app.post("/api/signup", async (req, res) => {
       email: email,
       password: hashedPassword,
       saved_list: [],
-      Instructions_Upon_Login = true,
-      first_login = true,
+      Instructions_Upon_Login: true,
+      first_login: true,
     });
 
     req.session.authenticated = true;
     req.session.email = email;
     req.session.cookie.maxAge = expireTime;
-
-    res.redirect("/html/Map.html");
+    res.redirect("/html/instructions.html");
   } catch (error) {
     res.status(503).send("There was a problem adding the user to db.");
   }

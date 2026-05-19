@@ -219,6 +219,7 @@
 
         // Redirect AFTER saving
         window.location.href = "/html/Home.html";
+
       }
 
       async function getUserLocation() {
