@@ -1,5 +1,7 @@
 /**
  *  Reference:
+ *  This code is modified to unify the UI with the rest of pages based on See_all_location.css.
+ *
  *  Previous comp1537 Web Assignment 1-6, COMP 1537 Lab examples 
  *  How to create an overlay image title:
  *  https://www.w3schools.com/howto/howto_css_image_overlay_title.asp
@@ -33,15 +35,14 @@
   padding: 0;
   font-family: "Darker Grotesque";
   box-sizing: border-box;
+  font-family: "Darker Grotesque";
+  cursor: none; /* hides default cursor */
 }
 
 html,
 body {
-  height: 100%;
-}
-
-.saved-page {
-  min-height: 100vh;
+  background-repeat: no-repeat;
+  color: #ffffff;
   background: linear-gradient(
     185deg,
     #6fae98 0%,
@@ -50,137 +51,114 @@ body {
     #2a443a 78%,
     #1e332c 100%
   );
-  font-family: "Darker Grotesque";
+  min-height: 100vh; /* resolves the strange duplicate background that used to appear for a split second */
+}
+
+/* Remove link underline */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* 
+  Whole page
+  currently see_all_locations doesn't have .page class, so header looks differently
+  I left the padding since the Home.html applied it 
+  */
+.saved-page {
+  width: 100%;
+  padding: 4vw 5vw 8vw;
   display: flex;
   flex-direction: column;
+  gap: 4vw;
 }
 
 /* Header */
 .header {
+  padding: 24px 24px;
+  gap: 12px;
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* title + back button on left */
-  gap: 14px;
-  padding: 20px 20px;
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow:
-    0 4px 14px rgba(255, 255, 255, 0.12),
-    0 0 22px rgba(255, 200, 220, 0.18);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.096);
 }
 
+.header > * {
+  flex-shrink: 0;
+  /* Prevent header items from shrinking when the screen narrows */
+}
 .header__back-btn {
   padding: 0;
-  background: none;
-  border: none;
-}
-
-.backIcon {
-  width: 30px;
-  height: 30px;
-  margin-top: 5px;
-  margin-left: 10px;
-  filter: drop-shadow(0 0 6px rgba(255, 200, 200, 0.4));
-  cursor: pointer;
-  transition:
-    transform 0.2s ease,
-    filter 0.2s ease;
-}
-
-.backIcon:hover {
-  transform: translateX(-4px);
-  filter: drop-shadow(0 0 10px rgba(255, 150, 170, 0.7));
-}
-
-.header__back-btn img {
-  width: 30px;
-  height: 30px;
-  filter: drop-shadow(0 0 6px rgba(255, 200, 200, 0.4));
-  margin-top: 5px;
-  margin-left: 10px;
-}
-
-.explore-all-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin: 18px 0 10px 20px;
-  padding: 0.55rem 1.3rem;
-  background: rgba(0, 0, 0, 0.65);
+  margin: 0;
+  background: transparent;
   border: none;
   color: white;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+}
+
+/*headerText*/
+.header__title {
+  flex: 1;
+  text-align: left;
+  color: #ffffff;
+  background: linear-gradient(90deg, #b2ffb9, #ffffff);
+  background-clip: text; /* allows the gradient to show through the text */
+  color: transparent;
+  margin: 0;
+  padding: 0;
+  font-size: 2rem;
+  letter-spacing: 0.04em;
+  animation: cherryFade 0.9s ease forwards;
+}
+
+.headerButtons {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.header__btn {
+  background: rgba(0, 0, 0, 0.65);
+  color: white;
+  border: none;
+  padding: 0.55rem 1.3rem;
   border-radius: 999px;
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   font-weight: 500;
-  align-self: flex-start !important;
-  width: auto !important;
-  max-width: fit-content !important;
   box-shadow:
     0 0 12px rgba(255, 255, 255, 0.692),
     0 0 22px rgba(255, 255, 255, 0.35),
     inset 0 0 8px rgba(255, 255, 255, 0.25);
-  transition: 0.25s ease;
 }
 
-.explore-all-btn:hover {
-  transform: translateY(-4px);
-  box-shadow:
-    0 0 18px rgba(255, 150, 169, 0.7),
-    0 0 30px rgba(255, 150, 169, 0.45),
-    inset 0 0 10px rgba(255, 255, 255, 0.35);
+.header__btn:focus,
+.applyButton:focus {
+  outline: 3px solid rgba(255, 120, 160, 0.6);
+  outline-offset: 10px;
 }
 
-.header__title {
-  font-size: 2.6rem !important;
-  letter-spacing: 0.8px;
-  font-weight: 600;
-  margin: 0;
-  padding: 0;
-  background: linear-gradient(90deg, #b2ffb9, #ffffff);
-  background-clip: text;
-  color: transparent;
-  text-shadow: 0 0 10px rgba(255, 220, 220, 0.55);
-}
-
-.header__btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--color-black);
-  border-radius: 20px;
-  padding: 8px 20px 8px 20px;
-  border: none;
-  color: var(--color-white);
-  opacity: 90%;
-}
-
-.header__filter-btn {
+.filterButton {
   background: none;
   border: none;
-  margin-left: auto;
-  min-width: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  color: white;
+  font-size: 2rem;
 }
 
-.material-symbols-outlined-filter {
-  font-size: 22px;
-  width: auto;
-  padding: 4px;
-}
-
-/* Card Section */
-.section__saved-page {
+.locationsGrid {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
   width: 100%;
-  padding: 0 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  box-sizing: border-box;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+  display: grid;
 }
-
-.card {
+.locationBox {
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
   border-radius: 1.2rem;
   background:
     linear-gradient(
@@ -194,39 +172,50 @@ body {
   box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.25),
     0 0 18px rgba(255, 150, 180, 0.25);
-  position: relative;
   overflow: hidden;
   display: flex;
-  margin-top: 20px;
   flex-direction: column;
+  animation: cherryFade 1.2s ease forwards;
+  animation: sofiaFloat 6s ease-in-out infinite;
+  position: relative;
   transition:
     transform 0.4s ease,
     box-shadow 0.4s ease;
-  animation: sofiaFloat 6s ease-in-out infinite;
 }
 
-.card:hover {
+.locationBox:hover {
   transform: translateY(-2vw);
   box-shadow:
     0 0 25px rgba(255, 120, 160, 0.45),
     0 0 60px rgba(255, 120, 160, 0.25);
 }
 
-.card:hover::after {
+/* Creates a very light pink radial bg shadow when a location box is hovered over (only valid on desktop) */
+.locationBox:hover::after {
   content: "";
   position: absolute;
   top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
   background: radial-gradient(
     circle at center,
     rgba(255, 205, 251, 0.404),
     transparent 70%
   );
-  pointer-events: none;
+  bottom: 0;
+  right: 0;
+  left: 0;
 }
 
+.material-symbols-outlined-bookmark {
+  color: var(--color-black);
+  font-variation-settings: "FILL" 1;
+}
+
+.material-symbols-outlined-bookmark-unsave {
+  color: var(--color-black);
+  font-variation-settings: "FILL" 0;
+}
+
+/* Makes it look like the page is breathing */
 @keyframes sofiaFloat {
   0% {
     transform: translateY(0);
@@ -239,161 +228,120 @@ body {
   }
 }
 
-.card__image-container {
-  width: 100%;
-}
-
-.card__image-container img {
-  width: 100%;
-  aspect-ratio: 16/9;
-  /* height: 200px; */
-  object-fit: cover;
+.bookmarkButton {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
   display: flex;
-}
-
-.card__save-btn {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.45);
   border: none;
+  padding: 0.4rem;
+  border-radius: 50%;
+  transition: transform 0.25s ease;
 }
 
-.material-symbols-outlined-bookmark {
-  font-size: 32px;
-  color: var(--color-white);
-  font-variation-settings: "FILL" 1;
+/* creates that little jumping icon effect when clicked on */
+.bookmarkButton:active {
+  transform: scale(2);
 }
 
-/* unsave bookmark */
-.material-symbols-outlined-bookmark-unsave {
-  font-size: 32px;
-  color: var(--color-white);
-}
-
-.card__text-container {
+.locationImage {
   width: 100%;
-  padding: 10px;
+  aspect-ratio: 5 / 3;
+  position: relative;
+  overflow: hidden;
+}
+
+.locationImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   position: absolute;
+  top: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  color: var(--color-white);
+  left: 0;
+  right: 0;
 }
 
-.card__title {
-  margin: 0;
-  font-size: 1.75rem;
-  font-weight: 300;
+.imageTag {
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  padding: 0.35rem 0.9rem;
+  background: rgba(0, 0, 0, 0.55);
   color: white;
+  border-radius: 999px;
+  font-size: 1.15rem;
 }
 
-.filter-footer {
+.hubInfo {
+  padding: 14px 16px;
+  gap: 4px;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
 }
 
-/* hiding all of this for now because it is not displaying the right information and I don't have time to fix it*/
-.locationDistanceKm,
-.relativePrice,
-.card-meta,
+.locationName {
+  margin: 0;
+  color: white;
+  font-size: 1.45rem;
+  font-weight: 200;
+}
+
 .locationDetails {
-  display: none !important;
-}
-
-/* Media Query */
-@media (max-width: 600px) {
-  .header__title {
-    font-size: 3rem;
-  }
-
-  .section__saved-page {
-    width: 100%;
-    padding: 25px;
-  }
-}
-
-@media (max-width: 900px) and (min-width: 601px) {
-  .header__title {
-    font-size: 4rem;
-  }
-
-  .section__saved-page {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-  }
-
-  .header__btn {
-    font-size: 1.2rem;
-    padding: 10px 28px;
-  }
-
-  .material-symbols-outlined-filter {
-    font-size: 34px;
-  }
-}
-
-@media (max-width: 1200px) and (min-width: 901px) {
-  .header__title {
-    font-size: 4.3rem;
-  }
-
-  .section__saved-page {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-  }
-
-  .header__btn {
-    font-size: 1.8rem;
-    padding: 10px 28px;
-  }
-
-  .material-symbols-outlined-filter {
-    font-size: 60px;
-  }
-}
-
-@media (min-width: 1201px) {
-  .header__title {
-    font-size: 5rem;
-  }
-
-  .section__saved-page {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-  }
-
-  .header__btn {
-    font-size: 2.5rem;
-    padding: 10px 28px;
-  }
-
-  .material-symbols-outlined-filter {
-    font-size: 60px;
-    margin-right: 30px;
-  }
-}
-
-/*======= Card Tags CSS =========*/
-
-.card-name {
-  font-size: 16px;
-  font-weight: 700;
-  margin-bottom: 6px;
-}
-
-.card-meta {
   display: flex;
-  gap: 12px;
-  font-size: 13px;
-  color: var(--subtext);
-  margin-bottom: 10px;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.card-tags {
+.distanceInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.locationIcon {
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 80%;
+  overflow: hidden;
+  justify-content: center;
+  display: flex;
+  background: rgba(255, 255, 255, 0.733);
+  align-items: center;
+}
+
+.locationDistanceKm {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #0f241c;
+}
+
+.locationIcon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.relativePrice {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #0a3003;
+}
+
+.clearButton,
+.applyButton {
+  padding: 16px;
+  border-radius: 999px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  width: 100%;
+}
+
+.tagRow {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
@@ -409,24 +357,35 @@ body {
   font-weight: 600;
 }
 
-/* ======= Filter CSS =========*/
-
-.filter-overlay {
+.filterPanelBg {
   position: fixed;
-  inset: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   background: rgba(0, 0, 0, 0.45);
   z-index: 10;
 }
 
-.filter-panel label,
-.filter-panel p,
-.filter-panel h2,
-.filter-panel select,
-.filter-panel option {
-  font-size: 1.35rem;
+/* changed to match Danielle's variable */
+.filter-tag {
+  color: white;
+  font-size: 1.05rem;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.15);
+  padding: 10px 20px;
+  border-radius: 999px;
+  margin-bottom: 0.6rem;
 }
 
-.filter-panel {
+/* changes to have a black background when clicked on */
+.filter-tag.active {
+  background: black;
+  border-color: black;
+  color: white;
+}
+
+.filterPanel {
   position: fixed;
   top: 0;
   right: 0;
@@ -438,7 +397,9 @@ body {
   display: flex;
   background: rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(14px);
-  padding: 2rem 1.5rem;
+  padding: 1.5rem;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
   font-size: 1.04rem;
   flex-direction: column;
   gap: 1.4rem;
@@ -446,57 +407,115 @@ body {
   animation: cherryFade 0.6s ease forwards;
 }
 
-/* SORTING OPTION */
-.sort-select {
+.filterPanel select,
+.filterPanel option,
+.filterPanel label,
+.filterPanel h3,
+.filterPanel p {
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 1.15rem;
   width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: var(--radius-btn);
-  font-size: 13px;
-  cursor: pointer;
-  background: white;
-  color: var(--text);
-}
-/* SORTING OPTION */
-
-.filter-tag {
-  color: white;
-  font-size: 1.05rem;
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  background: rgba(255, 255, 255, 0.15);
-  padding: 10px 20px;
-  border-radius: 999px;
-  margin-bottom: 0.6rem;
 }
 
-.filter-tag.active {
-  background: black;
-  border-color: black;
-  color: white;
-}
-
-.clear-btn {
+.clearButton {
   background: white;
   color: black;
   border: 2px solid black;
-  padding: 16px;
-  border-radius: 999px;
-  font-size: 1.1rem;
-  font-weight: 700;
-  width: 100%;
 }
 
-.apply-btn {
+.applyButton {
   background: black;
   color: white;
   border: none;
-  padding: 16px;
-  border-radius: 999px;
-  font-size: 1.1rem;
-  font-weight: 700;
-  width: 100%;
+}
+
+@keyframes cherryFade {
+  0% {
+    opacity: 0;
+    transform: translateY(2.5vw);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .hidden {
   display: none;
+}
+
+@media (max-width: 600px) {
+  * {
+    cursor: auto;
+  }
+
+  .header {
+    padding: 8vw 5vw;
+  }
+
+  .headerText {
+    font-size: 1.6rem;
+  }
+
+  .saveButton {
+    padding: 0.55rem 1.2rem;
+    font-size: 1rem;
+  }
+
+  .filterButton {
+    font-size: 1.8rem;
+  }
+
+  .tag {
+    font-size: 1rem;
+    padding: 0.35rem 0.9rem;
+  }
+
+  .locationsGrid {
+    grid-template-columns: 1fr; /* for cards to stack */
+    width: 90%;
+    padding: 0;
+  }
+
+  .locationBox {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .locationName {
+    font-size: 1.25rem;
+  }
+
+  .locationDistanceKm,
+  .relativePrice {
+    font-size: 1.1rem;
+  }
+
+  .clearButton,
+  .applyButton {
+    margin-top: 0.5rem;
+    padding: 14px;
+    font-size: 1.1rem;
+  }
+}
+
+@media (min-width: 600px) {
+  * {
+    cursor: auto;
+  }
+
+  .locationsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1000px) {
+  * {
+    cursor: auto;
+  }
+
+  .locationsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }

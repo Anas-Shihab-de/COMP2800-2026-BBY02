@@ -1,37 +1,46 @@
 /**
- * TODO:
- * Update CSS so that all the page has the same header and the card section, bg
+ * CREDITS
+ *
+ * Min: Wrote 90% of the code
+ * Damon: Page authentication logic
+ * Danielle: Wrote helper function for distance between coordinates and the filter panel logic
+ * Sofia: Refactored Min's comments, fixed geolocation logic to pull from db,
+ *        made minor changes to pull $$, phone #, and backdrop image from db
  */
 
-// Global variables
-// for tags logic
-let initialSavedLocations = [];
-let selectedTags = [];
-//for distance logic
-let userLocation = null;
-let currentSort = "distance"; //default
-
-// Check if authenticated
+/**
+ * Verifies authentication prior to accessing the Saved Page
+ */
 async function checkAuth() {
   const res = await fetch("/api/authentication");
   const auth = await res.json();
   if (!auth.authenticated) {
     window.location.href = "../html/Login.html";
   } else {
-    // send the login user's email to load their saved locations.
+    // Sends the login user's email to load their saved locations.
     await loadSavedLocations(auth.email);
   }
 }
 checkAuth();
 
+// User's inital saved places before filtering
+let initialSavedLocations = [];
+
+// User's chosen tags for filtering
+let selectedTags = [];
+
+// User's chosen location
+let userLocation = null;
+
+// Current method used to sort (default)
+let currentSort = "distance";
+
 /**
- * Loads saved location only from the logged in user.
- * Load all locations and filter them to have only the same ids in the userSavedList.
+ * Loads saved locations only from the logged in user.
+ * If the user accesses this page from Home, then display all categories of the saved places.
+ * If the user accesses this page from See all Locations, then display certain cegory of the saved places.
  *
- * -- updated logic:
- * -- To  get filtered by category (food pantries, farmers' market, local market) as well before rendering cards.
- * -- If "saved_places button" is clicked from Home.html, this updated logic wouldn't be applied.
- * @param userEmail the email to find the logged in user's saved location
+ * @param {*} userEmail the email to find the logged in user's saved location
  *
  * Reference: COMP1800_202530_BBY21 project
  * https://github.com/RuleOfSix/1800_202530_BBY21
@@ -41,13 +50,17 @@ checkAuth();
 async function loadSavedLocations(userEmail) {
   const locations = await loadLocations();
   const userSavedList = await loadUserSavedList(userEmail);
+  const authRes = await fetch("/api/authentication", {
+    credentials: "include",
+  });
+  const auth = await authRes.json();
 
-  // 1. filter by user
+  // 1. Finds user's saved places from all locations
   let savedLocations = locations.filter((location) =>
     userSavedList.includes(location._id),
   );
 
-  // 2. filter by category (optional)
+  // 2. (Optional) Displays only certain category of the saved places.
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const category = urlParams.get("category");
@@ -62,13 +75,13 @@ async function loadSavedLocations(userEmail) {
     });
   }
 
-  // 3. copy filtered savedlocations for tags logic
+  // Copies this savedlocations for tags filtering logic as initial saved places
   initialSavedLocations = savedLocations;
 
-  // get userLocation to calculate distance
-  userLocation = await getUserLocation();
+  // Gets userLocation to calculate distance
+  userLocation = auth.selectedlocation ?? [-123.0016, 49.2532];
 
-  // draw the page
+  // Intentionally skipped sorting by distance to preserve user's saved order
   renderCards(savedLocations);
   loadFilterTags();
 }
@@ -83,7 +96,8 @@ async function loadLocations() {
 
 /**
  * Loads saved_list in users from the database (helper method)
- * @param userEmail the email to find the logged in user's saved location
+ *
+ * @param {*} userEmail the email to find the logged in user's saved location
  */
 async function loadUserSavedList(userEmail) {
   const res = await fetch("/api/users");
@@ -98,22 +112,27 @@ async function loadUserSavedList(userEmail) {
 }
 
 /**
- * @param savedLocations locations that filtered by user saved list.
- *        User saved list contains array of ids that user saved.
+ * Renders saved location cards to the page.
+ *
+ * @param {*} savedLocations User saved locations and optionally filtered by its category.
  */
 function renderCards(savedLocations) {
   const grid = document.getElementById("section__saved-page");
+
+  // Clears the page
   grid.innerHTML = "";
 
+  // Exits early if there are no saved places to render
   if (savedLocations.length == 0) {
     return;
   }
+
   for (let i = 0; i < savedLocations.length; i++) {
     const savedLocationId = savedLocations[i]._id;
     const imagePath = savedLocations[i].images[0];
 
-    // calcualte distance based on the location's coordinate
-    let distance = "N/A";
+    // Calculates the distance, defaults to 0
+    let distance = "0";
     if (userLocation && savedLocations[i].geo?.coordinates) {
       distance =
         getDistanceKm(userLocation, savedLocations[i].geo.coordinates) + " km";
@@ -121,56 +140,62 @@ function renderCards(savedLocations) {
 
     grid.insertAdjacentHTML(
       "beforeend",
-      `<article class="card" data-id="${savedLocationId}">
-        <div class="card__image-container">
+      `<article class="locationBox" data-id="${savedLocationId}">
 
-            <img
-            src="${imagePath}"
-            alt="Queensborough Coummnity Centre"
-            />
-            <button type="button" class="card__save-btn">
-            <span
-                class="material-symbols-outlined material-symbols-outlined-bookmark"
-            >
-                bookmark
+        <button type="button" class="bookmarkButton card__save-btn">
+          <span class="material-symbols-outlined material-symbols-outlined-bookmark">
+           bookmark
+          </span>
+        </button>
+
+        <a href="Details.html?locationId=${savedLocationId}">
+    
+      <div class="locationImage">
+          <img src="${imagePath}" alt="${savedLocations[i].name}" />
+      </div>
+
+      <div class="hubInfo">
+        <h3 class="locationName">${savedLocations[i].name}</h3>
+        
+        <div class="locationDetails">
+          <div class="distanceInfo">
+            <span class="locationIcon">
+              <img src="../img/locationIcon.png" alt="icon" />
             </span>
-            </button>
-        </div>
-        <div class="card__text-container">
-            <h3 class="card__title">${savedLocations[i].name}</h3>
-            <div class="card-meta">
-            <span class="meta-distance">${distance}</span>
-            <span class="meta-price">$$</span>
+            <span class="locationDistanceKm">${distance}</span>
           </div>
-          <div class="card-tags">
-            ${savedLocations[i].tags
-              .map((tag) => {
-                return '<span class="tag">' + tag + "</span>";
-              })
-              .join("")}
-          </div>
-        </div>
+          <span class="relativePrice">$$</span>
+       </div>
+
+      <div class="tagRow">
+        ${savedLocations[i].tags
+          .map((tag) => `<span class="tag">${tag}</span>`)
+          .join("")}
+      </div>
+    </div>
+
+    </a>
     </article>
     `,
     );
 
-    // card to go to detailed page
+    // Gets the card to go to detailed page
     const lastCard = grid.lastElementChild;
     lastCard.addEventListener("click", (event) => {
-      // to prevent going to details page when bookmark icon is clicked
+      // Prevents going to detailed page when bookmark icon is clicked
       if (event.target.closest(".card__save-btn")) {
         return;
       }
-
       location.href = `Details.html?locationId=${savedLocationId}`;
     });
 
-    // bookmark button to save/unsave location
+    // Gets save button to bookmark the location
     const saveBtn = lastCard.querySelector(".card__save-btn");
     const bookmarkIcon = saveBtn.querySelector(
       ".material-symbols-outlined-bookmark",
     );
 
+    // Makes button clickable
     saveBtn.addEventListener("click", () => {
       toggleSaveBtn(savedLocations[i]._id, bookmarkIcon);
     });
@@ -179,20 +204,22 @@ function renderCards(savedLocations) {
 
 /**
  * Changes bookmark icon as the user clicked and updates user's saved_list.
- * @pararm savedLocationsId the id of each card that needs to be updated.
- * @param bookmarkIcon the icon in the save button that the user clicked.
+ *
+ * @param {*} savedLocationsId the id of each card that needs to be updated.
+ * @param {*} bookmarkIcon the icon in the save button that the user clicked.
  */
 async function toggleSaveBtn(savedLocationId, bookmarkIcon) {
   const savedIcon = bookmarkIcon.classList.contains(
     "material-symbols-outlined-bookmark",
   );
 
+  // If the location is already saved, then makes the location unsaved.
   if (savedIcon) {
     bookmarkIcon.classList.remove("material-symbols-outlined-bookmark");
     bookmarkIcon.classList.add("material-symbols-outlined-bookmark-unsave");
     unsavePlace(savedLocationId);
   } else {
-    // to save the place again before leaving the page
+    // Saves the location again before the user leaves the page.
     bookmarkIcon.classList.remove("material-symbols-outlined-bookmark-unsave");
     bookmarkIcon.classList.add("material-symbols-outlined-bookmark");
     savePlace(savedLocationId);
@@ -200,11 +227,12 @@ async function toggleSaveBtn(savedLocationId, bookmarkIcon) {
 }
 
 /**
+ * Removes a savedlocation ID to the user's saved_list in the database. (helper method)
+ *
+ * @param {*} savedLocationId the id of each card that needs to be updated.
+ *
  * Example: postJson(data)
  * https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
- *
- * Removes a savedlocation ID to the user's saved_list in the database. (helper method)
- * @param savedLocationId the id of each card that needs to be updated.
  */
 async function unsavePlace(savedLocationId) {
   const response = await fetch("/api/unsave-location", {
@@ -222,7 +250,8 @@ async function unsavePlace(savedLocationId) {
 
 /**
  * Adds a savedlocation ID to the user's saved_list in the database. (helper method)
- * @param savedLocationId the id of each card that needs to be updated.
+ *
+ * @param {*} savedLocationId the id of each card that needs to be updated.
  */
 async function savePlace(savedLocationId) {
   const response = await fetch("/api/save-location", {
@@ -238,40 +267,35 @@ async function savePlace(savedLocationId) {
   }
 }
 
-// explore all button
-const exploreBtn = document.querySelector(".explore-all-btn");
+// Makes explore button clickable: moves to Home.html when it is clicked.
+const exploreBtn = document.querySelector(".header__btn");
+exploreBtn.addEventListener("click", () => {
+  location.href = "Home.html";
+});
 
-if (exploreBtn) {
-  exploreBtn.addEventListener("click", () => {
-    location.href = "Home.html";
-  });
-}
-
-// back button
+// Makes back button clickable: moves to the previous page when it is clicked.
 const backBtn = document.querySelector(".header__back-btn");
 backBtn.addEventListener("click", () => {
   window.history.back();
 });
 
 /**
- * ========================================================
- * Filter button logic based from See_All_Locations.js
- * Filters item from the user's saved_list (intialSavedList) not from the whole list.
- * ========================================================
+ * Filters the locations from the user's saved_list (intialSavedList) not from the whole list.
+ * Filter logic is based from See_All_Locations.js and modified to saved page logic
  */
 
-// filter button
+// Filter event listners
 document.getElementById("filter-btn").addEventListener("click", openFilters);
 document
-  .getElementById("filter-overlay")
+  .getElementById("filterPanelBg")
   .addEventListener("click", closeFilters);
 
 /**
  * Opens the filter panel overlay
  */
 function openFilters() {
-  const panel = document.getElementById("filter-panel");
-  const overlay = document.getElementById("filter-overlay");
+  const panel = document.getElementById("filterPanel");
+  const overlay = document.getElementById("filterPanelBg");
 
   if (panel.classList.contains("hidden")) {
     panel.classList.remove("hidden");
@@ -285,8 +309,8 @@ function openFilters() {
  * Closes the filter panel overlay
  */
 function closeFilters() {
-  document.getElementById("filter-panel").classList.add("hidden");
-  document.getElementById("filter-overlay").classList.add("hidden");
+  document.getElementById("filterPanel").classList.add("hidden");
+  document.getElementById("filterPanelBg").classList.add("hidden");
 }
 
 /**
@@ -353,7 +377,7 @@ function toggleTag(btn, tag) {
 }
 
 /**
- * Filters by the exact tags that the use chooses and re-renders the
+ * Filters by the exact tags that the user chooses and re-renders the list.
  */
 function applyFilters() {
   const filtered = [];
@@ -379,6 +403,10 @@ function applyFilters() {
  */
 function clearFilters() {
   selectedTags = [];
+  currentSort = "distance";
+
+  document.getElementById("sort-select").value = "distance";
+
   const filterTags = document.querySelectorAll(".filter-tag");
   for (let i = 0; i < filterTags.length; i++) {
     filterTags[i].classList.remove("active");
@@ -388,29 +416,10 @@ function clearFilters() {
 }
 
 /**
- * Gets the user's current coordinates using the browser's geolocation API.
- * getUserLocation  from See_All_Locations.js
- *
- * @returns the user's longitude and latitude
- */
-async function getUserLocation() {
-  const defaultLocation = [-123.0016, 49.2532];
-
-  if (!navigator.geolocation) return defaultLocation;
-
-  return new Promise((resolve) => {
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        resolve([pos.coords.longitude, pos.coords.latitude]);
-      },
-      () => resolve(defaultLocation),
-    );
-  });
-}
-
-/**
  * Calculates the distance in kilometers between two coordinates.
- * getDistanceKm code from See_All_Locations.js
+ * Uses the Haversine formula.
+ *
+ * getDistanceKm code is from See_All_Locations.js
  *
  * @param {*} a longitude and latitude of point a
  * @param {*} b longitude and latitude of point b
@@ -435,7 +444,8 @@ function getDistanceKm(a, b) {
 
 /**
  * Sorts locations by the current sort setting.
- * sortLocations code from See_All_Locations.js
+ *
+ * sortLocations code is from See_All_Locations.js
  *
  * @param {*} locations the list of locations to sort
  *
