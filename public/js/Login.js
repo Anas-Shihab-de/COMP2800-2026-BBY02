@@ -7,6 +7,9 @@
 
       let loginIsCurrentlyShown = true;
 
+      /**
+       * Updates the login/signup form UI.
+       */
       function changeUI() {
         if (loginIsCurrentlyShown) {
           loginForm.style.display = "flex";

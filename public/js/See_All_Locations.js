@@ -1,8 +1,8 @@
 /**
  * CREDITS
  *
- * Min:
- * Damon:
+ * Min: Changed variable names
+ * Damon: Wrote the authorization code
  * Danielle: Wrote 90% of the code.
  * Sofia: Refactored comments, changed variable names & template code.
  */

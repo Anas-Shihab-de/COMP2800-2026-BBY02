@@ -146,7 +146,14 @@
           .setLngLat(location)
           .addTo(map);
       }
-
+      
+      /**
+       * Saves the user's selected location and radius to the database.
+       * 
+       * @param {*} location coordinates in [longitude, latitude] format
+       * @param {*} radius selected radius in kilometers
+       * @param {*} region selected region name
+       */
       async function saveLocationToDB(location, radius, region = null) {
         const locationData = {
           selectedlocation: location,
@@ -199,6 +206,10 @@
         button.addEventListener("click", handleSetLocation);
       }
 
+      /**
+       * Saves the currently selected location and radius.
+       * Stores the user's settings and redirects the user to the home page.
+       */
       function handleSetLocation() {
         console.log("Choose location clicked");
         console.log("userLocation is:", userLocation);
@@ -222,6 +233,12 @@
 
       }
 
+      /**
+       * Retrieves the user's current location. 
+       * Falls back to a default location if unavailable.
+       * 
+       * @returns the coordinates in [longitude, latitude] format.
+       */
       async function getUserLocation() {
         const defaultLocation = [-123.0016, 49.2532];
 
@@ -237,7 +254,9 @@
         });
       }
 
-      // Taken from Anas, slightly modified
+      /**
+       * Loads all location data from the JSON file
+       */
       async function loadLocations() {
         try {
           const res = await fetch("../resource/locations.JSON");
@@ -250,7 +269,12 @@
         }
       }
 
-      // Taken from Anas
+      /**
+       * Filters and renders locations within the selected radius.
+       * Updates the list of currently filtered locations
+       * 
+       * @param {*} locations the array of location objects
+       */
       function renderLocations(locations) {
         currentFilteredLocations = [];
 
@@ -294,6 +318,10 @@
         button.addEventListener("click", setUserPinToCurrentLocation);
       }
 
+      /**
+       * Updates the user's pin to their current geolocation. 
+       * Repositions the pin marker and recenters the map.
+       */
       async function setUserPinToCurrentLocation() {
         const currentLocation = await new Promise((resolve, reject) => {
           navigator.geolocation.getCurrentPosition(
@@ -330,7 +358,9 @@
         updateMapMask(radius);
       }
 
-      // New code, not taken from Anas; for the dropdown regions
+      /**
+       * Sets up the region select dropdown.
+       */
       function setupRegionSelect() {
         if (!regionSelect) return;
 

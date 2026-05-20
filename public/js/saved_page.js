@@ -1,6 +1,11 @@
 /**
- * TODO:
- * Update CSS so that all the page has the same header and the card section, bg
+ * CREDITS
+ *
+ * Min: Wrote 90% of the code
+ * Damon: Page authentication logic
+ * Danielle: Wrote helper function for distance between coordinates
+ * Sofia: Refactored Min's comments, fixed geolocation logic to pull from db,
+ *        made minor changes to pull $$, phone #, and backdrop image from db
  */
 
 // Global variables
