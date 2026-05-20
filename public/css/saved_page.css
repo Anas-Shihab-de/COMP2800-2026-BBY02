@@ -22,6 +22,8 @@
 
 /**
  *  Reference:
+ *  This code is modified to unify the UI with the rest of pages based on See_all_location.css.
+ *
  *  Previous comp1537 Web Assignment 1-6, COMP 1537 Lab examples 
  *  How to create an overlay image title:
  *  https://www.w3schools.com/howto/howto_css_image_overlay_title.asp
@@ -54,336 +56,487 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: "Darker Grotesque";
+  cursor: none; /* hides default cursor */
 }
 
 html,
 body {
-  height: 100%;
+  background-repeat: no-repeat;
+  color: #ffffff;
+  background: linear-gradient(
+    185deg,
+    #6fae98 0%,
+    #4f7f6a 28%,
+    #3b5c4f 55%,
+    #2a443a 78%,
+    #1e332c 100%
+  );
+  min-height: 100vh; /* resolves the strange duplicate background that used to appear for a split second */
 }
 
-/* Whole page */
+/* Remove link underline */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* 
+  Whole page
+  currently see_all_locations doesn't have .page class, so header looks differently
+  I left the padding since the Home.html applied it 
+  */
 .saved-page {
-  min-height: 100vh;
-  background: linear-gradient(
-    to bottom,
-    rgba(11, 117, 74, 0.6) 0%,
-    rgba(167, 250, 202, 0.37) 50%,
-    rgba(167, 250, 202, 0) 88%
-  );
-  font-family: "Darker Grotesque";
+  width: 100%;
+  padding: 4vw 5vw 8vw;
   display: flex;
   flex-direction: column;
+  gap: 4vw;
 }
 
 /* Header */
 .header {
+  padding: 24px 24px;
+  gap: 12px;
   display: flex;
-  flex-direction: column;
-  width: 100%;
-  padding: 40px 24px 20px;
-  gap: 16px;
-}
-
-.header__top {
-  display: flex;
-  flex-direction: row;
-}
-
-.header__back-btn {
-  background: none;
-  border: none;
-  padding: 0;
-  color: var(--color-black);
-}
-
-.header__title {
-  margin-bottom: 8px;
-}
-
-.header__bottom {
-  display: flex;
-  flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
-  margin-bottom: 15px;
+  background: rgba(255, 255, 255, 0.096);
+}
+
+.header > * {
+  flex-shrink: 0;
+  /* Prevent header items from shrinking when the screen narrows */
+}
+.header__back-btn {
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+}
+
+/*headerText*/
+.header__title {
+  flex: 1;
+  text-align: left;
+  color: #ffffff;
+  background: linear-gradient(90deg, #b2ffb9, #ffffff);
+  background-clip: text; /* allows the gradient to show through the text */
+  color: transparent;
+  margin: 0;
+  padding: 0;
+  font-size: 2rem;
+  letter-spacing: 0.04em;
+  animation: cherryFade 0.9s ease forwards;
+}
+
+.headerButtons {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
 }
 
 .header__btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--color-black);
-  border-radius: 20px;
-  padding: 8px 20px 8px 20px;
+  background: rgba(0, 0, 0, 0.65);
+  color: white;
   border: none;
-  color: var(--color-white);
-  opacity: 90%;
+  padding: 0.55rem 1.3rem;
+  border-radius: 999px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  box-shadow:
+    0 0 12px rgba(255, 255, 255, 0.692),
+    0 0 22px rgba(255, 255, 255, 0.35),
+    inset 0 0 8px rgba(255, 255, 255, 0.25);
 }
 
-.header__filter-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.header__btn:focus,
+.applyButton:focus {
+  outline: 3px solid rgba(255, 120, 160, 0.6);
+  outline-offset: 10px;
+}
+
+.filterButton {
   background: none;
   border: none;
-  min-width: 60px;
+  color: white;
+  font-size: 2rem;
 }
 
-.material-symbols-outlined-filter {
-  font-size: 28px;
-  width: 60px;
-  padding: 5px 5px 5px 5px;
-}
-
-/* Card Section */
-.section__saved-page {
+.locationsGrid {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
   width: 100%;
-  padding: 0 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  box-sizing: border-box;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+  display: grid;
 }
-
-.card {
-  border-radius: 20px;
+.locationBox {
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+  border-radius: 1.2rem;
+  background:
+    linear-gradient(
+      to bottom right,
+      rgba(228, 255, 224, 0.699),
+      transparent,
+      rgba(255, 255, 255, 0.555)
+    ),
+    rgba(255, 255, 255, 0.12);
+  border: 1.5px solid rgba(255, 200, 220, 0.527);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.25),
+    0 0 18px rgba(255, 150, 180, 0.25);
   overflow: hidden;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  background-color: var(--color-white);
   display: flex;
   flex-direction: column;
+  animation: cherryFade 1.2s ease forwards;
+  animation: sofiaFloat 6s ease-in-out infinite;
   position: relative;
+  transition:
+    transform 0.4s ease,
+    box-shadow 0.4s ease;
 }
 
-.card__image-container {
-  width: 100%;
+.locationBox:hover {
+  transform: translateY(-2vw);
+  box-shadow:
+    0 0 25px rgba(255, 120, 160, 0.45),
+    0 0 60px rgba(255, 120, 160, 0.25);
 }
 
-.card__image-container img {
-  width: 100%;
-  aspect-ratio: 16/9;
-  /* height: 200px; */
-  object-fit: cover;
-  display: flex;
-}
-
-.card__save-btn {
+/* Creates a very light pink radial bg shadow when a location box is hovered over (only valid on desktop) */
+.locationBox:hover::after {
+  content: "";
   position: absolute;
-  top: 20px;
-  right: 20px;
-  background: none;
-  border: none;
+  top: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 205, 251, 0.404),
+    transparent 70%
+  );
+  bottom: 0;
+  right: 0;
+  left: 0;
 }
 
 .material-symbols-outlined-bookmark {
-  font-size: 32px;
-  color: var(--color-white);
+  color: var(--color-black);
   font-variation-settings: "FILL" 1;
 }
 
-/* unsave bookmark */
 .material-symbols-outlined-bookmark-unsave {
-  font-size: 32px;
-  color: var(--color-white);
+  color: var(--color-black);
+  font-variation-settings: "FILL" 0;
 }
 
-.card__text-container {
-  width: 100%;
-  padding: 10px;
+/* Makes it look like the page is breathing */
+@keyframes sofiaFloat {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-13px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.bookmarkButton {
   position: absolute;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  color: var(--color-white);
-}
-
-.card__title {
-  font-size: 1.4rem;
-}
-
-/* Media Query */
-@media (max-width: 600px) {
-  .header__title {
-    font-size: 3rem;
-  }
-
-  .section__saved-page {
-    width: 100%;
-    padding: 25px;
-  }
-}
-
-@media (max-width: 900px) and (min-width: 601px) {
-  .header__title {
-    font-size: 4rem;
-  }
-
-  .section__saved-page {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-  }
-
-  .header__btn {
-    font-size: 1.2rem;
-    padding: 10px 28px;
-  }
-
-  .material-symbols-outlined-filter {
-    font-size: 34px;
-  }
-}
-
-@media (max-width: 1200px) and (min-width: 901px) {
-  .header__title {
-    font-size: 4.3rem;
-  }
-
-  .section__saved-page {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-  }
-
-  .header__btn {
-    font-size: 1.8rem;
-    padding: 10px 28px;
-  }
-
-  .material-symbols-outlined-filter {
-    font-size: 60px;
-  }
-}
-
-@media (min-width: 1201px) {
-  .header__title {
-    font-size: 5rem;
-  }
-
-  .section__saved-page {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-  }
-
-  .header__btn {
-    font-size: 2.5rem;
-    padding: 10px 28px;
-  }
-
-  .material-symbols-outlined-filter {
-    font-size: 60px;
-    margin-right: 30px;
-  }
-}
-
-/*======= Card Tags CSS =========*/
-
-.card-name {
-  font-size: 16px;
-  font-weight: 700;
-  margin-bottom: 6px;
-}
-
-.card-meta {
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
   display: flex;
-  gap: 12px;
-  font-size: 13px;
-  color: var(--subtext);
-  margin-bottom: 10px;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.45);
+  border: none;
+  padding: 0.4rem;
+  border-radius: 50%;
+  transition: transform 0.25s ease;
 }
 
-.card-tags {
+/* creates that little jumping icon effect when clicked on */
+.bookmarkButton:active {
+  transform: scale(2);
+}
+
+.locationImage {
+  width: 100%;
+  aspect-ratio: 5 / 3;
+  position: relative;
+  overflow: hidden;
+}
+
+.locationImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.imageTag {
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  padding: 0.35rem 0.9rem;
+  background: rgba(0, 0, 0, 0.55);
+  color: white;
+  border-radius: 999px;
+  font-size: 1.15rem;
+}
+
+.hubInfo {
+  padding: 14px 16px;
+  gap: 4px;
+  display: flex;
+  flex-direction: column;
+}
+
+.locationName {
+  margin: 0;
+  color: white;
+  font-size: 1.45rem;
+  font-weight: 200;
+}
+
+.locationDetails {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.distanceInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.locationIcon {
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 80%;
+  overflow: hidden;
+  justify-content: center;
+  display: flex;
+  background: rgba(255, 255, 255, 0.733);
+  align-items: center;
+}
+
+.locationDistanceKm {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #0f241c;
+}
+
+.locationIcon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.relativePrice {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #0a3003;
+}
+
+.clearButton,
+.applyButton {
+  padding: 16px;
+  border-radius: 999px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  width: 100%;
+}
+
+.tagRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 0.35rem;
+  margin-top: 0.2rem;
 }
 
 .tag {
-  background: var(--tag-bg);
-  color: var(--tag-text);
-  font-size: 11px;
+  border-radius: 999px;
+  font-size: 1.09rem;
+  padding: 0.3rem 0.8rem;
+  background: rgba(255, 255, 255, 0.438);
+  color: #1f3b32;
   font-weight: 600;
-  padding: 4px 12px;
-  border-radius: var(--radius-btn);
 }
 
-/* ======= Filter CSS =========*/
-
-.filter-overlay {
+.filterPanelBg {
   position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.45);
   z-index: 10;
 }
 
-.filter-panel {
-  position: fixed;
-  top: 56px;
-  right: 0;
-  height: 100%;
-  width: 80%;
-  max-width: 320px;
-  background: white;
-  z-index: 11;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  overflow-y: auto;
-}
-
-/* SORTING OPTION */
-.sort-select {
-  width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: var(--radius-btn);
-  font-size: 13px;
-  cursor: pointer;
-  background: white;
-  color: var(--text);
-}
-/* SORTING OPTION */
-
+/* changed to match Danielle's variable */
 .filter-tag {
-  margin-top: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 20px;
-  padding: 6px 14px;
-  background: white;
-  cursor: pointer;
+  color: white;
+  font-size: 1.05rem;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.15);
+  padding: 10px 20px;
+  border-radius: 999px;
+  margin-bottom: 0.6rem;
 }
 
+/* changes to have a black background when clicked on */
 .filter-tag.active {
   background: black;
-  color: white;
   border-color: black;
-}
-
-.clear-btn {
-  flex: 1;
-  padding: 10px;
-  border: 2px solid #1a1a1a;
-  border-radius: var(--radius-btn);
-  background: white;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.apply-btn {
-  flex: 1;
-  padding: 10px;
-  border: none;
-  border-radius: var(--radius-btn);
-  background: #1a1a1a;
   color: white;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
+}
+
+.filterPanel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 78%;
+  max-width: 320px;
+  height: 100%;
+  border-left: 2px solid rgba(255, 200, 220, 0.35);
+  box-shadow: -4px 0 18px rgba(255, 150, 180, 0.25);
+  display: flex;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px);
+  padding: 1.5rem;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  font-size: 1.04rem;
+  flex-direction: column;
+  gap: 1.4rem;
+  z-index: 11;
+  animation: cherryFade 0.6s ease forwards;
+}
+
+.filterPanel select,
+.filterPanel option,
+.filterPanel label,
+.filterPanel h3,
+.filterPanel p {
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 1.15rem;
+  width: 100%;
+}
+
+.clearButton {
+  background: white;
+  color: black;
+  border: 2px solid black;
+}
+
+.applyButton {
+  background: black;
+  color: white;
+  border: none;
+}
+
+@keyframes cherryFade {
+  0% {
+    opacity: 0;
+    transform: translateY(2.5vw);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .hidden {
   display: none;
+}
+
+@media (max-width: 600px) {
+  * {
+    cursor: auto;
+  }
+
+  .header {
+    padding: 8vw 5vw;
+  }
+
+  .headerText {
+    font-size: 1.6rem;
+  }
+
+  .saveButton {
+    padding: 0.55rem 1.2rem;
+    font-size: 1rem;
+  }
+
+  .filterButton {
+    font-size: 1.8rem;
+  }
+
+  .tag {
+    font-size: 1rem;
+    padding: 0.35rem 0.9rem;
+  }
+
+  .locationsGrid {
+    grid-template-columns: 1fr; /* for cards to stack */
+    width: 90%;
+    padding: 0;
+  }
+
+  .locationBox {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .locationName {
+    font-size: 1.25rem;
+  }
+
+  .locationDistanceKm,
+  .relativePrice {
+    font-size: 1.1rem;
+  }
+
+  .clearButton,
+  .applyButton {
+    margin-top: 0.5rem;
+    padding: 14px;
+    font-size: 1.1rem;
+  }
+}
+
+@media (min-width: 600px) {
+  * {
+    cursor: auto;
+  }
+
+  .locationsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1000px) {
+  * {
+    cursor: auto;
+  }
+
+  .locationsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }

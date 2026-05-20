@@ -21,34 +21,32 @@
 
 <body class="saved-page">
   <header class="header">
-    <div class="header__top">
-      <button type="button" class="header__back-btn">
-        <span class="material-symbols-outlined"> arrow_back_ios </span>
-      </button>
-      <h1 class="header__title">Saved Places</h1>
-    </div>
-    <div class="header__bottom">
+    <button type="button" class="header__back-btn backButton">
+      <span class="material-symbols-outlined"> arrow_back_ios </span>
+    </button>
+    <h1 class="header__title headerText">Saved Places</h1>
+
+    <div class="headerButtons">
       <button type="button" class="header__btn">Explore All</button>
 
-      <!-- filter -->
-      <button type="button" class="header__filter-btn" id="filter-btn">
-        <span class=" material-symbols-outlined material-symbols-outlined-filter">
+      <button type="button" class="header__filter-btn filterButton" id="filter-btn">
+        <span class="material-symbols-outlined material-symbols-outlined-filter">
           filter_list
         </span>
       </button>
     </div>
   </header>
+
   <main>
     <!-- Cards -->
-    <section class="section__saved-page" id="section__saved-page">
+    <section class="locationsGrid section__saved-page" id="section__saved-page">
     </section>
   </main>
 
 
-  <!-- Filter Panel -->
-  <div id="filter-overlay" class="filter-overlay hidden"></div>
-  <div id="filter-panel" class="filter-panel hidden">
-
+  <!-- FILTER PANEL -->
+  <div id="filterPanelBg" class="filterPanelBg hidden"></div>
+  <div id="filterPanel" class="filterPanel hidden">
     <div class="filter-header">
       <h2>Filter Tags</h2>
     </div>
@@ -60,17 +58,17 @@
         <option value="name">Name: A–Z</option>
       </select>
     </div>
+
     <div class="filter-section">
       <div id="filter-tags-container" class="filter-tags"></div>
     </div>
 
     <div class="filter-footer">
-      <button class="clear-btn" onclick="clearFilters()">Clear All</button>
-      <button class="apply-btn" onclick="applyFilters()">Apply</button>
+      <button class="clearButton" onclick="clearFilters()">Clear All</button>
+      <button class="applyButton" onclick="applyFilters()">Apply</button>
     </div>
-
   </div>
-  <!-- FILTER PANEL -->
+
 </body>
 <script src="../js/saved_page.js"></script>
 
