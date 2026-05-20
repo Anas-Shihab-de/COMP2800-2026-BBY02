@@ -76,6 +76,11 @@
         filter: drop-shadow(0 0 6px rgba(255, 200, 200, 0.4));
       }
 
+      .backIcon:hover {
+        transform: translateX(-4px);
+        filter: drop-shadow(0 0 10px rgba(255, 150, 170, 0.7));
+      }
+
       .settingsSection {
         display: flex;
         flex-direction: column;
@@ -668,6 +673,52 @@
       document.querySelector(".backIcon").addEventListener("click", () => {
         window.history.back();
       });
+
+      // Loads the user's preferences for the intro tutorial
+      async function loadTutorialSetting() {
+        try {
+          const response = await fetch("/api/authentication", {
+            credentials: "include",
+          });
+
+          const auth = await response.json();
+
+          const tutorialToggle = document.getElementById("tutorialToggle");
+          tutorialToggle.checked = auth.show_tutorial === true;
+        } catch (error) {
+          console.error(
+            "There was a problem loading your preferences: ",
+            error,
+          );
+        }
+      }
+
+      loadTutorialSetting();
+
+      // Saves your preferences after toggling the switch
+      document
+        .getElementById("tutorialToggle")
+        .addEventListener("change", async (event) => {
+          const showTutorial = event.target.checked;
+
+          try {
+            const res = await fetch("/api/updateTutorialSetting", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({ showTutorial }),
+            });
+
+            if (!res.ok) {
+              alert("There was a problem saving tutorial preferences");
+            }
+          } catch (error) {
+            console.error(
+              "There was a problem saving tutorial preferences:",
+              error,
+            );
+          }
+        });
     </script>
   </body>
 </html>

@@ -239,10 +239,13 @@ async function savePlace(savedLocationId) {
 }
 
 // explore all button
-const exploreBtn = document.querySelector(".header__btn");
-exploreBtn.addEventListener("click", () => {
-  location.href = "Home.html";
-});
+const exploreBtn = document.querySelector(".explore-all-btn");
+
+if (exploreBtn) {
+  exploreBtn.addEventListener("click", () => {
+    location.href = "Home.html";
+  });
+}
 
 // back button
 const backBtn = document.querySelector(".header__back-btn");

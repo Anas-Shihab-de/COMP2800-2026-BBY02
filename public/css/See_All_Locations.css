@@ -60,6 +60,15 @@ a {
   font-size: 2rem;
   display: flex;
   align-items: center;
+  filter: drop-shadow(0 0 6px rgba(255, 200, 200, 0.4));
+  transition:
+    transform 0.25s ease,
+    filter 0.25s ease;
+}
+
+.backButton:hover {
+  transform: translateX(-4px);
+  filter: drop-shadow(0 0 10px rgba(255, 150, 170, 0.7));
 }
 
 .headerText {

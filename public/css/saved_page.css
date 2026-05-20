@@ -1,25 +1,3 @@
-/** ------------------------------------------------------------------------
- * CSS Naming Convention: BEM (Block, Element, Modifier)
- * --------------------------------------------------------------------------
- *  B (Block): A standalone entity that is meaningful on its own.
- *
- *  - Use class selectors ONLY (No IDs, No tags).
- *  ex) .btn, .nav, .menu, .search-form
- * 
- *  E (Element): Parts of a block and have no standalone meaning. 
- *
- *  - Semantically tied to its block. 
- *  - Should be nested inside a block in HTML.
- *  ex) .btn__text, .nav__item, .nav__link
- *
- *  M (Modifier): Flags on blocks or elements. 
- * 
- *  - Use them to change appearancem, behavior or state.
- *  ex) .btn--large, .btn--red, .nav__link--active  
- * 
- *  Reference: https://getbem.com/naming/
- */
-
 /**
  *  Reference:
  *  Previous comp1537 Web Assignment 1-6, COMP 1537 Lab examples 
@@ -53,6 +31,7 @@
 * {
   margin: 0;
   padding: 0;
+  font-family: "Darker Grotesque";
   box-sizing: border-box;
 }
 
@@ -61,14 +40,15 @@ body {
   height: 100%;
 }
 
-/* Whole page */
 .saved-page {
   min-height: 100vh;
   background: linear-gradient(
-    to bottom,
-    rgba(11, 117, 74, 0.6) 0%,
-    rgba(167, 250, 202, 0.37) 50%,
-    rgba(167, 250, 202, 0) 88%
+    185deg,
+    #6fae98 0%,
+    #4f7f6a 28%,
+    #3b5c4f 55%,
+    #2a443a 78%,
+    #1e332c 100%
   );
   font-family: "Darker Grotesque";
   display: flex;
@@ -78,35 +58,88 @@ body {
 /* Header */
 .header {
   display: flex;
-  flex-direction: column;
-  width: 100%;
-  padding: 40px 24px 20px;
-  gap: 16px;
-}
-
-.header__top {
-  display: flex;
-  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start; /* title + back button on left */
+  gap: 14px;
+  padding: 20px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 4px 14px rgba(255, 255, 255, 0.12),
+    0 0 22px rgba(255, 200, 220, 0.18);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .header__back-btn {
+  padding: 0;
   background: none;
   border: none;
-  padding: 0;
-  color: var(--color-black);
+}
+
+.backIcon {
+  width: 30px;
+  height: 30px;
+  margin-top: 5px;
+  margin-left: 10px;
+  filter: drop-shadow(0 0 6px rgba(255, 200, 200, 0.4));
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease;
+}
+
+.backIcon:hover {
+  transform: translateX(-4px);
+  filter: drop-shadow(0 0 10px rgba(255, 150, 170, 0.7));
+}
+
+.header__back-btn img {
+  width: 30px;
+  height: 30px;
+  filter: drop-shadow(0 0 6px rgba(255, 200, 200, 0.4));
+  margin-top: 5px;
+  margin-left: 10px;
+}
+
+.explore-all-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 18px 0 10px 20px;
+  padding: 0.55rem 1.3rem;
+  background: rgba(0, 0, 0, 0.65);
+  border: none;
+  color: white;
+  border-radius: 999px;
+  font-size: 1.5rem;
+  font-weight: 500;
+  align-self: flex-start !important;
+  width: auto !important;
+  max-width: fit-content !important;
+  box-shadow:
+    0 0 12px rgba(255, 255, 255, 0.692),
+    0 0 22px rgba(255, 255, 255, 0.35),
+    inset 0 0 8px rgba(255, 255, 255, 0.25);
+  transition: 0.25s ease;
+}
+
+.explore-all-btn:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 0 18px rgba(255, 150, 169, 0.7),
+    0 0 30px rgba(255, 150, 169, 0.45),
+    inset 0 0 10px rgba(255, 255, 255, 0.35);
 }
 
 .header__title {
-  margin-bottom: 8px;
-}
-
-.header__bottom {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  margin-bottom: 15px;
+  font-size: 2.6rem !important;
+  letter-spacing: 0.8px;
+  font-weight: 600;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(90deg, #b2ffb9, #ffffff);
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 10px rgba(255, 220, 220, 0.55);
 }
 
 .header__btn {
@@ -122,18 +155,19 @@ body {
 }
 
 .header__filter-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   background: none;
   border: none;
-  min-width: 60px;
+  margin-left: auto;
+  min-width: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .material-symbols-outlined-filter {
-  font-size: 28px;
-  width: 60px;
-  padding: 5px 5px 5px 5px;
+  font-size: 22px;
+  width: auto;
+  padding: 4px;
 }
 
 /* Card Section */
@@ -147,13 +181,62 @@ body {
 }
 
 .card {
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  background-color: var(--color-white);
-  display: flex;
-  flex-direction: column;
+  border-radius: 1.2rem;
+  background:
+    linear-gradient(
+      to bottom right,
+      rgba(228, 255, 224, 0.699),
+      transparent,
+      rgba(255, 255, 255, 0.555)
+    ),
+    rgba(255, 255, 255, 0.12);
+  border: 1.5px solid rgba(255, 200, 220, 0.527);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.25),
+    0 0 18px rgba(255, 150, 180, 0.25);
   position: relative;
+  overflow: hidden;
+  display: flex;
+  margin-top: 20px;
+  flex-direction: column;
+  transition:
+    transform 0.4s ease,
+    box-shadow 0.4s ease;
+  animation: sofiaFloat 6s ease-in-out infinite;
+}
+
+.card:hover {
+  transform: translateY(-2vw);
+  box-shadow:
+    0 0 25px rgba(255, 120, 160, 0.45),
+    0 0 60px rgba(255, 120, 160, 0.25);
+}
+
+.card:hover::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 205, 251, 0.404),
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+@keyframes sofiaFloat {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-13px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
 
 .card__image-container {
@@ -198,7 +281,24 @@ body {
 }
 
 .card__title {
-  font-size: 1.4rem;
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 300;
+  color: white;
+}
+
+.filter-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* hiding all of this for now because it is not displaying the right information and I don't have time to fix it*/
+.locationDistanceKm,
+.relativePrice,
+.card-meta,
+.locationDetails {
+  display: none !important;
 }
 
 /* Media Query */
@@ -296,16 +396,17 @@ body {
 .card-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 0.35rem;
+  margin-top: 0.2rem;
 }
 
 .tag {
-  background: var(--tag-bg);
-  color: var(--tag-text);
-  font-size: 11px;
+  border-radius: 999px;
+  font-size: 1.09rem;
+  padding: 0.3rem 0.8rem;
+  background: rgba(255, 255, 255, 0.438);
+  color: #1f3b32;
   font-weight: 600;
-  padding: 4px 12px;
-  border-radius: var(--radius-btn);
 }
 
 /* ======= Filter CSS =========*/
@@ -313,24 +414,36 @@ body {
 .filter-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.45);
   z-index: 10;
+}
+
+.filter-panel label,
+.filter-panel p,
+.filter-panel h2,
+.filter-panel select,
+.filter-panel option {
+  font-size: 1.35rem;
 }
 
 .filter-panel {
   position: fixed;
-  top: 56px;
+  top: 0;
   right: 0;
-  height: 100%;
-  width: 80%;
+  width: 78%;
   max-width: 320px;
-  background: white;
-  z-index: 11;
-  padding: 1.5rem;
+  height: 100%;
+  border-left: 2px solid rgba(255, 200, 220, 0.35);
+  box-shadow: -4px 0 18px rgba(255, 150, 180, 0.25);
   display: flex;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px);
+  padding: 2rem 1.5rem;
+  font-size: 1.04rem;
   flex-direction: column;
-  gap: 1rem;
-  overflow-y: auto;
+  gap: 1.4rem;
+  z-index: 11;
+  animation: cherryFade 0.6s ease forwards;
 }
 
 /* SORTING OPTION */
@@ -347,41 +460,41 @@ body {
 /* SORTING OPTION */
 
 .filter-tag {
-  margin-top: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 20px;
-  padding: 6px 14px;
-  background: white;
-  cursor: pointer;
+  color: white;
+  font-size: 1.05rem;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.15);
+  padding: 10px 20px;
+  border-radius: 999px;
+  margin-bottom: 0.6rem;
 }
 
 .filter-tag.active {
   background: black;
-  color: white;
   border-color: black;
+  color: white;
 }
 
 .clear-btn {
-  flex: 1;
-  padding: 10px;
-  border: 2px solid #1a1a1a;
-  border-radius: var(--radius-btn);
   background: white;
-  font-size: 14px;
+  color: black;
+  border: 2px solid black;
+  padding: 16px;
+  border-radius: 999px;
+  font-size: 1.1rem;
   font-weight: 700;
-  cursor: pointer;
+  width: 100%;
 }
 
 .apply-btn {
-  flex: 1;
-  padding: 10px;
-  border: none;
-  border-radius: var(--radius-btn);
-  background: #1a1a1a;
+  background: black;
   color: white;
-  font-size: 14px;
+  border: none;
+  padding: 16px;
+  border-radius: 999px;
+  font-size: 1.1rem;
   font-weight: 700;
-  cursor: pointer;
+  width: 100%;
 }
 
 .hidden {

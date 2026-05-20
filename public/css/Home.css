@@ -340,7 +340,7 @@ a {
 }
 
 .dropdownMenu {
-  background: rgba(255, 255, 255, 0.342);
+  background: rgb(255, 255, 255);
   border-radius: 8px;
   padding: 12px;
   box-shadow: 0 4px 12px rgba(255, 255, 255, 0.479);

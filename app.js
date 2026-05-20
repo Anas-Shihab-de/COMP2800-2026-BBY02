@@ -173,13 +173,15 @@ app.post("/api/signup", async (req, res) => {
       email: email,
       password: hashedPassword,
       saved_list: [],
+      show_tutorial: true,
     });
 
     req.session.authenticated = true;
     req.session.email = email;
     req.session.cookie.maxAge = expireTime;
+    req.session.justSignedUp = true;
 
-    res.redirect("/html/SofiasMap.html");
+    res.redirect("/html/Tutorial.html");
   } catch (error) {
     res.status(503).send("There was a problem adding the user to db.");
   }
@@ -210,12 +212,16 @@ app.post("/api/login", async (req, res) => {
       req.session.email = result[0].email;
       req.session.cookie.maxAge = expireTime;
 
-      res.redirect("/html/Home.html");
-    } else {
-      res.redirect("/html/Login.html");
+      if (result[0].show_tutorial === true) {
+        return res.redirect("/html/Tutorial.html");
+      }
+
+      return res.redirect("/html/Home.html");
     }
+
+    return res.redirect("/html/Login.html");
   } catch (error) {
-    res.status(503).send("Problem logging in.");
+    res.status(503).send("There was a problem logging in");
   }
 });
 
@@ -459,6 +465,73 @@ app.post("/api/clearSavedList", async (req, res) => {
   } catch (err) {
     console.error("There was a problem clearing your saved_list:", err);
     res.status(500).json({ error: "Failed to clear saved list." });
+  }
+});
+
+/**
+ * Updates the user's settings for tutorial preference.
+ */
+app.post("/api/updateTutorialSetting", async (req, res) => {
+  try {
+    const email = req.session.email;
+    const { showTutorial } = req.body;
+
+    if (!email) {
+      return res.status(401).json({ error: "You are not authenticated." });
+    }
+
+    const usersCollection = client
+      .db(mongodb_project_database)
+      .collection("Users");
+
+    await usersCollection.updateOne(
+      { email: email },
+      { $set: { show_tutorial: showTutorial } },
+    );
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("There was a problem saving your tutorial preferences", err);
+    res
+      .status(500)
+      .json({ error: "There was a problem saving your tutorial preferences." });
+  }
+});
+
+/**
+ * Marks the tutorial as completed, redirects to correct page.
+ */
+app.post("/api/viewedtutorial", async (req, res) => {
+  try {
+    const email = req.session.email;
+
+    if (!email) {
+      return res.status(401).json({ error: "Not authenticated." });
+    }
+
+    const usersCollection = client
+      .db(mongodb_project_database)
+      .collection("Users");
+
+    // Shows the tutorial as being complete
+    await usersCollection.updateOne(
+      { email: email },
+      { $set: { show_tutorial: false } },
+    );
+
+    let redirectTo = "/html/Home.html";
+
+    if (req.session.justSignedUp === true) {
+      redirectTo = "/html/SofiasMap.html";
+      req.session.justSignedUp = false;
+    }
+
+    res.json({ success: true, redirectTo });
+  } catch (err) {
+    console.error("There was a problem completing the tutorial.", err);
+    res
+      .status(500)
+      .json({ error: "There was a problem completing the tutorial" });
   }
 });
 

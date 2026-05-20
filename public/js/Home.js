@@ -352,7 +352,7 @@ function isOpenNow(hours) {
       return true;
     }
   }
-  // Otherwise, closed
+  // Otherwise, the location is closed
   return false;
 }
 

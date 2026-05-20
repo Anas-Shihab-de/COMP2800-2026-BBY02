@@ -5,73 +5,72 @@
 -->
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Darker Grotesque"
+      rel="stylesheet"
+    />
+    <!-- Google Fonts-->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    />
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/saved_page.css" />
+    <title>Saved Places</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css?family=Darker Grotesque" rel="stylesheet" />
-  <!-- Google Fonts-->
-  <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-  <!-- CSS -->
-  <link rel="stylesheet" href="../css/saved_page.css" />
-  <title>Saved Places</title>
-</head>
-
-<body class="saved-page">
-  <header class="header">
-    <div class="header__top">
+  <body class="saved-page">
+    <header class="header">
       <button type="button" class="header__back-btn">
-        <span class="material-symbols-outlined"> arrow_back_ios </span>
+        <img src="../img/BackIcon.png" alt="Back" class="backIcon" />
       </button>
-      <h1 class="header__title">Saved Places</h1>
-    </div>
-    <div class="header__bottom">
-      <button type="button" class="header__btn">Explore All</button>
 
-      <!-- filter -->
+      <h1 class="header__title">Saved Places</h1>
+
       <button type="button" class="header__filter-btn" id="filter-btn">
-        <span class=" material-symbols-outlined material-symbols-outlined-filter">
+        <span
+          class="material-symbols-outlined material-symbols-outlined-filter"
+        >
           filter_list
         </span>
       </button>
+    </header>
+
+    <button type="button" class="explore-all-btn">Explore All</button>
+
+    <main>
+      <!-- Cards -->
+      <section class="section__saved-page" id="section__saved-page"></section>
+    </main>
+
+    <!-- Filter Panel -->
+    <div id="filter-overlay" class="filter-overlay hidden"></div>
+    <div id="filter-panel" class="filter-panel hidden">
+      <div class="filter-header">
+        <h2>Filter Tags</h2>
+      </div>
+
+      <div class="filter-section">
+        <p class="filter-label">Sort By</p>
+        <select id="sort-select" class="sort-select">
+          <option value="distance">Nearest First</option>
+          <option value="name">Name: A–Z</option>
+        </select>
+      </div>
+      <div class="filter-section">
+        <div id="filter-tags-container" class="filter-tags"></div>
+      </div>
+
+      <div class="filter-footer">
+        <button class="clear-btn" onclick="clearFilters()">Clear All</button>
+        <button class="apply-btn" onclick="applyFilters()">Apply</button>
+      </div>
     </div>
-  </header>
-  <main>
-    <!-- Cards -->
-    <section class="section__saved-page" id="section__saved-page">
-    </section>
-  </main>
-
-
-  <!-- Filter Panel -->
-  <div id="filter-overlay" class="filter-overlay hidden"></div>
-  <div id="filter-panel" class="filter-panel hidden">
-
-    <div class="filter-header">
-      <h2>Filter Tags</h2>
-    </div>
-
-    <div class="filter-section">
-      <p class="filter-label">Sort By</p>
-      <select id="sort-select" class="sort-select">
-        <option value="distance">Nearest First</option>
-        <option value="name">Name: A–Z</option>
-      </select>
-    </div>
-    <div class="filter-section">
-      <div id="filter-tags-container" class="filter-tags"></div>
-    </div>
-
-    <div class="filter-footer">
-      <button class="clear-btn" onclick="clearFilters()">Clear All</button>
-      <button class="apply-btn" onclick="applyFilters()">Apply</button>
-    </div>
-
-  </div>
-  <!-- FILTER PANEL -->
-</body>
-<script src="../js/saved_page.js"></script>
-
+    <!-- FILTER PANEL -->
+  </body>
+  <script src="../js/saved_page.js"></script>
 </html>
