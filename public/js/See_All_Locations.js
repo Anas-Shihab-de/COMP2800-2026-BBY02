@@ -1,7 +1,7 @@
 /**
  * CREDITS
  *
- * Min: Changed variable names
+ * Min: Changed variable names and modified the logic related to filtered location.
  * Damon: Wrote the authorization code
  * Danielle: Wrote 90% of the code.
  * Sofia: Refactored comments, changed variable names & template code.
@@ -383,15 +383,15 @@ function openSaved() {
 }
 
 /**
-* Calculates the distance in kilometers between two coordinates.
-*
-* Uses the Haversine formula.
-*
-* @param {*} a the first point's coordinates in [longitude, latitude]
-* @param {*} b the second point's coordinates in [longitude, latitude]
-*
-* @returns distance in kilometers
-*/
+ * Calculates the distance in kilometers between two coordinates.
+ *
+ * Uses the Haversine formula.
+ *
+ * @param {*} a the first point's coordinates in [longitude, latitude]
+ * @param {*} b the second point's coordinates in [longitude, latitude]
+ *
+ * @returns distance in kilometers
+ */
 function getDistanceKm(a, b) {
   const R = 6371;
 
