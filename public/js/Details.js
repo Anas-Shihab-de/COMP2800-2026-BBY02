@@ -1,8 +1,8 @@
 /**
  * CREDITS
  *
- * Min: Wrote all logic for the details page.
- * Damon: AI-feature logic.
+ * Min: Wrote the logic for the details page.
+ * Damon: Wrote the AI-feature logic.
  * Danielle: Wrote helper function for distance between coordinates
  * Sofia: Refactored Min's comments, fixed geolocation logic to pull from db,
  *        made minor changes to pull $$, phone #, and backdrop image from db
@@ -60,7 +60,7 @@ async function loadLocation() {
   const locations = await res.json();
   currentLocation = locations.find((loc) => loc._id === locationId);
 
-  // Redirects to 404 page if geolocation doesn't exist
+  // Redirects to 404 page if location doesn't exist
   if (!currentLocation) {
     window.location.href = "../html/404.html";
     return;
@@ -88,10 +88,10 @@ async function loadLocation() {
 async function loadUserSavedList() {
   const res = await fetch("/api/users");
   const users = await res.json();
-  const loggedinUser = users.find((user) => user.email === userEmail);
+  const loggedInUser = users.find((user) => user.email === userEmail);
 
-  if (loggedinUser && loggedinUser.saved_list) {
-    return loggedinUser.saved_list;
+  if (loggedInUser && loggedInUser.saved_list) {
+    return loggedInUser.saved_list;
   } else {
     return [];
   }
@@ -159,7 +159,7 @@ async function renderPage(location) {
   }
 
   // Gets the full working hours of a location
-  let fullSchdule = "";
+  let fullSchedule = "";
   let timeText = "";
 
   for (const day in location.hours) {
@@ -171,7 +171,7 @@ async function renderPage(location) {
       timeText = `Closed`;
     }
 
-    fullSchdule += `
+    fullSchedule += `
     <li>
         <span>${formattedDay}: </span>
         <span>${timeText}</span>
@@ -251,7 +251,7 @@ async function renderPage(location) {
 
             <div class="fullScheduleSection" style="display: none;">
                 <ul>
-                   ${fullSchdule}
+                   ${fullSchedule}
                 </ul>
             </div>
 

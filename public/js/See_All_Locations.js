@@ -200,7 +200,7 @@ function renderCards(locations) {
 }
 
 /**
- * Saves or unsaves a location
+ * Toggles saved/unsaved state for a location.
  *
  * @param {*} event the click event
  * @param {*} locationId the id of the location
@@ -236,7 +236,7 @@ async function toggleSave(event, locationId) {
 }
 
 /**
- * Redirects user to the details page
+ * Redirects user to the details page of the specific location.
  *
  * @param {*} locationId the id of the location
  */
@@ -332,7 +332,7 @@ function toggleTag(btn, tag) {
 }
 
 /**
- * Filters by the exact tags that the use chooses and re-renders the
+ * Filters by the exact tags that the user chooses and re-renders the list.
  */
 function applyFilters() {
   const filtered = [];
@@ -354,7 +354,7 @@ function applyFilters() {
 }
 
 /**
- * Clears all tags selected.
+ * Clears all tags selected and resets sorting and filters.
  */
 function clearFilters() {
   selectedTags = [];
@@ -383,13 +383,15 @@ function openSaved() {
 }
 
 /**
- * Calculates the distance in kilometers between two coordinates.
- *
- * @param {*} a longitude and latitude of point a
- * @param {*} b longitude and latitude of point b
- *
- * @returns distance in kilometers
- */
+* Calculates the distance in kilometers between two coordinates.
+*
+* Uses the Haversine formula.
+*
+* @param {*} a the first point's coordinates in [longitude, latitude]
+* @param {*} b the second point's coordinates in [longitude, latitude]
+*
+* @returns distance in kilometers
+*/
 function getDistanceKm(a, b) {
   const R = 6371;
 

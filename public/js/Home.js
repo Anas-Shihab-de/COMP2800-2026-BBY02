@@ -55,6 +55,10 @@ loadLocations();
 
 /**
  * Applies the situation (dropdown) filters to all locations.
+ * 
+ * @param {*} locations the locations to be filtered
+ * 
+ * @returns the filtered locations
  */
 function applySituationFilters(locations) {
   return locations.filter((loc) => {
@@ -101,9 +105,9 @@ function applySituationFilters(locations) {
 }
 
 /**
- * Renders the locations into the right category row.
+ * Renders the locations into their corresponding category row.
  *
- * @param {*} locations
+ * @param {*} allLocations the locations retrieved from the database
  */
 function renderCards(allLocations) {
   for (const rowCategory of rowCategories) {
@@ -187,7 +191,12 @@ function renderCards(allLocations) {
   addSeeAllButtonsListener();
 }
 /**
- * Inserts a single location into a row.
+ * Inserts a single location card into a row.
+ * 
+ * @param {*} row the parent row element
+ * @param {*} location the location data
+ * @param {*} distanceText the formatted distance text
+ * @param {*} badgeText the featured tag displayed on the image
  */
 function insertLocationCard(row, location, distanceText, badgeText) {
   row.insertAdjacentHTML(
@@ -302,11 +311,11 @@ document.getElementById("mySituationButton").addEventListener("click", () => {
 });
 
 const checkboxList = [
-  { id: "filterNoId", filterkey: "noId" },
-  { id: "filterWheelchair", filterkey: "wheelchair" },
-  { id: "filterWalking", filterkey: "walking" },
-  { id: "filterCultural", filterkey: "cultural" },
-  { id: "filterOpenNow", filterkey: "openNow" },
+  { id: "filterNoId", filterKey: "noId" },
+  { id: "filterWheelchair", filterKey: "wheelchair" },
+  { id: "filterWalking", filterKey: "walking" },
+  { id: "filterCultural", filterKey: "cultural" },
+  { id: "filterOpenNow", filterKey: "openNow" },
 ];
 
 for (const item of checkboxList) {
@@ -315,7 +324,7 @@ for (const item of checkboxList) {
   // Listens for checkbox clicks
   checkbox.addEventListener("change", (event) => {
     // Updates the filters in use
-    situationFilters[item.filterkey] = event.target.checked;
+    situationFilters[item.filterKey] = event.target.checked;
 
     // Re-renders locations
     loadLocations();
@@ -324,6 +333,10 @@ for (const item of checkboxList) {
 
 /**
  * Determines if a location is open based on its daily hours.
+ * 
+ * @param {*} hours the weekly operating hours
+ * 
+ * @returns true if the location is currently open
  */
 function isOpenNow(hours) {
   const now = new Date();

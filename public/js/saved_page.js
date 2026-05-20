@@ -3,7 +3,7 @@
  *
  * Min: Wrote 90% of the code
  * Damon: Page authentication logic
- * Danielle: Wrote helper function for distance between coordinates
+ * Danielle: Wrote helper function for distance between coordinates and the filter panel logic
  * Sofia: Refactored Min's comments, fixed geolocation logic to pull from db,
  *        made minor changes to pull $$, phone #, and backdrop image from db
  */
@@ -30,7 +30,7 @@ async function checkAuth() {
 checkAuth();
 
 /**
- * Loads saved location only from the logged in user.
+ * Loads saved locations only from the logged in user.
  * Load all locations and filter them to have only the same ids in the userSavedList.
  *
  * -- updated logic:
@@ -103,6 +103,8 @@ async function loadUserSavedList(userEmail) {
 }
 
 /**
+ * Renders saved location cards to the page.
+ * 
  * @param savedLocations locations that filtered by user saved list.
  *        User saved list contains array of ids that user saved.
  */
@@ -117,7 +119,7 @@ function renderCards(savedLocations) {
     const savedLocationId = savedLocations[i]._id;
     const imagePath = savedLocations[i].images[0];
 
-    // calcualte distance based on the location's coordinate
+    // calculate distance based on the location's coordinate
     let distance = "N/A";
     if (userLocation && savedLocations[i].geo?.coordinates) {
       distance =
@@ -184,7 +186,8 @@ function renderCards(savedLocations) {
 
 /**
  * Changes bookmark icon as the user clicked and updates user's saved_list.
- * @pararm savedLocationsId the id of each card that needs to be updated.
+ * 
+ * @param savedLocationsId the id of each card that needs to be updated.
  * @param bookmarkIcon the icon in the save button that the user clicked.
  */
 async function toggleSaveBtn(savedLocationId, bookmarkIcon) {
@@ -355,7 +358,7 @@ function toggleTag(btn, tag) {
 }
 
 /**
- * Filters by the exact tags that the use chooses and re-renders the
+ * Filters by the exact tags that the user chooses and re-renders the list.
  */
 function applyFilters() {
   const filtered = [];

@@ -76,6 +76,8 @@
        *
        * Uses the Haversine formula.
        *
+       * @param {*} a the first point's coordinates in [longitude, latitude]
+       * @param {*} b the second point's coordinates in [longitude, latitude]
        * @returns distance in kilometers
        */
       function getDistanceKm(a, b) {
@@ -255,7 +257,7 @@
       }
 
       /**
-       * Loads all location data from the JSON file
+       * Loads all location data from the JSON file from the database.
        */
       async function loadLocations() {
         try {
@@ -270,7 +272,7 @@
       }
 
       /**
-       * Filters and renders locations within the selected radius.
+       * Filters ocations within the selected radius.
        * Updates the list of currently filtered locations
        * 
        * @param {*} locations the array of location objects
@@ -310,7 +312,9 @@
         map.easeTo({ zoom, duration: 400 });
       });
 
-      // Taken from Anas, slightly modified
+      /**
+       * Attaches handler for the "use current location" button.
+       */
       function setupCurrentLocationButton() {
         const button = document.getElementById("use-current-location-btn");
         if (!button) return;
