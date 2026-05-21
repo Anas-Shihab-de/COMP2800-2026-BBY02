@@ -25,7 +25,7 @@
       </div>
 
       <div id="loginForm">
-        <form action="/api/login" method="post">
+        <form>
           <h2>Login</h2>
           <input name="loginName" type="text" placeholder="username" />
           <input name="loginPassword" type="password" placeholder="password" />
@@ -34,7 +34,7 @@
       </div>
 
       <div id="signupForm" style="display: none">
-        <form action="/api/signup" method="post">
+        <form>
           <h2>Sign Up</h2>
           <input name="signupName" type="text" placeholder="username" />
           <input name="signupEmail" type="email" placeholder="email" />
@@ -42,6 +42,8 @@
           <button id="signupButton" type="submit">Sign Up</button>
         </form>
       </div>
+
+      <p id="errorMsg"></p>
     </div>
     <script src="../js/Login.js"></script>
   </body>

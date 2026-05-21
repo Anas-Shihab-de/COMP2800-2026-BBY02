@@ -170,6 +170,10 @@ button:hover {
   animation: fadingForm 1.5s ease;
 }
 
+#errorMsg {
+  color: red;
+  margin: 0;
+}
 /* creates the little fading animation for the forms */
 @keyframes fadingForm {
   from {
