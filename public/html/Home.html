@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FoodHubBC - Home</title>
+    <link
+      href="https://fonts.googleapis.com/css?family=Darker Grotesque"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/Raspberry.css" />
+    <link rel="stylesheet" href="../css/Home.css" />
+  </head>
+
+  <body>
+    <main class="page">
+      <header class="header">
+        <div class="topBar">
+          <div class="fruitsLogo">
+            <img src="../img/sillyFruits.png" />
+          </div>
+          <div>
+            <div class="appName">Featured Food Hubs</div>
+          </div>
+        </div>
+      </header>
+
+      <div class="filterBar">
+        <button class="filterButton" id="savedLocationsButton">Saved</button>
+        <div class="situationDropdown">
+          <button class="filterButton" id="mySituationButton">
+            My Situation ▾
+          </button>
+
+          <div class="dropdownMenu" id="dropdownMenu">
+            <label
+              ><input type="checkbox" id="filterNoId" /> I don’t have ID</label
+            >
+            <label
+              ><input type="checkbox" id="filterWheelchair" /> I need wheelchair
+              access</label
+            >
+            <label
+              ><input type="checkbox" id="filterWalking" /> I can only
+              walk/don't have access to transportation</label
+            >
+            <label
+              ><input type="checkbox" id="filterCultural" /> I need culturally
+              diverse food</label
+            >
+            <label
+              ><input type="checkbox" id="filterOpenNow" /> I need something
+              open right now</label
+            >
+          </div>
+        </div>
+
+        <button class="filterButton" id="showAllButton">Show All</button>
+        <img
+          src="../img/settingsIcon.png"
+          class="settingsIcon"
+          id="settingsButton"
+        />
+      </div>
+
+      <section class="newSection">
+        <div class="sectionHeader">
+          <div>
+            <div class="name">Community food pantries</div>
+            <div class="description">
+              Free, neighbourhood run shelves and fridges.
+            </div>
+          </div>
+
+          <a
+            href="/html/SeeAllLocations.html?category=Food Pantry"
+            class="seeAll"
+            id="seeAllPantries"
+            >See all pantries</a
+          >
+        </div>
+
+        <div class="rowOfLocations" id="pantriesRow"></div>
+      </section>
+
+      <!-- Farmers markets -->
+      <section class="newSection">
+        <div class="sectionHeader">
+          <div>
+            <div class="name">BC Farmers Markets</div>
+            <div class="description">
+              Fresh local vendors that accept coupons.
+            </div>
+          </div>
+          <a
+            href="/html/SeeAllLocations.html?category=Farmers Market"
+            class="seeAll"
+            id="seeAllFarmers"
+            >See all markets</a
+          >
+        </div>
+
+        <div class="rowOfLocations" id="farmersMarketsRow"></div>
+      </section>
+
+      <!-- Local Food Markets -->
+      <section class="newSection">
+        <div class="sectionHeader">
+          <div>
+            <div class="name">Other Local Food Markets</div>
+            <div class="description">Nearby family-owned or local grocers.</div>
+          </div>
+          <a
+            href="/html/SeeAllLocations.html?category=Local Market"
+            class="seeAll"
+            id="seeAllLocals"
+            >See all markets</a
+          >
+        </div>
+
+        <div class="rowOfLocations" id="localFoodMarketsRow"></div>
+      </section>
+       <div class="rowOfLocations" id="localFoodMarketsRow"></div>
+      </section>
+
+      <div class="raspberryMask hidden" id="raspberryMask">
+        <div class="raspberryMsg" id="raspberryMsg"></div>
+        <button class="raspberryExit" id="raspberryExit">Exit</button>
+      </div>
+    </main>
+
+    <div class="hidden" id="bewareOfRaspberry" ></div>
+    <div class="hidden" id="bewareOfRaspberryText"></div>
+
+    <script src="../js/Raspberry.js"></script>
+    <script src="../js/Home.js"></script>
+  </body>
+</html>

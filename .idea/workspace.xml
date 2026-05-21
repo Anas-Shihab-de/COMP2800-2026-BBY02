@@ -2,7 +2,23 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="88af22a5-f2dc-4635-aa03-e32015ec07cc" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/resource/slideshow/Details_1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/resource/slideshow/Details_2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/resource/slideshow/Home_1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/resource/slideshow/Home_2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/resource/slideshow/Home_3.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/resource/slideshow/fileCollect.JSON" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/instructions.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/instructions.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/locations.JSON" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/settings.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/settings.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_4_27_2026_1_38_PM_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_4_27_2026_1_38_PM__Changes_.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Index_Script.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/Index_Script.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Index_Style.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/Index_Style.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,30 +39,21 @@
     &quot;assignee&quot;: &quot;Anas-Shihab-de&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/Anas-Shihab-de/COMP2800-2026-BBY02.git&quot;,
-    &quot;accountId&quot;: &quot;2d606bfa-e589-4c77-ba19-eb67b36d7ca1&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Anas-Shihab-de/2800-202610-BBY10.git",
+    "accountId": "2d606bfa-e589-4c77-ba19-eb67b36d7ca1"
   }
-}</component>
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/Anas-Shihab-de/COMP2800-2026-BBY10.git&quot;,
-    &quot;accountId&quot;: &quot;2d606bfa-e589-4c77-ba19-eb67b36d7ca1&quot;
-  }
-}&lt;/component&gt;
-  &lt;component name=&quot;ProjectColorInfo&quot;&gt;{
-  &amp;quot;associatedIndex&amp;quot;: 4
-}&lt;/component&gt;
-  &lt;component name=&quot;ProjectId&quot; id=&quot;3CuB2GZAF9mogGUprtAg4WEUKxz&quot; /&gt;
-  &lt;component name=&quot;ProjectViewState&quot;&gt;
-    &lt;option name=&quot;hideEmptyMiddlePackages&quot; value=&quot;true&quot; /&gt;
-    &lt;option name=&quot;showLibraryContents&quot; value=&quot;true&quot; /&gt;
-  &lt;/component&gt;
-  &lt;component name=&quot;PropertiesComponent&quot;&gt;&lt;![CDATA[{
+  <component name="ProjectId" id="3CuB2GZAF9mogGUprtAg4WEUKxz" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
@@ -54,7 +61,7 @@
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Anas-Shihab-de-branch&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/User/Documents/GitHub/COMP2800-2026-BBY02&quot;
   }
@@ -63,6 +70,19 @@
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\User\Documents\GitHub\COMP2800-2026-BBY02" />
     </key>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="COMP2800-2026-BBY02" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="COMP2800-2026-BBY02" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>

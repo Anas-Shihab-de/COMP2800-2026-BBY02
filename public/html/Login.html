@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Darker Grotesque"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/Login.css" />
+    <title>FoodHubBC</title>
+
+    <style></style>
+  </head>
+
+  <body>
+    <div class="headerContainer">
+      <div class="headerTitle">FoodHubBC</div>
+    </div>
+
+    <div class="mainContainer">
+      <div class="sliderContainer">
+        <button id="signupSlider">Signup</button>
+        <button id="loginSlider">Login</button>
+      </div>
+
+      <div id="loginForm">
+        <form>
+          <h2>Login</h2>
+          <input name="loginName" type="text" placeholder="username" />
+          <input name="loginPassword" type="password" placeholder="password" />
+          <button id="loginButton" type="submit">Login</button>
+        </form>
+      </div>
+
+      <div id="signupForm" style="display: none">
+        <form>
+          <h2>Sign Up</h2>
+          <input name="signupName" type="text" placeholder="username" />
+          <input name="signupEmail" type="email" placeholder="email" />
+          <input name="signupPassword" type="password" placeholder="password" />
+          <button id="signupButton" type="submit">Sign Up</button>
+        </form>
+      </div>
+
+      <p id="errorMsg"></p>
+    </div>
+    <script src="../js/Login.js"></script>
+  </body>
+</html>

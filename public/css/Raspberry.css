@@ -1,0 +1,179 @@
+/**
+ *  CREDITS: Sofia
+ */
+.raspberryMask {
+  position: fixed;
+  align-items: center;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  justify-content: center;
+  flex-direction: column;
+  background: rgba(255, 0, 76, 0.514);
+  display: flex;
+  z-index: 9999; /* guarantees it stays above all other elements */
+}
+
+/* styles the game over and winning message */
+.raspberryMsg {
+  color: white;
+  font-weight: 700;
+  font-family: "Darker Grotesque", sans-serif;
+  font-size: 5rem;
+  margin-bottom: 20px;
+  text-align: center;
+  text-shadow:
+    0 0 25px rgba(167, 71, 111, 0.9),
+    0 0 60px rgba(255, 0, 80, 0.35),
+    0 0 120px rgba(255, 0, 80, 0.55);
+}
+
+.screenShake {
+  animation: tankApproaching 0.25s ease-in-out;
+}
+
+.hidden {
+  display: none;
+}
+
+.raspberryExit {
+  letter-spacing: 2px;
+  padding: 14px 36px;
+  font-family: "Darker Grotesque";
+  font-size: 3rem;
+  font-weight: 700;
+  color: white;
+  background: rgba(0, 0, 0, 0.55);
+  border: 3px solid rgba(255, 0, 80, 0.6);
+  border-radius: 40px;
+  text-shadow:
+    0 0 12px rgba(255, 242, 246, 0.815),
+    0 0 22px rgba(255, 213, 226, 0.699);
+  /* inner element box shadow */
+  box-shadow:
+    0 0 25px rgba(255, 0, 80, 0.35),
+    inset 0 0 20px rgba(255, 0, 80, 0.25);
+}
+
+.raspberry {
+  position: fixed;
+  cursor: pointer; /* needed for desktop */
+  /* used filter in order for the shadow to encompass the raspberry shape, not the box */
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.459))
+    drop-shadow(0 0 14px rgba(255, 54, 121, 0.5));
+  width: 240px;
+  height: auto;
+  z-index: 9998;
+  animation: raspberryWiggle var(--wiggleSpeed, 0.6s) infinite ease-in-out;
+}
+
+.disableClicks {
+  pointer-events: none;
+}
+
+/* only enables clicking on raspberry + raspberry game */
+.raspberry,
+.raspberryMask,
+.raspberryExit {
+  pointer-events: auto;
+}
+
+.warningMask {
+  position: fixed;
+  animation: flashingRaspberry 0.25s infinite alternate;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 0, 0, 0.25);
+  pointer-events: none; /* allows you to click through the element to the other side of the screen */
+  z-index: 9997;
+}
+
+/* makes raspberries flash during the warning screen */
+@keyframes flashingRaspberry {
+  from {
+    opacity: 0.1;
+  }
+  to {
+    opacity: 30;
+  }
+}
+
+.imminentRaspberryText {
+  position: fixed;
+  top: 20px;
+  width: 100%;
+  text-align: center;
+  font-family: "Darker Grotesque";
+  font-size: 6.5rem;
+  color: white;
+  text-shadow: 0 0 20px rgba(255, 0, 98, 0.9);
+  font-weight: 600;
+  z-index: 9998;
+  animation: seeingRed 0.6s infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes seeingRed {
+  from {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  to {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+/* the animation applied to each raspberry */
+@keyframes raspberryWiggle {
+  0% {
+    transform: rotate(-6deg) scale(1);
+  }
+  50% {
+    transform: rotate(6deg) scale(1.05);
+  }
+  100% {
+    transform: rotate(-6deg) scale(1);
+  }
+}
+
+/* creates the screen shaking animation to stress out the user */
+/* inspired by l4d2 */
+@keyframes tankApproaching {
+  0% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  10% {
+    transform: translate(-25px, 18px) rotate(-2deg) scale(1.02);
+  }
+  20% {
+    transform: translate(30px, -22px) rotate(1deg) scale(0.98);
+  }
+  30% {
+    transform: translate(-18px, 12px) rotate(2deg) scale(1.03);
+  }
+  40% {
+    transform: translate(22px, -30px) rotate(-1deg) scale(0.97);
+  }
+  50% {
+    transform: translate(-35px, 25px) rotate(3deg) scale(1.04);
+  }
+  60% {
+    transform: translate(28px, -18px) rotate(-2deg) scale(0.99);
+  }
+  70% {
+    transform: translate(-20px, 30px) rotate(1deg) scale(1.02);
+  }
+  80% {
+    transform: translate(32px, -25px) rotate(-3deg) scale(0.96);
+  }
+  90% {
+    transform: translate(-15px, 10px) rotate(2deg) scale(1.03);
+  }
+  100% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+}

@@ -1,0 +1,120 @@
+/**
+ *  CREDITS: Sofia & Anas
+ */
+* {
+  font-family: "Darker Grotesque";
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  min-height: 100vh;
+  padding: 2rem;
+  gap: 2.2rem;
+  position: relative;
+  background: linear-gradient(
+    to bottom,
+    rgba(140, 210, 180, 0.9) 0%,
+    rgba(140, 210, 180, 0.75) 55%,
+    rgba(180, 200, 220, 0.45) 75%,
+    rgba(210, 170, 190, 0.38) 88%,
+    rgba(10, 40, 30, 0.22) 100%
+  );
+}
+
+.heading {
+  position: relative;
+  font-size: 5vw;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: white;
+  animation: sofiaFloat 4.5s ease-in-out infinite;
+  text-shadow:
+    0 0 6px rgba(245, 133, 255, 0.55),
+    0 0 10px rgba(255, 110, 137, 0.918);
+}
+
+.tutorialVid {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: inherit;
+  display: block;
+}
+
+.videoBox {
+  position: relative;
+  border: 10px solid rgba(255, 255, 255, 0.22);
+  aspect-ratio: 16/ 9;
+  border-radius: 1.6rem;
+  width: 100%;
+  max-width: 720px;
+  background: transparent;
+  animation: videoFloat 1.4s ease forwards;
+  box-shadow:
+    0 22px 55px rgba(0, 0, 0, 0.55),
+    0 0 40px rgba(255, 150, 170, 0.25),
+    inset 0 1px 2px rgba(255, 255, 255, 0.12);
+}
+
+.videoBox video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.continue {
+  position: absolute;
+  font-size: 3rem;
+  letter-spacing: 0.06em;
+  bottom: 2.4rem;
+  left: 50%;
+  animation: continueFlash 2.4s ease-in-out infinite;
+  transform: translateX(-50%);
+  color: rgba(41, 1, 17, 0.85);
+}
+
+@keyframes sofiaFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes videoFloat {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes continueFlash {
+  0% {
+    opacity: 0.55;
+    text-shadow: 0 0 10px rgba(255, 150, 170, 0.35);
+  }
+  50% {
+    opacity: 1;
+    text-shadow: 0 0 22px rgba(255, 150, 170, 0.65);
+  }
+  100% {
+    opacity: 0.55;
+    text-shadow: 0 0 10px rgba(255, 150, 170, 0.35);
+  }
+}
+
+@media (min-width: 768px) {
+  body {
+    padding-top: 4rem;
+  }
+}

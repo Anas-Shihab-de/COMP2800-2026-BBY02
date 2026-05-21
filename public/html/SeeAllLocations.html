@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FoodHubBC - See All</title>
+    <!-- Google Material Icons -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Darker Grotesque"
+      rel="stylesheet"
+    />
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/SeeAllLocations.css" />
+  </head>
+
+  <body>
+    <!-- HEADER -->
+    <header class="header">
+      <button class="backButton" id="backButton">
+        <span class="material-symbols-outlined">arrow_back_ios</span>
+      </button>
+
+      <h1 class="headerText" id="headerText"></h1>
+
+      <div class="headerButtons">
+        <button class="saveButton" id="saveButton">Saved Places</button>
+
+        <button class="filterButton" id="filterButton">
+          <span class="material-symbols-outlined">filter_list</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- CARDS GRID -->
+    <main class="locationsGrid" id="locationsGrid"></main>
+
+    <!-- FILTER PANEL -->
+    <div id="filterPanelBg" class="filterPanelBg hidden"></div>
+    <div id="filterPanel" class="filterPanel hidden">
+      <div class="filter-header">
+        <h2>Filter Tags</h2>
+      </div>
+
+      <div class="filter-section">
+        <p class="filter-label">Sort By</p>
+        <select id="sort-select" class="sort-select">
+          <option value="distance">Nearest First</option>
+          <option value="name">Name: A–Z</option>
+        </select>
+      </div>
+
+      <div class="filter-section">
+        <div id="filter-tags-container" class="filter-tags"></div>
+      </div>
+
+      <div class="filter-footer">
+        <button class="clearButton" onclick="clearFilters()">Clear All</button>
+        <button class="applyButton" onclick="applyFilters()">Apply</button>
+      </div>
+    </div>
+
+    <script src="../js/SeeAllLocations.js"></script>
+  </body>
+</html>

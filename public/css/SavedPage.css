@@ -1,0 +1,522 @@
+/**
+ *  CREDITS
+ *  Min: Created all styling based on SeeAllLocation.css
+ *
+ *  Reference:
+ *  This code is modified to unify the UI with the rest of pages based on SeeAllLocation.css.
+ *
+ *  Previous comp1537 Web Assignment 1-6, COMP 1537 Lab examples 
+ *  How to create an overlay image title:
+ *  https://www.w3schools.com/howto/howto_css_image_overlay_title.asp
+ *  Google search: How to fill in google icon
+ *  Background-gradient: https://gemini.google.com/share/30aadd0a98a5
+ */
+:root {
+  /* Colors */
+  --color-white: #ffffff;
+  --color-black: #050a13;
+  --color-primary-green: #80bba2;
+  --color-green-dark: #0b754a;
+  --color-green-light: #a7faca;
+  --color-orange-dark: #ffc144;
+  --color-orange-light: #ffeba5;
+  --color-cream: #fbfae6;
+  --color-brown: #c18340;
+
+  /* App Theme Color examples */
+  --color-primary: var(--color-primary-green);
+  --color-primary-variant: var(--color-green-light);
+  --color-accent: var(--color-orange-dark);
+  --color-text: var(--color-black);
+
+  --radius-btn: 20px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Darker Grotesque";
+  box-sizing: border-box;
+  font-family: "Darker Grotesque";
+  cursor: none; /* hides default cursor */
+}
+
+html,
+body {
+  background-repeat: no-repeat;
+  color: #ffffff;
+  background: linear-gradient(
+    185deg,
+    #6fae98 0%,
+    #4f7f6a 28%,
+    #3b5c4f 55%,
+    #2a443a 78%,
+    #1e332c 100%
+  );
+  min-height: 100vh; /* resolves the strange duplicate background that used to appear for a split second */
+}
+
+/* Remove link underline */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* 
+  Whole page
+  : removes padding to apply same UI with SeeALlLocations
+  */
+.saved-page {
+  width: 100%;
+  /* padding: 4vw 5vw 8vw; */
+  display: flex;
+  flex-direction: column;
+  gap: 4vw;
+}
+
+/* Header */
+.header {
+  padding: 24px 24px;
+  gap: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.096);
+}
+
+.header > * {
+  flex-shrink: 0;
+  /* Prevent header items from shrinking when the screen narrows */
+}
+.header__back-btn {
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+}
+
+/*headerText*/
+.header__title {
+  flex: 1;
+  text-align: left;
+  color: #ffffff;
+  background: linear-gradient(90deg, #b2ffb9, #ffffff);
+  background-clip: text; /* allows the gradient to show through the text */
+  color: transparent;
+  margin: 0;
+  padding: 0;
+  font-size: 2rem;
+  letter-spacing: 0.04em;
+  animation: cherryFade 0.9s ease forwards;
+}
+
+.headerButtons {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.header__btn {
+  background: rgba(0, 0, 0, 0.65);
+  color: white;
+  border: none;
+  padding: 0.55rem 1.3rem;
+  border-radius: 999px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  box-shadow:
+    0 0 12px rgba(255, 255, 255, 0.692),
+    0 0 22px rgba(255, 255, 255, 0.35),
+    inset 0 0 8px rgba(255, 255, 255, 0.25);
+}
+
+.header__btn:focus,
+.applyButton:focus {
+  outline: 3px solid rgba(255, 120, 160, 0.6);
+  outline-offset: 10px;
+}
+
+.filterButton {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2rem;
+}
+
+.locationsGrid {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+  display: grid;
+}
+.locationBox {
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+  border-radius: 1.2rem;
+  background:
+    linear-gradient(
+      to bottom right,
+      rgba(228, 255, 224, 0.699),
+      transparent,
+      rgba(255, 255, 255, 0.555)
+    ),
+    rgba(255, 255, 255, 0.12);
+  border: 1.5px solid rgba(255, 200, 220, 0.527);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.25),
+    0 0 18px rgba(255, 150, 180, 0.25);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: cherryFade 1.2s ease forwards;
+  animation: sofiaFloat 6s ease-in-out infinite;
+  position: relative;
+  transition:
+    transform 0.4s ease,
+    box-shadow 0.4s ease;
+}
+
+.locationBox:hover {
+  transform: translateY(-2vw);
+  box-shadow:
+    0 0 25px rgba(255, 120, 160, 0.45),
+    0 0 60px rgba(255, 120, 160, 0.25);
+}
+
+/* Creates a very light pink radial bg shadow when a location box is hovered over (only valid on desktop) */
+.locationBox:hover::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 205, 251, 0.404),
+    transparent 70%
+  );
+  bottom: 0;
+  right: 0;
+  left: 0;
+}
+
+.material-symbols-outlined-bookmark {
+  color: var(--color-black);
+  font-variation-settings: "FILL" 1;
+}
+
+.material-symbols-outlined-bookmark-unsave {
+  color: var(--color-black);
+  font-variation-settings: "FILL" 0;
+}
+
+/* Makes it look like the page is breathing */
+@keyframes sofiaFloat {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-13px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.bookmarkButton {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.45);
+  border: none;
+  padding: 0.4rem;
+  border-radius: 50%;
+  transition: transform 0.25s ease;
+}
+
+/* creates that little jumping icon effect when clicked on */
+.bookmarkButton:active {
+  transform: scale(2);
+}
+
+.locationImage {
+  width: 100%;
+  aspect-ratio: 5 / 3;
+  position: relative;
+  overflow: hidden;
+}
+
+.locationImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.imageTag {
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  padding: 0.35rem 0.9rem;
+  background: rgba(0, 0, 0, 0.55);
+  color: white;
+  border-radius: 999px;
+  font-size: 1.15rem;
+}
+
+.hubInfo {
+  padding: 14px 16px;
+  gap: 4px;
+  display: flex;
+  flex-direction: column;
+}
+
+.locationName {
+  margin: 0;
+  color: white;
+  font-size: 1.45rem;
+  font-weight: 200;
+}
+
+.locationDetails {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.distanceInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.locationIcon {
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 80%;
+  overflow: hidden;
+  justify-content: center;
+  display: flex;
+  background: rgba(255, 255, 255, 0.733);
+  align-items: center;
+}
+
+.locationDistanceKm {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #0f241c;
+}
+
+.locationIcon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.relativePrice {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #0a3003;
+}
+
+.clearButton,
+.applyButton {
+  padding: 16px;
+  border-radius: 999px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  width: 100%;
+}
+
+.tagRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.2rem;
+}
+
+.tag {
+  border-radius: 999px;
+  font-size: 1.09rem;
+  padding: 0.3rem 0.8rem;
+  background: rgba(255, 255, 255, 0.438);
+  color: #1f3b32;
+  font-weight: 600;
+}
+
+.filterPanelBg {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 10;
+}
+
+/* changed to match Danielle's variable */
+.filter-tag {
+  color: white;
+  font-size: 1.05rem;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.15);
+  padding: 10px 20px;
+  border-radius: 999px;
+  margin-bottom: 0.6rem;
+}
+
+/* changes to have a black background when clicked on */
+.filter-tag.active {
+  background: black;
+  border-color: black;
+  color: white;
+}
+
+.filterPanel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 78%;
+  max-width: 320px;
+  height: 100%;
+  border-left: 2px solid rgba(255, 200, 220, 0.35);
+  box-shadow: -4px 0 18px rgba(255, 150, 180, 0.25);
+  display: flex;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px);
+  padding: 1.5rem;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  font-size: 1.04rem;
+  flex-direction: column;
+  gap: 1.4rem;
+  z-index: 11;
+  animation: cherryFade 0.6s ease forwards;
+}
+
+.filterPanel select,
+.filterPanel option,
+.filterPanel label,
+.filterPanel h3,
+.filterPanel p {
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 1.15rem;
+  width: 100%;
+}
+
+.clearButton {
+  background: white;
+  color: black;
+  border: 2px solid black;
+}
+
+.applyButton {
+  background: black;
+  color: white;
+  border: none;
+}
+
+@keyframes cherryFade {
+  0% {
+    opacity: 0;
+    transform: translateY(2.5vw);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  * {
+    cursor: auto;
+  }
+
+  .header {
+    padding: 8vw 5vw;
+  }
+
+  .headerText {
+    font-size: 1.6rem;
+  }
+
+  .saveButton {
+    padding: 0.55rem 1.2rem;
+    font-size: 1rem;
+  }
+
+  .filterButton {
+    font-size: 1.8rem;
+  }
+
+  .tag {
+    font-size: 1rem;
+    padding: 0.35rem 0.9rem;
+  }
+
+  .locationsGrid {
+    grid-template-columns: 1fr; /* for cards to stack */
+    width: 90%;
+    padding: 0;
+  }
+
+  .locationBox {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .locationName {
+    font-size: 1.25rem;
+  }
+
+  .locationDistanceKm,
+  .relativePrice {
+    font-size: 1.1rem;
+  }
+
+  .clearButton,
+  .applyButton {
+    margin-top: 0.5rem;
+    padding: 14px;
+    font-size: 1.1rem;
+  }
+}
+
+@media (min-width: 600px) {
+  * {
+    cursor: auto;
+  }
+
+  .locationsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1000px) {
+  * {
+    cursor: auto;
+  }
+
+  .locationsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
