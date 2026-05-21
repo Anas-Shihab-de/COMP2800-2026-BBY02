@@ -26,7 +26,7 @@ const saltRounds = 12;
 
 const express = require("express");
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
 const { MongoClient } = require("mongodb");
 const MONGO_URI = `mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/`;
@@ -157,7 +157,7 @@ app.get("/api/sessions", async (req, res) => {
 /**
  * Creates a new user account with a hashed password and empty
  * saved_list.
- * 
+ *
  * Checks if the inputs are valid with joi.
  *
  * Starts a session for the user.
@@ -170,20 +170,23 @@ app.post("/api/signup", async (req, res) => {
 
   try {
     if (!username || !email || !password) {
-      return res.status(400).json({error: "Missing username, email, or password"});
+      return res
+        .status(400)
+        .json({ error: "Missing username, email, or password" });
     }
 
-    const schema = Joi.object(
-        {
-            username: Joi.string().alphanum().max(50).required(),
-            email: Joi.string().email().required(),
-            password: Joi.string().max(50).required()
-        }
-    );
+    const schema = Joi.object({
+      username: Joi.string().alphanum().max(50).required(),
+      email: Joi.string().email().required(),
+      password: Joi.string().max(50).required(),
+    });
 
-    const validationResult = schema.validate({username, email, password});
+    const validationResult = schema.validate({ username, email, password });
     if (validationResult.error != null) {
-      return res.status(400).json({error: "Username must be alphanumeric with max length 50. Email must be a valid email format. Password has a max length of 50."});
+      return res.status(400).json({
+        error:
+          "Username must be alphanumeric with max length 50. Email must be a valid email format. Password has a max length of 50.",
+      });
     }
 
     const usersCollection = await client
@@ -200,10 +203,11 @@ app.post("/api/signup", async (req, res) => {
 
     req.session.authenticated = true;
     req.session.email = email;
+    req.session.username = username;
     req.session.cookie.maxAge = expireTime;
     req.session.justSignedUp = true;
 
-    res.status(200).json({redirect: "/html/Tutorial.html"});
+    res.status(200).json({ redirect: "/html/Tutorial.html" });
   } catch (error) {
     res.status(503).send("There was a problem adding the user to db.");
   }
@@ -213,8 +217,8 @@ app.post("/api/signup", async (req, res) => {
  * Verifies username and password.
  *
  * Checks if the inputs are valid with joi.
- * 
- * Redirects to the home page if username/password pair exist in db, 
+ *
+ * Redirects to the home page if username/password pair exist in db,
  * otherwise, back to the login page.
  */
 app.post("/api/login", async (req, res) => {
@@ -223,19 +227,20 @@ app.post("/api/login", async (req, res) => {
 
   try {
     if (!username || !password) {
-      return res.status(400).json({error: "Missing username or password"});
+      return res.status(400).json({ error: "Missing username or password" });
     }
 
-    const schema = Joi.object(
-      {
-          username: Joi.string().alphanum().max(50).required(),
-          password: Joi.string().max(50).required()
-      }
-    );
+    const schema = Joi.object({
+      username: Joi.string().alphanum().max(50).required(),
+      password: Joi.string().max(50).required(),
+    });
 
-    const validationResult = schema.validate({username, password});
+    const validationResult = schema.validate({ username, password });
     if (validationResult.error != null) {
-      return res.status(400).json({error: "Username must be alphanumeric with max length 50. Password has a max length of 50."});
+      return res.status(400).json({
+        error:
+          "Username must be alphanumeric with max length 50. Password has a max length of 50.",
+      });
     }
 
     const usersCollection = await client
@@ -250,15 +255,16 @@ app.post("/api/login", async (req, res) => {
     ) {
       req.session.authenticated = true;
       req.session.email = result[0].email;
+      req.session.username = result[0].username;
       req.session.cookie.maxAge = expireTime;
 
       if (result[0].show_tutorial === true) {
-        return res.status(200).json({redirect: "/html/Tutorial.html"});
+        return res.status(200).json({ redirect: "/html/Tutorial.html" });
       }
 
-      return res.status(200).json({redirect: "/html/Home.html"});
+      return res.status(200).json({ redirect: "/html/Home.html" });
     } else {
-      return res.status(401).json({error: "Invalid username or password"});
+      return res.status(401).json({ error: "Invalid username or password" });
     }
   } catch (error) {
     console.log(error);
@@ -385,7 +391,7 @@ app.post("/api/unsave-location", async (req, res) => {
       .collection("Users");
 
     const result = await usersCollection.updateOne(
-      { username: req.session.username },
+      { email: userEmail },
       { $pull: { saved_list: locationId } },
     );
 
@@ -590,7 +596,7 @@ app.use(express.static(__dirname + "/public/"));
 
 // 404 page
 app.use((req, res) => {
-    res.status(404).redirect("/html/404.html");
+  res.status(404).redirect("/html/404.html");
 });
 
 app.listen(PORT, () => {

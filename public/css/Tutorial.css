@@ -70,7 +70,7 @@ body {
   position: absolute;
   font-size: 3rem;
   letter-spacing: 0.06em;
-  bottom: 2.4rem;
+  bottom: 10px;
   left: 50%;
   animation: continueFlash 2.4s ease-in-out infinite;
   transform: translateX(-50%);

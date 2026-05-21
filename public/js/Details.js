@@ -24,7 +24,7 @@ let userLocation = null;
 let currentLocation = null;
 const areas = [
   "Vancouver",
-  "Port Moody",
+  "Surrey",
   "Burnaby",
   "New Westminster",
   "Richmond",
@@ -199,7 +199,7 @@ async function renderPage(location) {
 
             <button type="button" class="bookmarkButton card__save-btn">
             <span
-                class="bookmark material-symbols-outlined .material-symbols-outlined-bookmark-unsave"
+                class="bookmark material-symbols-outlined material-symbols-outlined-bookmark-unsave"
             >
                 bookmark
             </span>
