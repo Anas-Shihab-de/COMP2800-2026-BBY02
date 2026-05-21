@@ -1,6 +1,7 @@
 * {
   box-sizing: border-box;
   --color-white: #ffffff;
+  --color-black: #050a13;
 }
 
 body {
@@ -317,23 +318,36 @@ body {
 }
 
 /* bookmark updated */
-.card__save-btn {
+.bookmarkButton {
   position: absolute;
-  right: 20px;
-  background: none;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.45);
   border: none;
+  padding: 0.4rem;
+  border-radius: 50%;
+  transition: transform 0.25s ease;
+}
+
+/* creates that little jumping icon effect when clicked on */
+.bookmarkButton:active {
+  transform: scale(2);
 }
 
 .material-symbols-outlined-bookmark {
   font-size: 32px;
-  color: var(--color-white) !important;
+  color: var(--color-black) !important;
   font-variation-settings: "FILL" 1;
 }
 
 /* unsave bookmark */
 .material-symbols-outlined-bookmark-unsave {
   font-size: 32px;
-  color: var(--color-white) !important;
+  color: var(--color-black) !important;
 }
 
 @media (max-width: 360px) {

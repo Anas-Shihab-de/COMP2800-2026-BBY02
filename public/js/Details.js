@@ -197,9 +197,9 @@ async function renderPage(location) {
             <div class="headerButtons">
             <button class="backIcon"><img src="../img/BackIcon.png" /></button>
 
-            <button type="button" class="card__save-btn">
+            <button type="button" class="bookmarkButton card__save-btn">
             <span
-                class="bookmark material-symbols-outlined material-symbols-outlined-bookmark "
+                class="bookmark material-symbols-outlined .material-symbols-outlined-bookmark-unsave"
             >
                 bookmark
             </span>
