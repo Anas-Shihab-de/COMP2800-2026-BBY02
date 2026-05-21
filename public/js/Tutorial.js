@@ -10,7 +10,7 @@ document.querySelector(".continue").addEventListener("click", async () => {
 
     const data = await res.json();
 
-    if (data.success) {
+    if (data.redirectTo) {
       window.location.href = data.redirectTo;
     }
   } catch (error) {
