@@ -172,7 +172,7 @@ function renderCards(locations) {
             <span class="locationDistanceKm">${distance}</span>
           </div>
 
-          <span class="relativePrice">$$</span>
+          <span class="relativePrice">${locations[i].relativePrice}</span>
         </div>
 
         <div class="tagRow">

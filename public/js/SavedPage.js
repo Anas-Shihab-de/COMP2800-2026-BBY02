@@ -164,7 +164,7 @@ function renderCards(savedLocations) {
             </span>
             <span class="locationDistanceKm">${distance}</span>
           </div>
-          <span class="relativePrice">$$</span>
+          <span class="relativePrice">${savedLocations[i].relativePrice}</span>
        </div>
 
       <div class="tagRow">
