@@ -232,7 +232,7 @@ function addHeaderButtonsListener() {
   // 1. Saved Locations
   const savedLocBtn = document.getElementById("savedLocationsButton");
   savedLocBtn.addEventListener("click", () => {
-    window.location.href = `/html/saved_page.html`;
+    window.location.href = `/html/SavedPage.html`;
   });
 }
 
@@ -244,21 +244,21 @@ function addSeeAllButtonsListener() {
   const seeAllPantries = document.getElementById("seeAllPantries");
   seeAllPantries.addEventListener("click", () => {
     const category = "Food Pantry";
-    window.location.href = `/html/See_All_Locations.html?category=${category}`;
+    window.location.href = `/html/SeeAllLocations.html?category=${category}`;
   });
 
   // 2. Farmers Market
   const seeAllFarmers = document.getElementById("seeAllFarmers");
   seeAllFarmers.addEventListener("click", () => {
     const category = "Farmers Market";
-    window.location.href = `/html/See_All_Locations.html?category=${category}`;
+    window.location.href = `/html/SeeAllLocations.html?category=${category}`;
   });
 
   // 3. Local Market
   const seeAllLocals = document.getElementById("seeAllLocals");
   seeAllLocals.addEventListener("click", () => {
     const category = "Local Market";
-    window.location.href = `/html/See_All_Locations.html?category=${category}`;
+    window.location.href = `/html/SeeAllLocations.html?category=${category}`;
   });
 }
 
@@ -357,7 +357,7 @@ function isOpenNow(hours) {
 }
 
 document.getElementById("settingsButton").addEventListener("click", () => {
-  window.location.href = "/html/Settings2.html";
+  window.location.href = "/html/Settings.html";
 });
 
 // Switches between showing all locations or only those within radius

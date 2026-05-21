@@ -1,4 +1,6 @@
-/* CREDITS: Sofia and Danielle */
+/**
+ *  CREDITS: Sofia & Danielle
+ */
 * {
   box-sizing: border-box;
   cursor: none; /* hides default cursor */
@@ -21,7 +23,7 @@ body {
   min-height: 100vh; /* resolves the strange duplicate background that used to appear for a split second */
 }
 
-/* Remove link underline */
+/* Removes link underline */
 a {
   text-decoration: none;
   color: inherit;
@@ -306,6 +308,7 @@ a {
 .clearButton,
 .applyButton {
   padding: 16px;
+  margin-top: 10px;
   border-radius: 999px;
   font-size: 1.1rem;
   font-weight: 700;

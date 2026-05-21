@@ -24,6 +24,7 @@ let userLocation = null;
 let currentLocation = null;
 const areas = [
   "Vancouver",
+  "Port Moody",
   "Burnaby",
   "New Westminster",
   "Richmond",

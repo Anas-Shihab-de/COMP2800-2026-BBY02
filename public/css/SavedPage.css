@@ -1,13 +1,15 @@
 /**
+ *  CREDITS
+ *  Min: Created all styling based on SeeAllLocation.css
+ *
  *  Reference:
- *  This code is modified to unify the UI with the rest of pages based on See_all_location.css.
+ *  This code is modified to unify the UI with the rest of pages based on SeeAllLocation.css.
  *
  *  Previous comp1537 Web Assignment 1-6, COMP 1537 Lab examples 
  *  How to create an overlay image title:
  *  https://www.w3schools.com/howto/howto_css_image_overlay_title.asp
  *  Google search: How to fill in google icon
- *  Problem-solving: 
- *  background-gradient: https://gemini.google.com/share/30aadd0a98a5
+ *  Background-gradient: https://gemini.google.com/share/30aadd0a98a5
  */
 :root {
   /* Colors */

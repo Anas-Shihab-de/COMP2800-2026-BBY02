@@ -11,6 +11,14 @@ const raspberryExit = document.getElementById("raspberryExit");
 const bewareOfRaspberry = document.getElementById("bewareOfRaspberry");
 const bewareOfRaspberryText = document.getElementById("bewareOfRaspberryText");
 
+// Audio objects
+let bgm = document.createElement("audio");
+let noo = document.createElement("audio");
+let victory = document.createElement("audio");
+bgm.src = "../audio/BgMusic.mp3";
+noo.src = "../audio/NOO.mp3";
+victory.src = "../audio/VictoryJingle.mp3";
+
 const RASPBERRY_IMGS = [
   "../img/Raspberry1.png",
   "../img/Raspberry2.png",
@@ -81,6 +89,9 @@ function startGame() {
   }
 
   running = true;
+
+  // Start bgm
+  bgm.play();
 
   // Starting values
   raspberryCount = 0;
@@ -198,6 +209,10 @@ function spawnRaspberry() {
   const index = Math.floor(Math.random() * RASPBERRY_IMGS.length);
   raspberry.src = RASPBERRY_IMGS[index];
 
+  // Adds audio element per raspberry so that multiple sfx can play at the same time
+  const raspberrySfx = document.createElement("audio");
+  raspberrySfx.src = "../audio/RaspberrySquish.mp3";
+
   raspberry.classList.add("raspberry");
 
   // Chooses a random horizontal starting position
@@ -214,9 +229,15 @@ function spawnRaspberry() {
 
   // Listens for clicks, removes raspberries
   raspberry.addEventListener("click", () => {
+    raspberrySfx.play();
     raspberry.remove();
     raspberryCount = Math.max(0, raspberryCount - 1);
     updateImminentWarning();
+  });
+
+  // Remove sfx when play() is done
+  raspberrySfx.addEventListener("ended", () => {
+    raspberrySfx.remove();
   });
 
   let yPosition = -80;
@@ -260,6 +281,10 @@ function spawnRaspberry() {
  */
 function endRaspberryGame(userWon) {
   running = false;
+  bgm.pause();
+
+  if (userWon) victory.play();
+  else noo.play();
 
   // Re-enables page clicking
   document.querySelector(".page").classList.remove("disableClicks");

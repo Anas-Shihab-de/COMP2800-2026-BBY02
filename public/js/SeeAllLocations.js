@@ -379,7 +379,7 @@ function openSaved() {
   const queryText = window.location.search;
   const urlParams = new URLSearchParams(queryText);
   const category = urlParams.get("category");
-  window.location.href = `/html/saved_page.html?category=${category}`;
+  window.location.href = `/html/SavedPage.html?category=${category}`;
 }
 
 /**

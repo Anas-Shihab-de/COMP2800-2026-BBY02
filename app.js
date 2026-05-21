@@ -85,7 +85,9 @@ app.get("/api/authentication", async (req, res) => {
     .db(mongodb_project_database)
     .collection("Users");
 
-  const user = await usersCollection.findOne({ email: req.session.email });
+  const user = await usersCollection.findOne({
+    username: req.session.username,
+  });
 
   res.json({
     authenticated: req.session.authenticated,
@@ -93,6 +95,7 @@ app.get("/api/authentication", async (req, res) => {
     selectedlocation: user?.selected_location || null,
     selectedradius: user?.selected_radius || 5,
     saved_list: user?.saved_list || [],
+    show_tutorial: user?.show_tutorial ?? false,
   });
 });
 
@@ -210,6 +213,7 @@ app.post("/api/login", async (req, res) => {
     ) {
       req.session.authenticated = true;
       req.session.email = result[0].email;
+      req.session.username = result[0].username;
       req.session.cookie.maxAge = expireTime;
 
       if (result[0].show_tutorial === true) {
@@ -344,7 +348,7 @@ app.post("/api/unsave-location", async (req, res) => {
       .collection("Users");
 
     const result = await usersCollection.updateOne(
-      { email: userEmail },
+      { username: req.session.username },
       { $pull: { saved_list: locationId } },
     );
 
@@ -516,13 +520,13 @@ app.post("/api/viewedtutorial", async (req, res) => {
     // Shows the tutorial as being complete
     await usersCollection.updateOne(
       { email: email },
-      { $set: { show_tutorial: false } },
+      { $set: { tutorial_completed: true } },
     );
 
     let redirectTo = "/html/Home.html";
 
     if (req.session.justSignedUp === true) {
-      redirectTo = "/html/SofiasMap.html";
+      redirectTo = "/html/Map.html";
       req.session.justSignedUp = false;
     }
 
