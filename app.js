@@ -1,3 +1,4 @@
+// Gets .env keys
 require("dotenv").config();
 
 // MongoDB
@@ -575,8 +576,6 @@ app.post("/api/viewedtutorial", async (req, res) => {
   }
 });
 
-app.use(express.static(__dirname + "/public/"));
-
 /**
  * Destroys the session and redirects to login page.
  */
@@ -584,6 +583,14 @@ app.get("/logout", (req, res) => {
   req.session.destroy(() => {
     res.redirect("/html/Login.html");
   });
+});
+
+// Tells server to use public directory
+app.use(express.static(__dirname + "/public/"));
+
+// 404 page
+app.use((req, res) => {
+    res.status(404).redirect("/html/404.html");
 });
 
 app.listen(PORT, () => {
