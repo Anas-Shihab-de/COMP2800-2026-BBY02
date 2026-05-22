@@ -2,6 +2,28 @@
 
 BBY-10 has created FoodHubBC as a way to help people manage skyrocketing food costs and locate nearby affordable and nutritious food distributors for those who are health and price conscious. This aligns with our belief in equitable food access to affordable, accessible, and community-focused food assets, such as food pantries, farmers markets, and community food hubs.
 
+## File Structure
+
+```
+project-root/
+├── .idea/
+├── public/
+│   ├── html/
+│   ├── css/
+│   └── js/
+│   └── audio/
+│   └── img/
+│   └── resource/
+├── app.js
+├── .gitattributes
+├── .gitignore
+├── LICENSE
+├── README.md
+├── app.js
+├── package-lock.json
+└── package.json
+```
+
 ## FEATURES
 
 ### Filters \& Personalization
