@@ -73,3 +73,4 @@ Danielle Laron
 - AI features use AI. They sometimes hallucinate fake times and are also not always accurate.
 - The current hosting site Render is slow, especially when first starting up. If some images are missing or pages are 404'd, try waiting a bit and refreshing.
 - The tutorial video shows a slightly earlier version of the app, which is why there is a slight difference in appearance on one or two of the pages. However, these differences are minor and insignificant.
+- To access the hidden easter egg, take a closer look at the logo on the Home page
