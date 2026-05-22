@@ -25,15 +25,15 @@ const RASPBERRY_IMGS = [
   "../img/Raspberry3.png",
 ];
 
-const MAX_RASPBERRIES_ON_SCREEN = 60;
-const TOTAL_SURVIVAL_TIME = 30000;
+const MAX_RASPBERRIES_ON_SCREEN = 35;
+const TOTAL_SURVIVAL_TIME = 31000;
 
 // Minimum threshold for raspberries to appear on the screen before warning message appears
-const MIN_WARNING_VALUE = 0.65;
+const MIN_WARNING_VALUE = 0.2;
 
-let raspberrySpawnSpeed = 600;
+let raspberrySpawnSpeed = 300;
 let running = false;
-let raspberrySpeed = 1.5;
+let raspberrySpeed = 2.0;
 let raspberryCount = 0;
 let startingTime = null;
 let raspberryPile = 0;
@@ -133,7 +133,7 @@ function startGame() {
     }
 
     // Increases speed by 25%
-    raspberrySpeed = raspberrySpeed * 1.25;
+    raspberrySpeed = raspberrySpeed * 1.03;
 
     // Adds the screen shaking animation
     document.body.classList.add("screenShake");
@@ -141,24 +141,23 @@ function startGame() {
       document.body.classList.remove("screenShake");
     }, 250);
   }, 3000);
+
+  // Checks once every second to see if the user survived long enough to win
+  const checkForWin = setInterval(() => {
+    if (!running) {
+      clearInterval(checkForWin);
+      return;
+    }
+
+    const timePlayed = Date.now() - startingTime;
+
+    // User wins once the time played >= total survival time
+    if (timePlayed >= TOTAL_SURVIVAL_TIME) {
+      endRaspberryGame(true);
+      clearInterval(checkForWin);
+    }
+  }, 1000);
 }
-
-// Checks once every second to see if the user survived long enough to win
-const checkForWin = setInterval(() => {
-  if (!running) {
-    clearInterval(checkForWin);
-    return;
-  }
-
-  // Calculates how long the game has been running
-  const timePlayed = Date.now() - startingTime;
-
-  // User wins once the time played >= total survival time
-  if (timePlayed >= TOTAL_SURVIVAL_TIME) {
-    endRaspberryGame(true);
-    clearInterval(checkForWin);
-  }
-}, 1000);
 
 /**
  * Schedules the next raspberry that should appear on the screen.

@@ -1,323 +1,326 @@
-  * {
-        box-sizing: border-box;
-      }
+/**
+ *  CREDITS: Sofia
+ */
+* {
+  box-sizing: border-box;
+}
 
-      body {
-        margin: 0;
-        font-family: "Darker Grotesque", sans-serif;
-        display: flex;
-        justify-content: center;
-        background: linear-gradient(
-          185deg,
-          #6fae9854 0%,
-          #87dab6b4 28%,
-          #8bdaba59 55%,
-          #6eb19786 78%,
-          #6ab89ec2 100%
-        );
-        color: #0f2a1f;
-      }
+body {
+  margin: 0;
+  font-family: "Darker Grotesque", sans-serif;
+  display: flex;
+  justify-content: center;
+  background: linear-gradient(
+    185deg,
+    #6fae9854 0%,
+    #87dab6b4 28%,
+    #8bdaba59 55%,
+    #6eb19786 78%,
+    #6ab89ec2 100%
+  );
+  color: #0f2a1f;
+}
 
-      .page {
-        width: 100%;
-        max-width: 430px;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        background: #a5ffe549;
-      }
+.page {
+  width: 100%;
+  max-width: 430px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #a5ffe549;
+}
 
-      .header {
-        padding: 0.5rem 0.5rem 0.5rem;
-        letter-spacing: 1px;
-        font-weight: 600;
-        background: white;
-        text-align: center;
-        font-size: 1.25rem;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        letter-spacing: 0.03em;
-      }
+.header {
+  padding: 0.5rem 0.5rem 0.5rem;
+  letter-spacing: 1px;
+  font-weight: 600;
+  background: white;
+  text-align: center;
+  font-size: 1.25rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.03em;
+}
 
-      .mapBox {
-        height: 55vh;
-        min-height: 260px;
-        background: #d9e8df;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-      }
+.mapBox {
+  height: 55vh;
+  min-height: 260px;
+  background: #d9e8df;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
 
-      .mapBox::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: rgba(255, 255, 255, 0.12);
-        pointer-events: none;
-      }
+.mapBox::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.12);
+  pointer-events: none;
+}
 
-      #map {
-        width: 100%;
-        height: 100%;
-        position: relative;
-        z-index: 1;
-      }
+#map {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
 
-      #map-overlay {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        right: 0;
-        left: 0;
-        background: rgba(0, 0, 0, 0.55);
-        pointer-events: none;
-        z-index: 2;
-        -webkit-mask-repeat: no-repeat;
-        mask-repeat: no-repeat;
-      }
+#map-overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+  z-index: 2;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
 
-      .controls {
-        animation: boxSlidesIn 0.6s ease-out forwards;
-        width: 100%;
-        min-height: 33vh;
-        display: flex;
-        text-align: center;
-        flex-direction: column;
-        justify-content: flex-start;
-        margin-top: -1rem;
-        background: rgba(255, 255, 255, 0.075);
-        backdrop-filter: blur(13px);
-        border-radius: 2rem 2rem 0 0;
-        padding: 1.8rem 1.4rem 2.4rem;
-        color: #0f2a1f;
-      }
+.controls {
+  animation: boxSlidesIn 0.6s ease-out forwards;
+  width: 100%;
+  min-height: 33vh;
+  display: flex;
+  text-align: center;
+  flex-direction: column;
+  justify-content: flex-start;
+  margin-top: -1rem;
+  background: rgba(255, 255, 255, 0.075);
+  backdrop-filter: blur(13px);
+  border-radius: 2rem 2rem 0 0;
+  padding: 1.8rem 1.4rem 2.4rem;
+  color: #0f2a1f;
+}
 
-      @keyframes boxSlidesIn {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
+@keyframes boxSlidesIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-      .controls h2 {
-        margin: 0 0 0.8rem;
-        font-size: 1.65rem;
-        font-weight: 650;
-        letter-spacing: 0.03em;
-      }
+.controls h2 {
+  margin: 0 0 0.8rem;
+  font-size: 1.65rem;
+  font-weight: 650;
+  letter-spacing: 0.03em;
+}
 
-      .regionSelector {
-        margin-bottom: 0.8rem;
-        width: 100%;
-        margin-bottom: 1rem;
-        text-align: left;
-      }
+.regionSelector {
+  margin-bottom: 0.8rem;
+  width: 100%;
+  margin-bottom: 1rem;
+  text-align: left;
+}
 
-      .regionSelector label {
-        font-size: 1.3rem;
-        margin-bottom: 0.4rem;
-        text-align: center;
-        font-weight: 600;
-        display: block;
-        margin-bottom: 0.3rem;
-      }
+.regionSelector label {
+  font-size: 1.3rem;
+  margin-bottom: 0.4rem;
+  text-align: center;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.3rem;
+}
 
-      .regionSelector select {
-        box-shadow:
-          0 0 8px rgba(255, 255, 255, 0.7),
-          0 0 14px rgba(255, 255, 255, 0.45);
-        border: 2px solid rgba(255, 255, 255, 0.6);
-        width: 60%;
-        max-width: 60%;
-        margin: 0 auto;
-        display: block;
-        font-size: 1.2rem;
-        padding: 0.6rem 0.8rem;
-        border-radius: 999px;
-        background-color: rgba(255, 255, 255, 0.308);
-        font-family: "Darker Grotesque";
-        outline: none;
-      }
+.regionSelector select {
+  box-shadow:
+    0 0 8px rgba(255, 255, 255, 0.7),
+    0 0 14px rgba(255, 255, 255, 0.45);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  width: 60%;
+  max-width: 60%;
+  margin: 0 auto;
+  display: block;
+  font-size: 1.2rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.308);
+  font-family: "Darker Grotesque";
+  outline: none;
+}
 
-      .regionSelector select:focus {
-        width: 60%;
-        max-width: 60%;
-        margin: 0 auto;
-      }
+.regionSelector select:focus {
+  width: 60%;
+  max-width: 60%;
+  margin: 0 auto;
+}
 
-      .regionSelector select option {
-        padding: 0.25rem 0.6rem;
-        font-size: 0.9rem;
-      }
+.regionSelector select option {
+  padding: 0.25rem 0.6rem;
+  font-size: 0.9rem;
+}
 
-      #selectRegion {
-        font-size: 1.5rem;
-      }
+#selectRegion {
+  font-size: 1.5rem;
+}
 
-      /* select distance text */
-      #selectDistance {
-        font-size: 1.5rem;
-        letter-spacing: 0;
-        margin-top: 5px;
-        margin-bottom: 0px;
-      }
+/* select distance text */
+#selectDistance {
+  font-size: 1.5rem;
+  letter-spacing: 0;
+  margin-top: 5px;
+  margin-bottom: 0px;
+}
 
-      .sliderSection {
-        margin-top: 1px;
-        position: relative;
-        justify-content: space-between;
-        flex-direction: column;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        margin-bottom: 0.8rem;
-      }
+.sliderSection {
+  margin-top: 1px;
+  position: relative;
+  justify-content: space-between;
+  flex-direction: column;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
 
-      .sliderValueKm {
-        position: absolute;
-        right: 0;
-        top: -1.4rem;
-        font-size: 1.4rem;
-        font-weight: 650;
-      }
+.sliderValueKm {
+  position: absolute;
+  right: 0;
+  top: -1.4rem;
+  font-size: 1.4rem;
+  font-weight: 650;
+}
 
-      .slider {
-        width: 100%;
-      }
+.slider {
+  width: 100%;
+}
 
-      #radius-slider {
-        width: 100%;
-      }
+#radius-slider {
+  width: 100%;
+}
 
-      input[type="range"] {
-        margin-top: 10px;
-        width: 100%;
-        accent-color: #2d5f4a;
-        cursor: pointer;
-      }
+input[type="range"] {
+  margin-top: 10px;
+  width: 100%;
+  accent-color: #2d5f4a;
+  cursor: pointer;
+}
 
-      .useLocation {
-        justify-content: center;
-        align-items: center;
-        gap: 0.5rem; /* gap between plane icon and button*/
-        display: flex;
-        margin: 0.05rem 0 1.8rem;
-        font-size: 1.45rem;
-        font-weight: 600;
-      }
+.useLocation {
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem; /* gap between plane icon and button*/
+  display: flex;
+  margin: 0.05rem 0 1.8rem;
+  font-size: 1.45rem;
+  font-weight: 600;
+}
 
-      .useLocation img {
-        width: 22px;
-        height: 22px;
-        object-fit: contain;
-      }
+.useLocation img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
 
-      .chooseButton {
-        font-family: "Darker Grotesque";
-        font-size: 1.2rem;
-        font-weight: 500;
-        margin-top: -25px;
-        letter-spacing: 0.03em;
-        padding: 0.8rem;
-        width: 200px;
-        margin: 0 auto;
-        background: #0f2a1f;
-        color: white;
-        border: none;
-        border-radius: 999px;
-        transition: 0.4s ease;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-      }
+.chooseButton {
+  font-family: "Darker Grotesque";
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-top: -25px;
+  letter-spacing: 0.03em;
+  padding: 0.8rem;
+  width: 200px;
+  margin: 0 auto;
+  background: #0f2a1f;
+  color: white;
+  border: none;
+  border-radius: 999px;
+  transition: 0.4s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
 
-      .chooseButton:active {
-        box-shadow: 0 0 18px rgba(255, 74, 134, 0.507);
-        background: #0f2a1f;
-        transform: scale(0.98);
-      }
+.chooseButton:active {
+  box-shadow: 0 0 18px rgba(255, 74, 134, 0.507);
+  background: #0f2a1f;
+  transform: scale(0.98);
+}
 
-      .useLocation:active {
-        text-shadow: 0 0 12px rgba(255, 74, 135, 0.75);
-        transform: scale(0.97);
-      }
+.useLocation:active {
+  text-shadow: 0 0 12px rgba(255, 74, 135, 0.75);
+  transform: scale(0.97);
+}
 
-      /* hiding unused elements */
-      #instructions,
-      .info-card,
-      #status {
-        display: none;
-      }
+/* hiding unused elements */
+#instructions,
+.info-card,
+#status {
+  display: none;
+}
 
-      @media (min-width: 700px) {
-        .page {
-          max-width: 100%;
-        }
-      }
+@media (min-width: 700px) {
+  .page {
+    max-width: 100%;
+  }
+}
 
-      @media (min-width: 1100px) {
-        body {
-          justify-content: flex-start;
-          background: linear-gradient(
-            185deg,
-            #6fae9854 0%,
-            #87dab6b4 28%,
-            #8bdaba59 55%,
-            #6eb19786 78%,
-            #6ab89ec2 100%
-          );
-        }
+@media (min-width: 1100px) {
+  body {
+    justify-content: flex-start;
+    background: linear-gradient(
+      185deg,
+      #6fae9854 0%,
+      #87dab6b4 28%,
+      #8bdaba59 55%,
+      #6eb19786 78%,
+      #6ab89ec2 100%
+    );
+  }
 
-        .page {
-          width: 100%;
-          margin: 0;
-          overflow: hidden;
-          max-width: 100%;
-        }
+  .page {
+    width: 100%;
+    margin: 0;
+    overflow: hidden;
+    max-width: 100%;
+  }
 
-        .header {
-          font-size: 1.6rem;
-          padding: 1rem;
-        }
+  .header {
+    font-size: 1.6rem;
+    padding: 1rem;
+  }
 
-        .mapBox {
-          height: 60vh;
-          border-radius: 0;
-        }
+  .mapBox {
+    height: 60vh;
+    border-radius: 0;
+  }
 
-        .controls {
-          max-width: 100%;
-          width: 100%;
-          border-radius: 0;
-          padding: 2rem 3rem 3rem;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
+  .controls {
+    max-width: 100%;
+    width: 100%;
+    border-radius: 0;
+    padding: 2rem 3rem 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
-        .regionSelector select {
-          max-width: 400px;
-          width: 40%;
-        }
+  .regionSelector select {
+    max-width: 400px;
+    width: 40%;
+  }
 
-        .slider {
-          width: 60%;
-          max-width: 600px;
-        }
+  .slider {
+    width: 60%;
+    max-width: 600px;
+  }
 
-        .chooseButton {
-          width: 260px;
-        }
+  .chooseButton {
+    width: 260px;
+  }
 
-        .sliderSection {
-          position: relative;
-          width: 80%;
-          max-width: 600px;
-        }
+  .sliderSection {
+    position: relative;
+    width: 80%;
+    max-width: 600px;
+  }
 
-        .sliderValueKm {
-          margin-right: 100px;
-          top: -1.4rem;
-        }
-      }
+  .sliderValueKm {
+    margin-right: 100px;
+    top: -1.4rem;
+  }
+}
