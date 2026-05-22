@@ -24,15 +24,37 @@ BBY-10 has created FoodHubBC as a way to help people manage skyrocketing food co
 - A settings page allowing you to change any preferences (change location, preferred distance, etc.)
 - A thematic and visually appealing design for both mobile and desktop users.
 
+## Setup & Troubleshooting
+
+### App Setup
+- Once you make a clone of the repository, install the corresponding dependencies (mongoDB, express, joi, express-session, connect-mongo, etc.)
+- Open the project folder, open it in the console, and run *node app.js* to host a local instance
+- To test app features, log into our test account (User: test001, pass: test)
+
+### Common Bugs and Fixes
+
+- If, while local hosting, changes do not appear on the page; run *node | findstr node* then *taskkill /F /IM node.exe* followed by *node ap.js*, this kills the node instance and re-runs it so the local host uses the most recent code
+- If, while local hosting, the map page doesn't render, check your internet connection, ensure geolocation is allowed in the browser and wait up to 30 seconds 
+ 
+## AI Tools & API's 
+
+### AI Tools
+
+- Google Gemini flash lite is used for the AI ask availability and ask a question features
+
+### API Usage
+
+- The Google Gemini and Mapbox API's are used for the details page, map, and settings page
+
 ## About Us
 
 **Team Name: BBY-10**
 
 **Team Members:**
 
-Anas Shihab
-
 Sofia Leustean
+
+Anas Shihab
 
 Min Lee
 
