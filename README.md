@@ -24,7 +24,7 @@ BBY-10 has created FoodHubBC as a way to help people manage skyrocketing food co
 - A settings page allowing you to change any preferences (change location, preferred distance, etc.)
 - A thematic and visually appealing design for both mobile and desktop users.
 
-## TECHNOLOGIES USED
+### Technologies Used
 
 - The frontend was built entirely using pure HTML, CSS, and JavaScript, with an Express.js backend. All data is stored in a MongoDB database hosted on MongoDB Atlas. This project also uses Mapbox API for map rendering and location selection, and Google Gemini API for the AI-features on the Details page.
 
